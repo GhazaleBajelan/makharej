@@ -316,6 +316,7 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 
 <script>
 'use strict';
+const APP_VERSION='2.9';let lastDiag='';
 /* =====================================================================
    1. UTILITIES, I18N & FORMATTING
    ===================================================================== */
@@ -464,6 +465,7 @@ const D={
  rf_types:['چه چیزهایی در گزارش باشد','Include'],rf_cat:['دسته هزینه','Expense category'],rf_all:['همه','All'],rf_debt:['کدام قسط','Which installment'],rf_q:['جستجو در توضیح','Search description'],rf_qPh:['مثلاً اسنپ، ناخن، ویپاد','e.g. snapp, nails'],
  rf_sum:['خلاصه: {a}','Summary: {a}'],rf_essSplit:['ضروری {a} · غیرضروری {b}','Essential {a} · non-essential {b}'],rf_net:['خالص (درآمد − هزینه − اقساط − واریز)','Net (income − expenses − installments − deposits)'],rf_netHint:['آنچه در این بازه برایتان ماند','What you kept in this period'],
  rf_byDebt:['جمع به تفکیک قسط','Totals by installment'],rf_payments:['پرداخت','payments'],rf_list:['تراکنش‌ها ({a} مورد)','Transactions ({a})'],rf_print:['🖨️ چاپ همین گزارش','🖨️ Print this report'],rf_csv:['⬇️ اکسل همین گزارش','⬇️ Excel of this report'],rf_pTitle:['گزارش مالی','Financial report'],rf_filters:['فیلترها','Filters'],rf_yearChart:['درآمد، اقساط و پس‌انداز ماه‌به‌ماه — سال {a}','Monthly income, installments & savings — {a}'],
+ dg_btn:['آزمایش اتصال','Test connection'],dg_ver:['نسخه برنامه','App version'],dg_dev:['دستگاه','Device'],dg_online:['اینترنت (از نظر دستگاه)','Online (device says)'],dg_yes:['بله','yes'],dg_no:['خیر','no'],dg_net:['نوع شبکه','Network type'],dg_server:['سرور','Server'],dg_crypto:['رمزنگاری در دسترس','Encryption available'],dg_last:['آخرین همگام‌سازی موفق','Last successful sync'],dg_lastErr:['آخرین خطا','Last error'],dg_test:['اتصال به سرور','Server connection'],dg_ok:['موفق ({a} میلی‌ثانیه)','OK ({a} ms)'],dg_key:['کلید و رمزگشایی','Key & decryption'],dg_keyOk:['درست است ✓','correct ✓'],dg_empty:['هنوز داده‌ای در سرور نیست','no data on server yet'],dg_hint:['از این صفحه عکس بگیرید و بفرستید تا مشکل دقیق پیدا شود.','Screenshot this and send it to find the exact problem.'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -873,7 +875,7 @@ const FB_RULES=`{
   }
 }`;
 function syncSection(){if(SC.enabled){const last=META.lastSync?new Date(META.lastSync):null;const lj=last?dateLabel(dToJ(last))+' '+dg(pad(last.getHours())+':'+pad(last.getMinutes())):tr('sy_never');
-    return `<p><span class="tag ok">${tr('sy_on',{a:SC.provider==='firebase'?'Firebase'+(SC.mode==='email'?' · '+esc(SC.email):''):esc(SC.restUrl)})}</span></p><p class="hint">${tr('sy_last',{a:lj})}${syncState.err?' · '+esc(syncState.err):''}</p><div class="btns"><button class="btn pri" data-act="syncNow">${tr('sy_now')}</button><button class="btn" data-act="syncOff">${tr('sy_disc')}</button></div>`;}
+    return `<p><span class="tag ok">${tr('sy_on',{a:SC.provider==='firebase'?'Firebase'+(SC.mode==='email'?' · '+esc(SC.email):''):esc(SC.restUrl)})}</span></p><p class="hint">${tr('sy_last',{a:lj})}${syncState.err?' · '+esc(syncState.err):''}</p><div class="btns"><button class="btn pri" data-act="syncNow">${tr('sy_now')}</button><button class="btn" data-act="diag">🔍 ${tr('dg_btn')}</button><button class="btn" data-act="syncOff">${tr('sy_disc')}</button></div><div id="diagOut">${lastDiag}</div>`;}
   return `<p class="hint">${tr('sy_intro')}</p><form data-form="sync" class="form" autocomplete="off">
   <div class="row2"><label class="fld"><span>${tr('sy_provider')}</span><select name="provider"><option value="firebase">${tr('sy_fb')}</option><option value="rest">${tr('sy_rest')}</option></select></label><label class="fld"><span>${tr('sy_mode')}</span><select name="mode"><option value="key">${tr('sy_modeKey')}</option><option value="email">${tr('sy_modeEmail')}</option></select></label></div>
   <label class="fld only-fb"><span>${tr('sy_db')}</span><input name="dbUrl" dir="ltr" placeholder="https://your-app-default-rtdb.firebaseio.com"></label>
@@ -900,6 +902,7 @@ V.settings=()=>{const st=S.settings;const seg=(name,opts,cur)=>`<div class="seg"
   <section class="card"><h2>${tr('set_backup')}</h2><div class="btns"><button class="btn" data-act="expJson">${tr('bk_json')}</button><button class="btn" data-act="shareJson">${tr('bk_share')}</button><label class="btn">${tr('bk_imp')}<input type="file" id="impJson" accept=".json,application/json" hidden></label></div>
    <div class="btns"><button class="btn" data-act="expCsv">${tr('bk_csv')}</button><label class="btn">${tr('bk_impCsv')}<input type="file" id="impCsv" accept=".csv,text/csv" hidden></label><button class="btn secb" data-act="print">${tr('printBtn')}</button></div><p class="hint">${tr('bk_hint')}</p></section>
   <section class="card"><h2>${tr('set_install')}</h2>${installHTML()}</section>
+  <p class="hint" style="text-align:center">${tr('app')} · v${APP_VERSION}</p>
   <section class="card"><h2>${tr('set_reset')}</h2><p class="hint">${tr('rs_hint')}</p><button class="btn bad" data-act="reset">${tr('rs_btn')}</button></section>`;};
 
 /* ---- render ---- */
@@ -1085,7 +1088,20 @@ const ACT={
  shareJson:async()=>{let file;try{file=new File([JSON.stringify(S)],`dakhlokharj-${stamp()}.json`,{type:'application/json'});}catch(e){}if(file&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:tr('app')});META.lastBackup=Date.now();saveJSON('dk2_meta',META);}catch(e){}}else toast(tr('bk_shareNA'),'warn');},
  notif:async()=>{if(!('Notification' in window))return toast(tr('notifNA'),'warn');try{await Notification.requestPermission();}catch(e){}render();notifyDue();},
  genKey:(n,b)=>{b.closest('form').elements.syncKey.value=genKey();},
- syncNow:()=>syncNow(),syncOff:()=>{if(confirm(tr('sy_discQ'))){SC={enabled:false};saveSC();setSync('local');render();}},
+ syncNow:()=>syncNow(),
+ diag:async()=>{const out=$('#diagOut');if(!out)return;const L=[];const row=(k,v,ok)=>L.push(`<li><b>${k}</b><span class="${ok===false?'neg':ok?'okc':''}">${v}</span></li>`);const draw=()=>{lastDiag=`<ol class="alloc">${L.join('')}</ol><p class="hint">${tr('dg_hint')}</p>`;const o=$('#diagOut');if(o)o.innerHTML=lastDiag;};
+   row(tr('dg_ver'),'v'+APP_VERSION);row(tr('dg_dev'),FA_LANG()?(/android/i.test(navigator.userAgent)?'اندروید':/iphone|ipad/i.test(navigator.userAgent)?'آیفون':'کامپیوتر'):(/android/i.test(navigator.userAgent)?'Android':/iphone|ipad/i.test(navigator.userAgent)?'iPhone':'Computer'));
+   row(tr('dg_online'),navigator.onLine?tr('dg_yes'):tr('dg_no'),navigator.onLine);
+   if(navigator.connection&&navigator.connection.effectiveType)row(tr('dg_net'),navigator.connection.effectiveType);
+   row(tr('dg_server'),esc(SC.provider==='firebase'?(SC.dbUrl||'').replace(/^https:\/\//,''):SC.restUrl));
+   row(tr('dg_crypto'),window.crypto&&crypto.subtle?tr('dg_yes'):tr('dg_no'),!!(window.crypto&&crypto.subtle));
+   row(tr('dg_last'),META.lastSync?dateLabel(dToJ(new Date(META.lastSync)))+' '+dg(pad(new Date(META.lastSync).getHours())+':'+pad(new Date(META.lastSync).getMinutes())):tr('sy_never'));
+   if(syncState.err)row(tr('dg_lastErr'),esc(syncState.err),false);
+   L.push(`<li><b>${tr('dg_test')}</b><span>…</span></li>`);draw();L.pop();
+   const t0=performance.now();try{const env=await remoteGet();const ms=Math.round(performance.now()-t0);row(tr('dg_test'),tr('dg_ok',{a:dg(ms)}),true);
+     if(env){try{await open_(env);row(tr('dg_key'),tr('dg_keyOk'),true);}catch(e){row(tr('dg_key'),esc(e.message),false);}}else row(tr('dg_key'),tr('dg_empty'));}
+   catch(e){row(tr('dg_test'),esc(e.message||String(e))+' ('+dg(Math.round(performance.now()-t0))+'ms)',false);}
+   draw();retryN=0;syncNow();},syncOff:()=>{if(confirm(tr('sy_discQ'))){SC={enabled:false};saveSC();setSync('local');render();}},
  reset:()=>{if(confirm(tr('rs_q1'))&&confirm(tr('rs_q2'))){S=blank();saveJSON(KEY,S);tab='dash';render();toast(tr('rs_ok'));}},
  install:async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(e){}deferredPrompt=null;render();}
 };
