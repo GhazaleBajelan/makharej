@@ -150,6 +150,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--sec)}
 input[type=checkbox]{width:20px;height:20px;min-height:0;accent-color:var(--pri)}
 .fld.big input{font-size:22px;font-weight:800;text-align:center}
 .row{display:flex;gap:6px}.row input{flex:1;min-width:0}
+.row input[type=checkbox]{flex:0 0 20px;width:20px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -448,6 +449,8 @@ const D={
  ev_title:['ارزیابی ماه','Month evaluation'],ev_metric:['شاخص','Metric'],ev_actual:['واقعی','Actual'],ev_target:['هدف','Target'],ev_ok:['خوب','Good'],ev_warn:['نزدیک حد','Borderline'],ev_bad:['نیاز به اصلاح','Needs fixing'],ev_max:['حداکثر {a}','max {a}'],ev_min:['حداقل {a}','min {a}'],ev_score:['{a} شاخص از {b} در وضعیت خوب','{a} of {b} metrics are good'],
  ev_dti:['سهم اقساط از درآمد','Installments ÷ income'],ev_cover:['درآمد ÷ نیاز ماه (اقساط + ثابت)','Income ÷ monthly needs'],ev_needs:['خرج ضروری در برابر بودجه','Needs vs budget'],ev_wants:['خرج غیرضروری در برابر بودجه','Wants vs budget'],ev_plans:['هزینه‌های ثابت در برابر برنامه','Fixed costs vs plan'],ev_save:['نرخ پس‌انداز (واریز به اهداف)','Savings rate (goal deposits)'],ev_left:['مانده قابل خرج','Spendable left'],
  p_balance:['مانده','Balance'],p_openBal:['موجودی ابتدای ماه','Opening balance'],p_closeBal:['موجودی پایان دوره','Closing balance'],p_goalDep:['واریز به هدف','Goal deposit'],
+ pl_auto:['هزینه‌های این دسته خودکار از این مبلغ کم شوند','Auto-deduct every expense in this category'],pl_autoHint:['مثلاً هر کرایه‌ای با دسته «حمل‌ونقل» ثبت کنید، از «رفت‌وآمد» کم می‌شود؛ هزینه‌های قبلی این ماه هم حساب می‌شوند. برای هزینه‌ای مثل ناخن که دسته‌اش با خرج‌های دیگر مشترک است، تیک نزنید و هنگام ثبت از کادر «مربوط به هزینه ثابت» انتخابش کنید.','E.g. every “Transport” expense is deducted from “Commute”, including earlier ones this month. For costs whose category is shared with other spending (e.g. nails), leave unticked and pick it in “Linked fixed cost”.'],
+ rc_btn:['تطبیق با موجودی واقعی','Match real balance'],rc_title:['تطبیق موجودی','Match your real balance'],rc_hint:['برنامه موجودی را از تراکنش‌های ثبت‌شده حساب می‌کند: الان {a}. موجودی واقعی همه حساب‌ها و پول نقدتان را وارد کنید تا برنامه با آن یکی شود. هیچ تراکنشی تغییر نمی‌کند.','The app computes cash from recorded transactions: now {a}. Enter your real total (accounts + cash) to match. No transaction changes.'],rc_lbl:['موجودی واقعی الان (تومان)','Real balance now (Toman)'],rc_neg:['موجودی منفی است (بدهکار)','Balance is negative (overdrawn)'],rc_save:['تطبیق بده','Match'],rc_ok:['موجودی روی {a} تنظیم شد','Balance set to {a}'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -556,13 +559,15 @@ function calc(p){
   const ex=EXP().filter(x=>x.date.startsWith(p));const E=sum(ex,'amount'),Ess=sum(ex.filter(x=>x.ess),'amount'),NonEss=E-Ess;
   const spendable=needs+wants,R=spendable-E;
   const remDays=isCur?ml-td[2]+1:0;const todayEx=isCur?ex.filter(x=>x.date===jS(td)):[];const todaySpent=sum(todayEx,'amount');
-  const plans=PLN().map(pl=>{const sp=sum(ex.filter(x=>x.plan===pl.id),'amount');return{pl,spent:sp,rem:Math.max(0,pl.amount-sp)};});
+  const plOf=planResolver();
+  const plans=PLN().map(pl=>{const sp=sum(ex.filter(x=>plOf(x)===pl.id),'amount');return{pl,spent:sp,rem:Math.max(0,pl.amount-sp)};});
   const planIds=new Set(plans.map(x=>x.pl.id)),planned=plans.reduce((s,x)=>s+x.pl.amount,0),planSpent=plans.reduce((s,x)=>s+x.spent,0),reserveAll=plans.reduce((s,x)=>s+x.rem,0),reserve=isCur?reserveAll:0;
-  const todayFree=sum(todayEx.filter(x=>!(x.plan&&planIds.has(x.plan))),'amount');
+  const todayFree=sum(todayEx.filter(x=>!plOf(x)),'amount');
   const safeDaily=remDays>0?Math.max(0,R-reserve+todayFree)/remDays:0;
   const contrib=GOA().reduce((a,g)=>a+sum(g.contributions.filter(c=>c.date.startsWith(p)),'amount'),0);
   const dayNow=isCur?td[2]:ml,burn=dayNow>0?E/dayNow:0,runOut=burn>0&&spendable>0?Math.ceil(spendable/burn):null;
   return{p,y,m,ml,I,paid,unpaid,L,N,shortfall,needs,wants,save,E,Ess,NonEss,spendable,R,remDays,todaySpent,todayFree,plans,planned,planSpent,reserve,reserveAll,need:L+planned,safeDaily,contrib,dayNow,burn,runOut,isCur,ex};}
+function planResolver(){const pls=PLN(),ids=new Set(pls.map(p=>p.id)),auto={};pls.forEach(pl=>{if(pl.autoCat&&!auto[pl.cat])auto[pl.cat]=pl.id;});return x=>x.plan&&ids.has(x.plan)?x.plan:(auto[x.cat]||'');}
 function cashBalance(){let c=S.settings.opening||0;c+=sum(INC(),'amount')-sum(EXP(),'amount');DEB().forEach(d=>c-=sum(d.payments,'amount'));GOA().forEach(g=>c-=sum(g.contributions,'amount'));return c;}
 
 /* Goals math (with inflation / FX growth buffer) */
@@ -669,7 +674,7 @@ V.dash=()=>{const c=calc();let h='';
     ${c.I===0?`<button class="btn sm" data-act="tab" data-id="income">${tr('addSalary')}</button>`:''}</div>
     <div class="ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="9"/><circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-used)}"/></svg><div class="t"><div><b>${dg(c.remDays)}</b>${tr('daysLeft')}</div></div></div></section>`;
   const cash=cashBalance();
-  h+=`<section class="card"><h2>${perName(c.p)}</h2><div class="ledger">${led(tr('k_inc'),money(c.I))}${led(tr('k_lock'),money(c.L),tr('s_paidRem',{a:num(c.paid),b:num(c.unpaid)}))}${led(tr('k_spent'),money(c.E),tr('s_nonEss',{a:num(c.NonEss)}))}${led(tr('k_left'),money(c.R),'',c.R<0?'bad':'')}${led(tr('k_save'),money(c.save),tr('s_contrib',{a:num(c.contrib)}))}${led(tr('k_cash'),money(cash),'',cash<0?'bad':'')}</div></section>`;
+  h+=`<section class="card"><h2>${perName(c.p)}</h2><div class="ledger">${led(tr('k_inc'),money(c.I))}${led(tr('k_lock'),money(c.L),tr('s_paidRem',{a:num(c.paid),b:num(c.unpaid)}))}${led(tr('k_spent'),money(c.E),tr('s_nonEss',{a:num(c.NonEss)}))}${led(tr('k_left'),money(c.R),'',c.R<0?'bad':'')}${led(tr('k_save'),money(c.save),tr('s_contrib',{a:num(c.contrib)}))}${led(tr('k_cash'),money(cash),`<button class="link" data-act="reconcile">${tr('rc_btn')}</button>`,cash<0?'bad':'')}</div></section>`;
   {const diff=c.I-c.need;h+=`<section class="card"><h3>🧾 ${tr('nd_title')}</h3><ol class="alloc"><li><b>${tr('nd_inst')}</b><span>${money(c.L)}</span></li><li><b>${tr('nd_plans')}</b><span>${money(c.planned)}</span></li><li><b>${tr('nd_total')}</b><span>${money(c.need)}</span></li><li><b>${tr('k_inc')}</b><span>${money(c.I)}</span></li></ol>
     <p class="${diff<0?'neg':'okc'}"><b>${diff>=0?tr('nd_ok',{a:money(diff)}):tr('nd_short',{a:money(-diff)})}</b></p>
     ${c.planned?`<p class="hint">${tr('nd_planLeft',{a:money(c.reserveAll)})} <button class="link" data-act="tab" data-id="expenses">${tr('nd_see')}</button></p>`:`<p class="hint">${tr('nd_noPlans')} <button class="link" data-act="newPlan">${tr('pl_add')}</button></p>`}</section>`;}
@@ -691,13 +696,14 @@ V.expenses=()=>{const list=EXP().filter(x=>x.date.startsWith(viewPer)).sort(byDe
   return plansHTML()+`<section class="card"><h2>${tr('addExp')}</h2>${expenseForm()}</section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b> · ${tr('nonEssTotal')}: <b class="warnc">${money(sum(list.filter(x=>!x.ess),'amount'))}</b></p>
   ${list.length?Object.keys(days).map(d=>`<div class="day-h"><span>${dateLabel(d)}</span><span class="num">${num(sum(days[d],'amount'))}</span></div><ul class="list">${days[d].map(x=>expItem(x,true)).join('')}</ul>`).join(''):empty(tr('noExpMonth'))}</section>`;};
 function plansHTML(){const c=calc(viewPer);return `<section class="card"><div class="card-h"><h2>📌 ${tr('pl_title')} · ${perName(c.p)}</h2><button class="btn sm pri" data-act="newPlan">${tr('pl_add')}</button></div><p class="hint">${tr('pl_hint')}</p>
-  ${c.plans.length?`<ul class="list">${c.plans.map(r=>{const p=r.pl.amount?Math.min(100,r.spent/r.pl.amount*100):0;return `<li><span class="ic">${cat(r.pl.cat).i}</span><div class="grow"><div>${esc(r.pl.title)} <span class="tag ${r.pl.ess?'e':'n'}">${tr(r.pl.ess?'ess':'noness')}</span></div><div class="track ${r.spent>r.pl.amount?'over':''}" style="margin:5px 0"><span style="width:${p}%"></span></div><div class="muted sm">${tr('pl_line',{a:num(r.spent),b:num(r.pl.amount),c:num(r.rem)})}</div></div>${c.isCur&&r.rem>0?`<button class="btn sm" data-act="payPlan" data-id="${r.pl.id}">${tr('pl_pay')}</button>`:''}<button class="del" data-act="editPlan" data-id="${r.pl.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delPlan" data-id="${r.pl.id}" aria-label="${tr('del')}">🗑</button></li>`;}).join('')}</ul>
+  ${c.plans.length?`<ul class="list">${c.plans.map(r=>{const p=r.pl.amount?Math.min(100,r.spent/r.pl.amount*100):0;return `<li><span class="ic">${cat(r.pl.cat).i}</span><div class="grow"><div>${esc(r.pl.title)} <span class="tag ${r.pl.ess?'e':'n'}">${tr(r.pl.ess?'ess':'noness')}</span>${r.pl.autoCat?` <span class="tag sec">⚡ ${cn(r.pl.cat)}</span>`:''}</div><div class="track ${r.spent>r.pl.amount?'over':''}" style="margin:5px 0"><span style="width:${p}%"></span></div><div class="muted sm">${tr('pl_line',{a:num(r.spent),b:num(r.pl.amount),c:num(r.rem)})}</div></div>${c.isCur&&r.rem>0?`<button class="btn sm" data-act="payPlan" data-id="${r.pl.id}">${tr('pl_pay')}</button>`:''}<button class="del" data-act="editPlan" data-id="${r.pl.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delPlan" data-id="${r.pl.id}" aria-label="${tr('del')}">🗑</button></li>`;}).join('')}</ul>
   <p>${tr('pl_sum',{a:`<b>${money(c.planned)}</b>`,b:money(c.planSpent),c:`<b>${money(c.reserveAll)}</b>`})}</p>`:empty(tr('pl_empty'))}</section>`;}
 function planForm(pl){pl=pl||{};const ck=pl.cat||'transport',es=pl.id?pl.ess:cat(ck).ess;return `<form data-form="plan" class="form" autocomplete="off"><input type="hidden" name="pid" value="${pl.id||''}">
   <label class="fld"><span>${tr('pl_name')}</span><input name="title" required maxlength="40" placeholder="${tr('pl_namePh')}" value="${esc(pl.title||'')}"></label>
   <label class="fld big"><span>${tr('pl_amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(pl.amount)}"></label>
   <div class="fld"><span>${tr('category')}</span><div class="chips">${Object.keys(CATS).map(k=>`<label class="chip"><input type="radio" name="cat" value="${k}" ${k===ck?'checked':''}><span>${CATS[k].i} ${cn(k)}</span></label>`).join('')}</div></div>
   <div class="fld"><span>${tr('kind')}</span><div class="seg"><label><input type="radio" name="ess" value="1" ${es?'checked':''}><span>${tr('ess')}</span></label><label><input type="radio" name="ess" value="0" ${es?'':'checked'}><span>${tr('noness')}</span></label></div></div>
+  <label class="row" style="align-items:flex-start;gap:8px;margin-bottom:6px"><input type="checkbox" name="autoCat" ${pl.id?(pl.autoCat?'checked':''):'checked'} style="margin-top:4px"><span><b>${tr('pl_auto')}</b><br><span class="hint">${tr('pl_autoHint')}</span></span></label>
   <button class="btn pri wide">${pl.id?tr('saveChanges'):tr('pl_add')}</button></form>`;}
 function incomeForm(x){x=x||{};const last=INC().filter(i=>i.type==='salary').sort(byDesc)[0],ty=x.type||'salary';return `<form data-form="income" class="form" autocomplete="off"><input type="hidden" name="eid" value="${x.id||''}">
   <div class="seg"><label><input type="radio" name="type" value="salary" ${ty==='salary'?'checked':''}><span>💼 ${tr('salary')}</span></label><label><input type="radio" name="type" value="extra" ${ty==='extra'?'checked':''}><span>✨ ${tr('extra')}</span></label><label><input type="radio" name="type" value="advance" ${ty==='advance'?'checked':''}><span>🤝 ${tr('advance')}</span></label></div><p class="hint">${tr('adv_hint')}</p>
@@ -987,6 +993,7 @@ const ACT={
  delExp:id=>{if(confirm(tr('confirmDel'))){tombstone('expenses',id);persist();render();}},
  delInc:id=>{if(confirm(tr('confirmDel'))){tombstone('incomes',id);INC().forEach(a=>{if(a.settledBy===id){delete a.settledBy;delete a.settledOn;touch(a);}});persist();render();}},
  editDebt:id=>{const d=findD(id);if(d)openModal(`<h2>✏️ ${esc(d.title)}</h2>`+debtForm(d));},
+ reconcile:()=>openModal(`<h2>🏦 ${tr('rc_title')}</h2><p class="hint">${tr('rc_hint',{a:money(cashBalance())})}</p><form data-form="reconcile" class="form" autocomplete="off"><label class="fld big"><span>${tr('rc_lbl')}</span><input name="amount" class="amt" inputmode="numeric" required></label><label class="row" style="align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" name="neg"> ${tr('rc_neg')}</label><button class="btn pri wide">${tr('rc_save')}</button></form>`),
  newPlan:()=>openModal(`<h2>📌 ${tr('pl_add')}</h2>`+planForm()),
  editPlan:id=>{const pl=PLN().find(x=>x.id===id);if(pl)openModal(`<h2>✏️ ${esc(pl.title)}</h2>`+planForm(pl));},
  delPlan:id=>{if(confirm(tr('confirmDel'))){tombstone('plans',id);persist();render();}},
@@ -1040,12 +1047,13 @@ const FORMS={
    else{g.target=A('target');if(!(g.target>0))return toast(tr('v_target'),'bad');}
    const ex=E.gid.value&&findG(E.gid.value);if(ex)Object.assign(ex,g,{u:Date.now()});else S.goals.push(touch(Object.assign({id:uid(),contributions:[]},g)));
    persist();closeModal();toast(tr(ex?'saved':'g_created'));render();},
+ reconcile:f=>{const E=f.elements;let v=parseAmount(E.amount.value);if(isNaN(v))return toast(tr('badAmount'),'bad');if(E.neg.checked)v=-v;const flows=cashBalance()-(S.settings.opening||0);S.settings.opening=v-flows;S.settings.u=Date.now();persist();closeModal();toast(tr('rc_ok',{a:money(v)}));render();},
  plan:f=>{const E=f.elements,title=E.title.value.trim(),amount=parseAmount(E.amount.value);if(!title)return toast(tr('v_title'),'bad');if(!(amount>0))return toast(tr('badAmount'),'bad');const ck=(f.querySelector('[name=cat]:checked')||{}).value||'misc',es=(f.querySelector('[name=ess]:checked')||{}).value==='1';
-   const data={title,amount,cat:ck,ess:es};const ex=E.pid.value&&PLN().find(x=>x.id===E.pid.value);if(ex){Object.assign(ex,data);touch(ex);}else{S.plans=S.plans||[];S.plans.push(touch(Object.assign({id:uid()},data)));}persist();closeModal();toast(tr('saved'));render();},
+   const data={title,amount,cat:ck,ess:es,autoCat:E.autoCat.checked};const ex=E.pid.value&&PLN().find(x=>x.id===E.pid.value);if(ex){Object.assign(ex,data);touch(ex);}else{S.plans=S.plans||[];S.plans.push(touch(Object.assign({id:uid()},data)));}persist();closeModal();toast(tr('saved'));render();},
  contrib:f=>{const E=f.elements,g=findG(E.gid.value),amount=parseAmount(E.amount.value);if(!g)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;g.contributions.push({id:uid(),date,amount});touch(g);persist();closeModal();toast(tr('g_depOk'));render();},
  settings:f=>{const E=f.elements,model=E.model.value,n=parseInt(toEn(E.needs.value),10),w=parseInt(toEn(E.wants.value),10),s=parseInt(toEn(E.save.value),10);
    if(model==='503020'&&([n,w,s].some(x=>!(x>=0))||n+w+s!==100))return toast(tr('m_sum'),'bad');
-   Object.assign(S.settings,{model,zbNeeds:parseAmount(E.zbNeeds.value)||0,zbSave:parseAmount(E.zbSave.value)||0,opening:parseAmount(E.opening.value)||0,alertDays:Math.max(0,parseInt(toEn(E.alertDays.value),10)||0),u:Date.now()});
+   Object.assign(S.settings,{model,zbNeeds:parseAmount(E.zbNeeds.value)||0,zbSave:parseAmount(E.zbSave.value)||0,opening:(()=>{const v=parseAmount(E.opening.value)||0;return (S.settings.opening<0&&v===Math.abs(Math.round(S.settings.opening)))?S.settings.opening:v;})(),alertDays:Math.max(0,parseInt(toEn(E.alertDays.value),10)||0),u:Date.now()});
    if(model==='503020')Object.assign(S.settings,{needs:n,wants:w,save:s});persist();toast(tr('m_ok'));render();},
  sync:f=>connectSync(f)
 };
