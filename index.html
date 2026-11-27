@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D9488">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>دخل‌وخرج</title>
+<link rel="manifest" id="manifestLink">
+<link rel="icon" id="favLink">
+<link rel="apple-touch-icon" id="appleLink">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+/* ===== Design tokens (2027 palette) ===== */
+:root{
+  --bg:#F8FAFC;--card:#FFFFFF;--ink:#0F172A;--muted:#475569;--line:#E2E8F0;--sunk:#F1F5F9;
+  --pri:#0D9488;--pri-strong:#0F766E;--on-pri:#FFFFFF;--pri-soft:#E6F7F5;
+  --sec:#6366F1;--sec-strong:#4F46E5;--sec-soft:#EEF2FF;--on-sec:#FFFFFF;
+  --ok:#047857;--ok-soft:#D1FAE5;--warn:#B45309;--warn-soft:#FEF3C7;--bad:#B91C1C;--bad-soft:#FEE2E2;
+  --hero1:#0F766E;--hero2:#4F46E5;--hero-ink:#FFFFFF;
+  --shadow:0 1px 2px rgba(15,23,42,.05),0 8px 24px rgba(15,23,42,.05);
+  --font:Vazirmatn,Tahoma,"Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+:root[lang=en]{--font:Inter,"Segoe UI",system-ui,-apple-system,sans-serif}
+:root[data-theme=dark]{
+  --bg:#0B1120;--card:#1E293B;--ink:#F1F5F9;--muted:#A3B1C6;--line:#334155;--sunk:#111A2E;
+  --pri:#14B8A6;--pri-strong:#2DD4BF;--on-pri:#042F2E;--pri-soft:#0F3B3A;
+  --sec:#818CF8;--sec-strong:#A5B4FC;--sec-soft:#1E1B4B;--on-sec:#1E1B4B;
+  --ok:#34D399;--ok-soft:#0E3B2E;--warn:#FBBF24;--warn-soft:#3B2F0B;--bad:#F87171;--bad-soft:#3F1D1D;
+  --hero1:#115E59;--hero2:#312E81;--hero-ink:#F1F5F9;--shadow:0 1px 2px rgba(0,0,0,.35);color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#0B1120;--card:#1E293B;--ink:#F1F5F9;--muted:#A3B1C6;--line:#334155;--sunk:#111A2E;
+  --pri:#14B8A6;--pri-strong:#2DD4BF;--on-pri:#042F2E;--pri-soft:#0F3B3A;
+  --sec:#818CF8;--sec-strong:#A5B4FC;--sec-soft:#1E1B4B;--on-sec:#1E1B4B;
+  --ok:#34D399;--ok-soft:#0E3B2E;--warn:#FBBF24;--warn-soft:#3B2F0B;--bad:#F87171;--bad-soft:#3F1D1D;
+  --hero1:#115E59;--hero2:#312E81;--hero-ink:#F1F5F9;--shadow:0 1px 2px rgba(0,0,0,.35);color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.7;padding-top:env(safe-area-inset-top);transition:background .2s,color .2s}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--sec);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ===== layout ===== */
+.nav{position:fixed;inset:auto 0 0 0;z-index:20;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.nav .brand,.nav .wide{display:none}
+.nav button{flex:1;border:0;background:none;padding:7px 1px 5px;display:flex;flex-direction:column;align-items:center;gap:0;font-size:10.5px;color:var(--muted);cursor:pointer;min-width:0}
+.nav button .i{font-size:19px;line-height:1.3}
+.nav button.on{color:var(--pri-strong);font-weight:700}
+.main{max-width:860px;margin:0 auto;padding:0 14px calc(100px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 2px;flex-wrap:wrap}
+.top .ttl{font-size:19px;font-weight:800;line-height:1.3}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+@media (min-width:920px){
+  .shell{display:grid;grid-template-columns:236px 1fr}
+  .nav{position:sticky;top:0;height:100vh;flex-direction:column;border-top:0;border-inline-end:1px solid var(--line);padding:18px 12px;gap:2px}
+  .nav .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:18px;padding:4px 10px 18px}
+  .nav .wide{display:flex}
+  .nav button{flex:0 0 auto;flex-direction:row;justify-content:flex-start;gap:10px;font-size:15px;padding:9px 12px;border-radius:10px}
+  .nav button.on{background:var(--pri-soft)}
+  .main{padding-bottom:48px}
+  .gear{display:none}
+}
+.logo{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--pri),var(--sec));display:grid;place-items:center;color:#fff;font-size:15px}
+
+/* ===== header tools ===== */
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 10px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.pill.ok .dot{background:var(--ok)}.pill.ing .dot{background:var(--sec);animation:pulse 1s infinite}.pill.err .dot{background:var(--bad)}.pill.off .dot{background:var(--warn)}
+@keyframes pulse{50%{opacity:.3}}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card)}
+.lang button{border:0;background:none;padding:4px 10px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--muted)}
+.lang button.on{background:var(--pri-strong);color:var(--on-pri)}
+.icon-btn{border:1px solid var(--line);background:var(--card);border-radius:999px;width:34px;height:30px;cursor:pointer}
+
+/* ===== surfaces ===== */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 12px;box-shadow:var(--shadow)}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+h2{font-size:17px;margin:0 0 8px;line-height:1.5}
+h3{font-size:15.5px;margin:0 0 8px;line-height:1.5}
+p{margin:4px 0}
+.muted{color:var(--muted)}.sm{font-size:12.5px}
+.hint{font-size:12.5px;color:var(--muted);margin:6px 0}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pos,.okc{color:var(--ok)}.neg{color:var(--bad)}.warnc{color:var(--warn)}.secc{color:var(--sec-strong)}
+.empty{text-align:center;color:var(--muted);padding:16px 8px}
+.notice{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13.5px}
+.grid2{display:grid;gap:12px}
+@media (min-width:760px){.grid2{grid-template-columns:1fr 1fr}}
+
+/* hero */
+.hero{background:linear-gradient(135deg,var(--hero1),var(--hero2));color:var(--hero-ink);border-radius:22px;padding:20px;margin-bottom:12px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.hero.neg{--hero1:#9F1239;--hero2:#7C2D12}
+.hero .lbl{font-size:13.5px;opacity:.9}
+.hero .val{font-size:clamp(28px,7vw,40px);font-weight:800;line-height:1.2;margin:2px 0 6px;font-variant-numeric:tabular-nums}
+.hero .val small{font-size:15px;font-weight:500;opacity:.9}
+.hero .sub{font-size:13.5px;opacity:.95}
+.hero .btn{margin-top:10px;background:var(--hero-ink);color:#0F172A;border:0}
+.ring{width:96px;height:96px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .t{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:12px;line-height:1.3}
+.ring .t b{font-size:18px;display:block}
+
+/* ledger + bars */
+.ledger{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+@media (min-width:640px){.ledger{grid-template-columns:repeat(3,1fr)}}
+.ledger .it{padding:10px 0;border-bottom:1px solid var(--line)}
+.ledger .lbl{font-size:12.5px;color:var(--muted)}
+.ledger .v{font-weight:800;font-size:16px;font-variant-numeric:tabular-nums}
+.ledger .s{font-size:11.5px;color:var(--muted)}
+.ledger .bad .v{color:var(--bad)}
+.bar{margin-bottom:12px}
+.bar-h{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;margin-bottom:4px}
+.track{height:9px;background:var(--line);border-radius:99px;overflow:hidden;display:flex}
+.track span{display:block;height:100%;background:var(--pri);border-radius:99px}
+.track.sec span{background:var(--sec)}
+.track.over span{background:var(--bad)}
+
+/* alerts */
+.alert{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:14px;margin-bottom:8px;font-weight:600;font-size:14px}
+.alert.bad{background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad)}
+.alert.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.alert .btn{flex:none}
+
+/* buttons */
+.btn{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1.5}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.pri{background:var(--pri-strong);color:var(--on-pri);border-color:transparent}
+.btn.secb{background:var(--sec-strong);color:var(--on-sec);border-color:transparent}
+.btn.wide{width:100%;padding:12px;font-size:16px}
+.btn.sm{padding:4px 10px;font-size:13px;border-radius:10px}
+.btn.bad{background:var(--bad);color:#fff;border-color:transparent}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
+.link{border:0;background:none;color:var(--sec-strong);cursor:pointer;font-weight:700;text-decoration:underline;padding:0}
+.del{border:0;background:none;cursor:pointer;opacity:.55;padding:4px;font-size:15px}
+.del:hover{opacity:1}
+
+/* forms */
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.fld>span{font-size:13px;color:var(--muted);font-weight:600}
+input,select,textarea{width:100%;border:1px solid var(--line);background:var(--sunk);border-radius:12px;padding:9px 12px;outline:none;min-height:44px}
+input:focus,select:focus{border-color:var(--pri)}
+input[type=range]{padding:0;border:0;background:none;accent-color:var(--sec)}
+input[type=checkbox]{width:20px;height:20px;min-height:0;accent-color:var(--pri)}
+.fld.big input{font-size:22px;font-weight:800;text-align:center}
+.row{display:flex;gap:6px}.row input{flex:1;min-width:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{position:relative}
+.chip input,.seg input{position:absolute;opacity:0;width:1px;height:1px;min-height:0}
+.chip span{display:inline-block;padding:6px 11px;border:1px solid var(--line);border-radius:999px;font-size:13px;cursor:pointer;background:var(--sunk)}
+.chip input:checked+span{background:var(--pri-strong);color:var(--on-pri);border-color:transparent}
+.chip input:focus-visible+span,.seg input:focus-visible+span{outline:2px solid var(--sec)}
+.seg{display:flex;background:var(--sunk);border:1px solid var(--line);border-radius:12px;padding:3px;margin-bottom:12px}
+.seg label{flex:1;position:relative}
+.seg span{display:block;text-align:center;padding:7px 4px;border-radius:9px;cursor:pointer;font-weight:600;font-size:14px}
+.seg input:checked+span{background:var(--card);box-shadow:var(--shadow);color:var(--pri-strong)}
+.seg input[name=ess][value="0"]:checked+span{color:var(--warn)}
+.form:has(input[name=model][value=zero]:checked) .m503{display:none}
+.form:has(input[name=model][value="503020"]:checked) .mzero{display:none}
+.form:has(select[name=mode] option[value=key]:checked) .only-email{display:none}
+.form:has(select[name=mode] option[value=email]:checked) .only-key{display:none}
+.form:has(select[name=provider] option[value=rest]:checked) .only-fb{display:none}
+.form:has(select[name=provider] option[value=firebase]:checked) .only-rest{display:none}
+.stage{display:grid;grid-template-columns:1fr 130px 36px;gap:6px;margin-bottom:6px}
+.tpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.tpl{border:1px solid var(--line);background:var(--sunk);border-radius:14px;padding:12px;text-align:start;cursor:pointer}
+.tpl b{display:block}.tpl span{font-size:12px;color:var(--muted)}
+.tpl:hover{border-color:var(--pri)}
+
+/* lists */
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.list li:last-child{border-bottom:0}
+.ic{width:36px;height:36px;border-radius:10px;background:var(--sunk);display:grid;place-items:center;font-size:18px;flex:none}
+.grow{flex:1;min-width:0}
+.grow>div:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{display:inline-block;font-size:11.5px;padding:0 8px;border-radius:999px;background:var(--sunk);border:1px solid var(--line);font-weight:600;line-height:1.8}
+.tag.e{color:var(--pri-strong)}.tag.n{color:var(--warn)}
+.tag.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.tag.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.tag.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.tag.sec{background:var(--sec-soft);color:var(--sec-strong);border-color:transparent}
+.day-h{font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;margin-top:12px;font-weight:700;border-bottom:1px dashed var(--line)}
+.pernav{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+
+/* advisor + goals */
+.insight{display:flex;gap:12px;padding:13px 14px;border-radius:14px;margin-bottom:10px;border:1px solid var(--line);background:var(--card)}
+.insight.bad{background:var(--bad-soft);border-color:transparent}
+.insight.warn{background:var(--warn-soft);border-color:transparent}
+.insight.ok{background:var(--ok-soft);border-color:transparent}
+.insight.info{background:var(--sec-soft);border-color:transparent}
+.insight p{margin:2px 0 0;font-size:14px}
+.ii{font-size:22px;line-height:1.4}
+.sub-card{border:1px dashed var(--line);border-radius:14px;padding:12px;margin:10px 0}
+.impact{list-style:none;margin:6px 0 0;padding:0;font-size:13px}
+.impact li{padding:2px 0}
+.total-save{padding:12px;border-radius:12px;background:var(--ok-soft);margin-top:10px}
+.alloc{list-style:none;padding:0;margin:8px 0}
+.alloc li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.alloc li span{font-variant-numeric:tabular-nums;white-space:nowrap}
+.eta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.eta>div{background:var(--sunk);border-radius:12px;padding:10px;display:flex;flex-direction:column}
+.stages{list-style:none;padding:0;margin:8px 0}
+.stages li{display:grid;grid-template-columns:24px 1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.stages .track{grid-column:2/4;height:6px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:start;padding:7px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600}
+.steps{padding-inline-start:18px;margin:8px 0}
+.mini{background:var(--pri-soft);border-radius:14px;padding:12px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mini b{font-size:18px}
+details{margin:8px 0}summary{cursor:pointer;font-weight:600}
+pre{background:var(--sunk);border-radius:10px;padding:10px;overflow:auto;font-size:12px;direction:ltr;text-align:left}
+.keybox{font-family:ui-monospace,Consolas,monospace;direction:ltr;letter-spacing:.5px}
+
+/* charts */
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--font)}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.donut-wrap{display:grid;grid-template-columns:minmax(140px,220px) 1fr;gap:16px;align-items:center}
+@media (max-width:520px){.donut-wrap{grid-template-columns:1fr}.donut-wrap svg{max-width:240px;margin:auto}}
+.donut .c1{font-size:16px;font-weight:800;fill:var(--ink)}
+.donut .c2{font-size:10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+.legend.col{flex-direction:column}
+.legend.col span{display:flex;justify-content:space-between;gap:10px}
+
+/* fab, modal, picker, toast */
+.fab{position:fixed;inset-inline-start:auto;inset-inline-end:18px;bottom:calc(80px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:18px;border:0;background:linear-gradient(135deg,var(--pri-strong),var(--sec-strong));color:#fff;font-size:32px;line-height:1;box-shadow:0 8px 22px rgba(79,70,229,.3);cursor:pointer;z-index:25}
+:root[dir=rtl] .fab{inset-inline-end:auto;inset-inline-start:auto;left:18px;right:auto}
+:root[dir=ltr] .fab{right:18px;left:auto}
+@media (min-width:920px){.fab{bottom:28px}}
+.modal,.dp{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.dp{z-index:70;align-items:center}
+.modal.open,.dp.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:540px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));position:relative}
+@media (min-width:640px){.modal{align-items:center}.sheet{border-radius:22px}}
+.x{position:absolute;inset-inline-end:12px;top:12px;border:0;background:var(--sunk);width:34px;height:34px;border-radius:10px;cursor:pointer}
+.dp-box{background:var(--card);border-radius:18px;padding:14px;width:min(340px,92vw);box-shadow:var(--shadow)}
+.dp-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.dp-h button{border:0;background:var(--sunk);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:18px}
+.dp-w,.dp-g{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.dp-w span{font-size:11.5px;color:var(--muted)}
+.dp-g button{border:0;background:none;height:38px;border-radius:10px;cursor:pointer;font-variant-numeric:tabular-nums}
+.dp-g button:hover{background:var(--sunk)}
+.dp-g button.today{outline:1.5px solid var(--sec)}
+.dp-g button.sel{background:var(--pri-strong);color:var(--on-pri)}
+#toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;max-width:90vw;text-align:center;font-size:14px}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.bad{background:var(--bad);color:#fff}#toast.warn{background:var(--warn);color:#fff}
+
+/* ===== print (A4 statement) ===== */
+#print{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff!important;color:#0F172A!important;padding:0;font-size:11pt}
+  body>*:not(#print){display:none!important}
+  #print{display:block}
+  #print h1{font-size:18pt;margin:0}
+  #print h2{font-size:12.5pt;margin:14px 0 6px;border-bottom:2px solid #0D9488;padding-bottom:2px}
+  #print .ph{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #4F46E5;padding-bottom:6px;margin-bottom:8px}
+  #print .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  #print .kpis div{border:1px solid #CBD5E1;border-radius:6px;padding:6px 8px}
+  #print .kpis small{display:block;color:#475569;font-size:8.5pt}
+  #print .kpis b{font-size:11.5pt}
+  #print table{font-size:9.5pt;page-break-inside:auto}
+  #print tr{page-break-inside:avoid}
+  #print th,#print td{border-bottom:1px solid #E2E8F0;padding:4px 5px;color:#0F172A}
+  #print .chart text{fill:#475569}
+  #print .two{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:center}
+  #print .foot{margin-top:14px;font-size:8.5pt;color:#64748B}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="nav" id="nav"></nav>
+  <div class="main">
+    <header class="top">
+      <div><div class="ttl" id="hdrTitle"></div><div class="muted sm" id="hdrDate"></div></div>
+      <div class="tools">
+        <button class="pill" id="syncPill" data-act="tab" data-id="settings"><span class="dot"></span><span id="syncTxt"></span></button>
+        <div class="lang" role="group" aria-label="Language"><button data-act="lang" data-id="fa">FA</button><button data-act="lang" data-id="en">EN</button></div>
+        <button class="icon-btn" id="themeBtn" data-act="theme"></button>
+        <button class="icon-btn gear" data-act="tab" data-id="settings" id="gearBtn">⚙️</button>
+      </div>
+    </header>
+    <main id="view"></main>
+  </div>
+</div>
+<button class="fab" id="fab" data-act="fab">+</button>
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="sheet" id="modalBody"></div></div>
+<div class="dp" id="dp" role="dialog" aria-modal="true"><div class="dp-box" id="dpBody"></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="print"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   1. UTILITIES, I18N & FORMATTING
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const sum=(a,k)=>a.reduce((s,x)=>s+(Number(k?x[k]:x)||0),0);
+function loadJSON(k,d){try{const v=localStorage.getItem(k);return v?Object.assign({},d,JSON.parse(v)):d;}catch(e){return d;}}
+function saveJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+
+let UI=loadJSON('dk2_ui',{lang:'fa',theme:'system'});
+const FA_LANG=()=>UI.lang==='fa';
+const D={
+ app:['دخل‌وخرج','Dakhl-o-Kharj'],
+ tab_dash:['داشبورد','Dashboard'],tab_expenses:['هزینه‌ها','Expenses'],tab_income:['درآمد','Income'],tab_debts:['اقساط','Debts'],tab_goals:['اهداف','Goals'],tab_reports:['گزارش','Reports'],tab_advisor:['مشاور','Advisor'],tab_settings:['تنظیمات','Settings'],
+ ttl_debts:['اقساط و بدهی‌ها','Installments & debts'],ttl_goals:['اهداف و نقشه راه','Goals & milestones'],ttl_reports:['نمودارها و گزارش','Charts & reports'],ttl_advisor:['مشاور مالی','Financial advisor'],ttl_settings:['تنظیمات، همگام‌سازی و پشتیبان','Settings, sync & backup'],
+ s_local:['فقط روی این دستگاه','Local only'],s_off:['آفلاین — ذخیره محلی','Offline – saved locally'],s_ing:['در حال همگام‌سازی…','Syncing…'],s_ok:['همگام شد','Synced online'],s_err:['خطای همگام‌سازی','Sync error'],
+ th_system:['تم: سیستم','Theme: system'],th_light:['تم: روشن','Theme: light'],th_dark:['تم: تیره','Theme: dark'],
+ toman:['تومان','Toman'],today:['امروز','Today'],yesterday:['دیروز','Yesterday'],cancel:['انصراف','Cancel'],close:['بستن','Close'],save:['ذخیره','Save'],del:['حذف','Delete'],edit:['ویرایش','Edit'],
+ prevM:['ماه قبل','Previous month'],nextM:['ماه بعد','Next month'],
+ amount:['مبلغ (تومان)','Amount (Toman)'],date:['تاریخ','Date'],desc:['توضیح','Description'],category:['دسته','Category'],kind:['نوع هزینه','Spending type'],
+ ess:['ضروری','Essential'],noness:['غیرضروری','Non-essential'],
+ descHint:['توضیح (برای پیشنهاد دقیق‌تر)','Description (helps the advisor)'],descPh:['مثلاً کافه، اسنپ، نان','e.g. cafe, taxi, bread'],
+ addExp:['ثبت هزینه','Add expense'],quickExp:['ثبت هزینه سریع','Quick expense'],editExp:['ویرایش هزینه','Edit expense'],saveChanges:['ذخیره تغییرات','Save changes'],
+ salary:['حقوق ماهانه','Monthly salary'],extra:['درآمد جانبی','Extra income'],addInc:['ثبت درآمد','Add income'],editInc:['ویرایش درآمد','Edit income'],incPh:['مثلاً حقوق آذر','e.g. Azar salary'],
+ incLockHint:['🔒 با ثبت هر درآمد، اول مبلغ اقساط این ماه قفل می‌شود و بعد باقی‌مانده طبق مدل بودجه تقسیم می‌شود.','🔒 Each income first locks this month’s installments, then the rest is split by your budget model.'],
+ total:['جمع','Total'],nonEssTotal:['غیرضروری','Non-essential'],noExpMonth:['در این ماه هزینه‌ای ثبت نشده','No expenses this month'],noIncMonth:['در این ماه درآمدی ثبت نشده','No income this month'],
+ badAmount:['مبلغ را وارد کنید','Enter an amount'],badDate:['تاریخ درست نیست؛ مثل ۱۴۰۵/۰۹/۰۶','Invalid date; use 1405/09/06'],pickCat:['دسته و نوع هزینه را انتخاب کنید','Choose a category and type'],
+ saved:['ثبت شد','Saved'],deleted:['حذف شد','Deleted'],confirmDel:['حذف شود؟','Delete this?'],
+ safeToday:['سقف خرج امن امروز','Safe to spend today'],daysLeft:['روز مانده','days left'],
+ heroNoInc:['برای محاسبه، درآمد این ماه را ثبت کنید.','Add this month’s income to calculate.'],
+ heroLeft:['امروز {a} خرج کرده‌اید؛ {b} دیگر جا دارید.','Spent {a} today; {b} still safe.'],
+ heroOver:['امروز {a} بیشتر از سقف امن خرج کرده‌اید؛ سقف روزهای بعد کمتر می‌شود.','{a} over today’s safe limit; the coming days’ limit will shrink.'],
+ addSalary:['ثبت حقوق این ماه','Add this month’s salary'],
+ k_inc:['درآمد این ماه','Income this month'],k_lock:['قفل‌شده برای اقساط','Locked for installments'],k_spent:['خرج‌شده','Spent'],k_left:['مانده قابل خرج','Spendable left'],k_save:['سهم پس‌انداز','Savings share'],k_cash:['موجودی نقد کل','Total cash'],
+ s_paidRem:['پرداخت‌شده {a} · مانده {b}','Paid {a} · due {b}'],s_nonEss:['غیرضروری {a}','Non-essential {a}'],s_contrib:['واریز شده {a}','Deposited {a}'],
+ budgetMonth:['بودجه این ماه','This month’s budget'],b_needs:['🧺 ضروریات','🧺 Needs'],b_wants:['🎈 غیرضروری','🎈 Wants'],b_save:['🏦 پس‌انداز (واریز به اهداف)','🏦 Savings (goal deposits)'],
+ of:['از','of'],splitLine:['درآمد {a} − اقساط {b} = {c} قابل تقسیم ({d})','Income {a} − installments {b} = {c} to split ({d})'],
+ m_zero:['مدل صفرمبنا','zero-based'],m_pct:['مدل {a}','{a} model'],
+ allTips:['همه توصیه‌ها و پیشنهادهای صرفه‌جویی','All advice & saving ideas'],recent:['آخرین تراکنش‌ها','Recent transactions'],noTx:['هنوز تراکنشی ثبت نشده','No transactions yet'],
+ start3:['شروع در سه قدم','Get started in 3 steps'],st1:['حقوق یا درآمد این ماه را ثبت کنید.','Add this month’s salary or income.'],st2:['اقساط و بدهی‌ها را با روز سررسید اضافه کنید.','Add installments with their due day.'],st3:['هر خرج را همان لحظه با دکمه + ثبت کنید.','Log each expense right away with +.'],addDebtBtn:['افزودن قسط','Add installment'],
+ noStorage:['این مرورگر اجازه ذخیره نمی‌دهد (مثلاً حالت ناشناس).','This browser blocks storage (e.g. private mode).'],
+ /* debts */
+ dk_loan:['وام بانکی','Bank loan'],dk_bnpl:['خرید اقساطی','BNPL'],dk_personal:['بدهی شخصی','Personal debt'],dk_check:['چک','Check'],
+ d_title:['عنوان','Title'],d_titlePh:['مثلاً وام بانک، قسط گوشی','e.g. bank loan, phone'],d_type:['نوع','Type'],d_monthly:['مبلغ هر قسط (تومان)','Installment amount (Toman)'],d_total:['تعداد کل اقساط','Total installments'],d_pre:['اقساط قبلاً پرداخت‌شده','Already paid'],d_due:['روز سررسید در ماه','Due day of month'],d_start:['اولین قسط پرداخت‌نشده','First unpaid installment'],d_late:['(عقب‌افتاده)','(overdue)'],
+ d_checkHint:['برای چک یا بدهی یک‌باره، تعداد کل اقساط را ۱ بگذارید.','For a check or one-time debt, set total installments to 1.'],d_add:['افزودن قسط، بدهی یا چک','Add installment, debt or check'],
+ d_monthlySum:['جمع اقساط ماهانه','Monthly installments'],d_remSum:['کل بدهی باقی‌مانده','Total debt remaining'],d_active:['بدهی‌های فعال','Active debts'],
+ d_line:['قسط ماهانه {a} · سررسید روز {b} هر ماه','{a} per month · due on day {b}'],d_prog:['{a} از {b} قسط پرداخت شده','{a} of {b} paid'],d_rem:['مانده {a}','{a} left'],
+ d_done:['تسویه شد 🎉','Paid off 🎉'],d_overdue:['عقب‌افتاده','Overdue'],d_daysPast:['{a} روز گذشته','{a} days late'],d_dueToday:['امروز سررسید','Due today'],d_daysTo:['{a} روز تا سررسید','Due in {a} days'],d_paidThis:['قسط این ماه پرداخت شد ✓','This month paid ✓'],d_first:['اولین سررسید: {a}','First due: {a}'],
+ d_pay:['پرداخت قسط {a}','Pay {a}'],d_prepay:['پیش‌پرداخت قسط {a}','Prepay {a}'],d_undo:['برگرداندن آخرین پرداخت','Undo last payment'],paidIt:['پرداخت کردم','I paid'],
+ a_late:['قسط «{t}» {n}عقب افتاده است ({a})','“{t}” installment is overdue{n} ({a})'],a_monthsN:['{a} ماه ',' ({a} months)'],a_past:['سررسید «{t}» {d} روز پیش گذشته — {a}','“{t}” was due {d} days ago — {a}'],a_today:['امروز سررسید «{t}» است — {a}','“{t}” is due today — {a}'],a_soon:['{d} روز تا سررسید «{t}» — {a}','“{t}” due in {d} days — {a}'],
+ v_title:['عنوان را بنویسید','Enter a title'],v_total:['تعداد کل اقساط را وارد کنید','Enter total installments'],v_pre:['اقساط پرداخت‌شده باید کمتر از کل باشد','Already-paid must be less than total'],v_due:['روز سررسید باید بین ۱ تا ۳۱ باشد','Due day must be 1–31'],
+ payOk:['پرداخت «{t}» ثبت شد؛ {n} قسط مانده','“{t}” payment saved; {n} left'],payDone:['تبریک! «{t}» تسویه شد 🎉','Congrats! “{t}” is paid off 🎉'],undoQ:['آخرین پرداخت این قسط برگردانده شود؟','Undo the last payment?'],delDebtQ:['این قسط و همه پرداخت‌هایش حذف شود؟','Delete this debt and its payments?'],
+ notifEnable:['🔔 فعال‌سازی اعلان سررسید','🔔 Enable due-date notifications'],notifOn:['اعلان‌ها فعال است','Notifications are on'],notifDenied:['اعلان‌ها در تنظیمات مرورگر مسدود شده','Notifications are blocked in browser settings'],notifNA:['این مرورگر اعلان را پشتیبانی نمی‌کند','This browser does not support notifications'],
+ notifNote:['اعلان وقتی نمایش داده می‌شود که برنامه باز یا در پس‌زمینه فعال باشد (حداقل روزی یک بار باز کنید).','Notifications fire when the app is opened or running (open it at least once a day).'],
+ nTitle:['یادآوری قسط','Installment reminder'],
+ /* allocation */
+ incSaved:['✅ درآمد ثبت شد','✅ Income saved'],allocOf:['تقسیم {a} به ترتیب اولویت:','How {a} was split, in priority order:'],al_lock:['🔒 اول: قفل اقساط این ماه','🔒 First: this month’s installments'],al_needs:['🧺 ضروریات','🧺 Needs'],al_save:['🏦 پس‌انداز و اهداف','🏦 Savings & goals'],al_wants:['🎈 خرج آزاد (غیرضروری)','🎈 Free spending (wants)'],
+ al_short:['اقساط هنوز کامل پوشش داده نشده','Installments not fully covered yet'],al_shortX:['{a} دیگر برای اقساط این ماه لازم است.','{a} more is needed for this month’s installments.'],safeFrom:['سقف خرج امن روزانه از امروز','Safe daily limit from today'],gotIt:['متوجه شدم','Got it'],
+ expSavedLeft:['ثبت شد · امروز {a} دیگر جا دارید','Saved · {a} still safe today'],expSavedOver:['ثبت شد · {a} بیشتر از سقف امن امروز','Saved · {a} over today’s safe limit'],
+ /* goals */
+ tpl_car:['خرید پژو ۲۰۶','Buy a Peugeot 206'],tpl_immig:['هزینه‌های مهاجرت','Immigration fund'],tpl_lang:['مدرک زبان','Language certificate'],tpl_emergency:['صندوق اضطراری','Emergency fund'],tpl_custom:['هدف دلخواه','Custom goal'],
+ tpld_car:['قیمت + حاشیه تورم','Price + inflation buffer'],tpld_immig:['مرحله‌به‌مرحله با ارز','Staged, in foreign currency'],tpld_lang:['آیلتس، تافل، گوته','IELTS, TOEFL, Goethe'],tpld_emergency:['۳ تا ۶ ماه هزینه ضروری','3–6 months of needs'],tpld_custom:['هر هدف دیگری','Anything else'],
+ newGoal:['هدف جدید از الگو','New goal from a template'],g_title:['عنوان هدف','Goal title'],g_saved:['موجودی فعلی (تومان)','Already saved (Toman)'],g_monthly:['واریز ماهانه (تومان)','Monthly deposit (Toman)'],g_target:['مبلغ هدف (تومان)','Target amount (Toman)'],
+ g_price:['قیمت فعلی خودرو (تومان)','Current car price (Toman)'],g_infl:['حاشیه تورم سالانه ٪','Yearly inflation buffer %'],g_deadline:['تاریخ هدف (اختیاری)','Target date (optional)'],
+ g_cur:['ارز','Currency'],g_rate:['نرخ هر واحد ارز (تومان)','Toman per 1 unit'],g_curInfl:['حاشیه رشد نرخ ارز سالانه ٪','Yearly FX growth buffer %'],g_stages:['مراحل و هزینه هر مرحله (به ارز)','Stages and cost (in currency)'],g_addStage:['+ مرحله','+ Stage'],
+ st_trans:['ترجمه مدارک','Document translation'],st_emb:['هزینه سفارت و ویزا','Embassy & visa fees'],st_pof:['تمکن مالی','Proof of funds'],st_fly:['بلیت و استقرار اولیه','Flight & initial settlement'],
+ g_exam:['آزمون','Exam'],g_fee:['هزینه ثبت‌نام آزمون (تومان)','Exam registration fee (Toman)'],g_classes:['بودجه کلاس و منابع (تومان)','Classes & resources budget (Toman)'],g_examDate:['تاریخ آزمون','Exam date'],
+ g_create:['ساخت هدف','Create goal'],g_update:['ذخیره هدف','Save goal'],g_created:['هدف ساخته شد','Goal created'],v_target:['مبلغ هدف را وارد کنید','Enter the target amount'],v_rate:['نرخ ارز را وارد کنید','Enter the exchange rate'],
+ wi_title:['اگر خرج‌های غیرضروری را کم کنم…','If I cut non-essential spending…'],wi_lbl:['صرفه‌جویی ماهانه فرضی','Monthly saving (what-if)'],wi_sugg:['پیشنهاد موتور صرفه‌جویی بر اساس ۳۰ روز اخیر: {a} در ماه.','Saving engine suggestion from the last 30 days: {a}/month.'],wi_use:['همین را بگذار','Use this'],
+ noGoals:['هنوز هدفی نساخته‌اید. یکی از الگوهای بالا را انتخاب کنید.','No goals yet. Pick a template above.'],
+ g_progress:['{a} از {b}','{a} of {b}'],g_needNow:['مبلغ لازم امروز','Needed today'],g_needEta:['مبلغ لازم در زمان رسیدن','Needed at completion'],g_now:['با برنامه فعلی ({a} در ماه)','Current plan ({a}/month)'],g_with:['با {a} صرفه‌جویی بیشتر','With {a} extra saving'],g_noPlan:['واریز ماهانه تعیین نشده','No monthly deposit set'],g_sooner:['⚡ {a} زودتر به هدف می‌رسید.','⚡ You reach it {a} sooner.'],
+ g_doneTag:['تکمیل شد 🎉','Completed 🎉'],g_deposit:['+ واریز','+ Deposit'],g_req:['برای رسیدن تا {d}: ماهانه {a} لازم است.','To reach it by {d}: {a}/month needed.'],g_late:['⚠️ با برنامه فعلی بعد از {d} می‌رسید.','⚠️ At the current pace you finish after {d}.'],
+ g_countdown:['{a} روز تا آزمون {e}','{a} days to the {e} exam'],g_never:['با این واریز به رشد قیمت نمی‌رسید','This deposit never catches up with price growth'],g_req24:['برای رسیدن در ۲۴ ماه: ماهانه {a} لازم است.','To reach it in 24 months: {a}/month needed.'],g_examPast:['تاریخ آزمون گذشته است','Exam date has passed'],g_setTarget:['مبلغ هدف را تعیین کنید','Set a target amount'],
+ g_depTitle:['واریز به «{t}»','Deposit to “{t}”'],g_depSave:['ثبت واریز','Save deposit'],g_depOk:['واریز ثبت شد','Deposit saved'],delGoalQ:['این هدف و واریزهایش حذف شود؟','Delete this goal and its deposits?'],
+ dur_m:['{a} ماه','{a} mo'],dur_d:['{a} روز','{a} days'],dur_and:[' و ',' '],now:['همین حالا','now'],
+ sb_title:['❄️ نقشه تسویه بدهی‌ها (گلوله‌برفی)','❄️ Debt payoff roadmap (snowball)'],sb_hint:['ترتیب: اول کوچک‌ترین بدهی. وقتی یکی تمام شد، قسطش به بعدی اضافه می‌شود. کل بدهی: {a}','Smallest debt first; each finished payment rolls into the next. Total debt: {a}'],
+ sb_debt:['بدهی','Debt'],sb_now:['پایان با روند فعلی','Finish (current)'],sb_with:['با صرفه‌جویی','With savings'],sb_free:['آزادی کامل از بدهی','Debt-free in'],sb_months:['{a} ماه','{a} months'],sb_earlier:[' ({a} ماه زودتر)',' ({a} months sooner)'],sb_none:['بدهی فعالی ندارید 👏','No active debts 👏'],
+ /* advisor */
+ subs_title:['پیشنهادهای جایگزین و صرفه‌جویی','Substitutions & savings'],subs_hint:['بر اساس هزینه‌های غیرضروری ۳۰ روز اخیر','Based on non-essential spending in the last 30 days'],
+ subs_times:['{a} در {b} بار','{a} over {b} times'],subs_save:['💰 صرفه‌جویی ماهانه: {a}','💰 Monthly saving: {a}'],subs_total:['جمع صرفه‌جویی ممکن: {a} در ماه.','Possible total saving: {a}/month.'],subs_see:['اثرش را روی اهداف ببین','See the effect on goals'],
+ subs_empty:['هنوز هزینه غیرضروری در ۳۰ روز اخیر ثبت نشده. هزینه‌ها را با برچسب «غیرضروری» و یک توضیح کوتاه ثبت کنید.','No non-essential spending in the last 30 days. Tag expenses “Non-essential” with a short description.'],
+ imp_debt:['«{t}» {a} زودتر تسویه می‌شود','“{t}” is paid off {a} sooner'],imp_goal:['«{t}»: {a} زودتر','“{t}”: {a} sooner'],imp_year:['یعنی {a} پس‌انداز در یک سال','That is {a} saved per year'],
+ how:['حساب این ماه چطور انجام شد','How this month was calculated'],
+ r_inc:['درآمد ماه','Month income'],r_lock:['اولویت اول: اقساط این ماه','Priority 1: this month’s installments'],r_net:['قابل تقسیم (درآمد − اقساط)','To split (income − installments)'],r_split:['ضروری / غیرضروری / پس‌انداز','Needs / wants / savings'],r_left:['مانده قابل خرج','Spendable left'],r_daily:['سقف امن روزانه (مانده ÷ {a} روز)','Safe daily (left ÷ {a} days)'],
+ i_noInc:['درآمد این ماه ثبت نشده','No income this month'],i_noIncX:['حقوق یا درآمد این ماه را ثبت کنید تا سهم اقساط، بودجه و سقف خرج روزانه حساب شود.','Add this month’s income to calculate installments, budget and the safe daily limit.'],
+ i_short:['درآمد کمتر از اقساط است','Income is below installments'],i_shortX:['برای پوشش اقساط این ماه {a} کم دارید. قبل از هر خرج دیگری این مبلغ را تأمین کنید یا درباره تمدید سررسید با طلبکار صحبت کنید.','You are {a} short for this month’s installments. Cover this before anything else, or ask the lender to move the due date.'],
+ i_dti:['{a} درآمد صرف اقساط می‌شود','{a} of income goes to installments'],i_dtiBad:['بیش از نیمی از درآمد قفل اقساط است. تا تسویه حداقل یک بدهی، هیچ قسط جدیدی قبول نکنید.','Over half your income is locked in installments. Take no new installments until one debt is finished.'],i_dtiWarn:['سهم اقساط از حد امن (حدود ۳۵٪) بالاتر است. با روش گلوله‌برفی، کوچک‌ترین بدهی را زودتر تمام کنید.','Installments are above the safe level (~35%). Use the snowball method to finish the smallest debt first.'],
+ i_over:['از بودجه این ماه جلو زده‌اید','You are over this month’s budget'],i_overX:['{a} بیشتر از بودجه قابل خرج مصرف شده. تا آخر ماه فقط هزینه‌های ضروری را انجام دهید.','{a} over the spendable budget. Only essential spending until month end.'],
+ i_burn:['با این سرعت، پول زودتر تمام می‌شود','At this pace, money runs out early'],i_burnX:['میانگین خرج روزانه {a} است؛ با این روند حدود روز {d} {m} بودجه تمام می‌شود. سقف امن روزانه: {s}.','You spend {a}/day on average; at this pace the budget ends around {m} {d}. Safe daily: {s}.'],
+ i_todayOver:['امروز از سقف امن رد شدید','Over today’s safe limit'],i_todayOverX:['امروز {a} بیشتر از سقف امن خرج شده. فردا فقط خرج ضروری داشته باشید.','{a} over today’s safe limit. Keep tomorrow to essentials.'],
+ i_wants:['خرج غیرضروری از سهمش بیشتر شده','Wants are over their share'],i_wantsX:['سهم غیرضروری {a} بود اما {b} خرج شده. پیشنهادهای صرفه‌جویی را ببینید.','Wants share was {a} but {b} was spent. See the saving ideas.'],
+ i_payFirst:['اول سهم پس‌انداز را کنار بگذارید','Pay yourself first'],i_payFirstX:['از سهم پس‌انداز این ماه ({a})، {b} هنوز به اهداف واریز نشده.','Of this month’s savings share ({a}), {b} is not yet deposited to goals.'],
+ i_emerg:['صندوق اضطراری ندارید','No emergency fund'],i_emergX:['یک صندوق اضطراری به اندازه سه ماه هزینه ضروری بسازید تا یک اتفاق ناگهانی شما را مجبور به قرض جدید نکند.','Build an emergency fund of about 3 months of needs so a surprise does not force a new loan.'],
+ i_backup:['پشتیبان بگیرید','Make a backup'],i_backupX:['همگام‌سازی ابری فعال نیست و اطلاعات فقط در همین مرورگر است. یک فایل JSON بگیرید یا همگام‌سازی را روشن کنید.','Cloud sync is off and data lives only in this browser. Download a JSON backup or turn on sync.'],
+ i_good:['وضعیت این ماه خوب است','This month looks good'],i_goodX:['خرج‌ها در محدوده بودجه است. مازاد را به اهداف منتقل کنید.','Spending is within budget. Move any surplus to your goals.'],
+ /* reports */
+ ch_donut:['خرج به تفکیک دسته','Spending by category'],ch_donutHint:['حلقه بیرونی: دسته‌ها · حلقه داخلی: ضروری/غیرضروری','Outer ring: categories · inner ring: essential/non-essential'],
+ ch_bars:['درآمد، اقساط و پس‌انداز (۶ ماه)','Income, installments & savings (6 months)'],ch_inc:['درآمد','Income'],ch_inst:['اقساط','Installments'],ch_sav:['پس‌انداز','Savings'],
+ ch_line:['سرعت خرج در برابر مسیر امن','Spending pace vs safe pace'],ch_actual:['خرج تجمعی','Cumulative spend'],ch_pace:['مسیر امن بودجه','Safe budget pace'],ch_proj:['پیش‌بینی','Projection'],
+ noData:['داده‌ای برای نمایش نیست','No data to show'],printBtn:['🖨️ چاپ / ذخیره PDF','🖨️ Print / Save PDF'],
+ p_title:['صورت‌حساب مالی ماهانه','Monthly financial statement'],p_gen:['تهیه‌شده در','Generated on'],p_kpi:['شاخص‌های کلیدی','Key figures'],p_inst:['وضعیت اقساط','Installments status'],p_goals:['پیشرفت اهداف','Goal progress'],p_ledger:['دفتر تراکنش‌ها','Transaction ledger'],p_type:['نوع','Type'],p_status:['وضعیت','Status'],p_eta:['زمان رسیدن','ETA'],p_foot:['تهیه‌شده با دخل‌وخرج — اطلاعات محلی کاربر','Prepared with Dakhl-o-Kharj from the user’s local data'],
+ /* settings */
+ set_ui:['زبان و ظاهر','Language & appearance'],set_lang:['زبان','Language'],set_theme:['تم','Theme'],th_sys:['سیستم','System'],th_l:['روشن','Light'],th_d:['تیره','Dark'],
+ set_budget:['مدل بودجه‌بندی','Budget model'],m_pctL:['درصدی (۵۰/۳۰/۲۰)','Percent (50/30/20)'],m_zeroL:['صفرمبنا','Zero-based'],m_pctH:['درصدها از «درآمد پس از کسر اقساط» حساب می‌شوند و جمعشان باید ۱۰۰ باشد.','Percentages apply to income after installments and must total 100.'],
+ m_needs:['ضروری ٪','Needs %'],m_wants:['غیرضروری ٪','Wants %'],m_save:['پس‌انداز ٪','Savings %'],m_zeroH:['مبلغ ضروریات و پس‌انداز را تعیین کنید؛ باقی‌مانده سهم غیرضروری است.','Set needs and savings amounts; the rest becomes wants.'],m_zNeeds:['بودجه ضروریات','Needs budget'],m_zSave:['پس‌انداز ثابت','Fixed savings'],
+ m_opening:['موجودی نقد اولیه','Opening cash'],m_alert:['هشدار سررسید (چند روز قبل)','Due-date warning (days before)'],m_saveBtn:['ذخیره تنظیمات','Save settings'],m_sum:['جمع سه درصد باید دقیقاً ۱۰۰ باشد','The three percentages must total 100'],m_ok:['تنظیمات ذخیره شد','Settings saved'],
+ set_notif:['اعلان سررسید','Due-date notifications'],
+ set_sync:['همگام‌سازی ابری خودکار','Automatic cloud sync'],
+ sy_intro:['اطلاعات قبل از ارسال روی همین دستگاه رمزنگاری می‌شود (AES-256). سرور فقط داده رمزشده را می‌بیند.','Data is encrypted on this device (AES-256) before upload. The server only sees ciphertext.'],
+ sy_provider:['سرویس','Provider'],sy_fb:['Firebase Realtime Database','Firebase Realtime Database'],sy_rest:['سرور شخصی (REST)','Own server (REST)'],sy_mode:['روش ورود','Sign-in method'],sy_modeKey:['کلید همگام‌سازی','Sync key'],sy_modeEmail:['ایمیل و رمز (Firebase Auth)','Email & password (Firebase Auth)'],
+ sy_db:['آدرس دیتابیس','Database URL'],sy_api:['Web API Key','Web API Key'],sy_email:['ایمیل','Email'],sy_pass:['رمز عبور (برای ورود و رمزنگاری)','Password (login + encryption)'],sy_key:['کلید همگام‌سازی (روی همه دستگاه‌ها یکسان)','Sync key (same on every device)'],sy_gen:['ساخت کلید','Generate key'],
+ sy_restUrl:['آدرس پایه API','API base URL'],sy_restTok:['توکن (اختیاری)','Bearer token (optional)'],sy_connect:['اتصال و همگام‌سازی','Connect & sync'],sy_now:['همگام‌سازی الان','Sync now'],sy_disc:['قطع اتصال','Disconnect'],
+ sy_on:['متصل: {a}','Connected: {a}'],sy_last:['آخرین همگام‌سازی: {a}','Last sync: {a}'],sy_never:['هنوز همگام نشده','Not synced yet'],sy_rules:['قوانین پیشنهادی Firebase','Suggested Firebase rules'],
+ sy_needHttps:['رمزنگاری فقط روی https یا localhost کار می‌کند.','Encryption needs https or localhost.'],sy_wrongKey:['کلید یا رمز با داده‌های ابری جور نیست','Key/password does not match the cloud data'],sy_authErr:['ورود ناموفق بود','Sign-in failed'],sy_wrongPass:['رمز عبور اشتباه است','Wrong password'],sy_fill:['همه فیلدهای لازم را پر کنید','Fill in all required fields'],sy_keyShort:['کلید باید حداقل ۱۶ کاراکتر باشد','Key must be at least 16 characters'],
+ sy_connected:['همگام‌سازی فعال شد','Sync is on'],sy_discQ:['همگام‌سازی قطع شود؟ اطلاعات روی این دستگاه باقی می‌ماند.','Disconnect sync? Data stays on this device.'],sy_note:['نکته: سرویس‌های گوگل (Firebase) از ایران ممکن است بدون فیلترشکن در دسترس نباشند؛ در آن صورت گزینه «سرور شخصی» را استفاده کنید.','Note: Google services (Firebase) may be unreachable from some regions; use “Own server” in that case.'],
+ set_backup:['پشتیبان و خروجی','Backup & export'],bk_json:['⬇️ دانلود پشتیبان (JSON)','⬇️ Download backup (JSON)'],bk_share:['📤 ارسال فایل پشتیبان','📤 Share backup file'],bk_imp:['⬆️ ادغام از پشتیبان','⬆️ Merge from backup'],bk_csv:['⬇️ خروجی اکسل (CSV)','⬇️ Excel export (CSV)'],bk_impCsv:['⬆️ ورود از CSV','⬆️ Import CSV'],
+ bk_hint:['ورود فایل، اطلاعات را با داده فعلی ادغام می‌کند (جدیدترین نسخه هر رکورد می‌ماند). CSV فقط درآمد و هزینه را وارد می‌کند.','Importing merges with current data (newest version of each record wins). CSV import adds incomes and expenses only.'],
+ bk_ok:['فایل پشتیبان دانلود شد','Backup downloaded'],bk_csvOk:['فایل CSV دانلود شد','CSV downloaded'],bk_bad:['این فایل پشتیبان این برنامه نیست','Not a backup of this app'],bk_badJson:['فایل JSON معتبر نیست','Invalid JSON file'],bk_mergeQ:['اطلاعات فایل با اطلاعات فعلی ادغام شود؟','Merge the file into current data?'],bk_merged:['ادغام انجام شد','Merged'],bk_rows:['{a} ردیف اضافه شد','{a} rows added'],bk_csvBad:['ساختار CSV شناخته نشد','Unrecognized CSV layout'],bk_shareNA:['این مرورگر ارسال فایل را پشتیبانی نمی‌کند؛ از دانلود استفاده کنید','Sharing files is not supported here; use download'],readErr:['خواندن فایل انجام نشد','Could not read the file'],
+ set_install:['نصب روی گوشی و ویندوز','Install on phone & Windows'],in_btn:['📲 نصب برنامه','📲 Install app'],in_done:['✅ برنامه نصب شده است.','✅ App is installed.'],
+ in_android:['<b>اندروید (Chrome):</b> منوی ⋮ ← «نصب برنامه».','<b>Android (Chrome):</b> ⋮ menu → “Install app”.'],in_ios:['<b>آیفون (Safari):</b> اشتراک‌گذاری ← «Add to Home Screen».','<b>iPhone (Safari):</b> Share → “Add to Home Screen”.'],in_win:['<b>ویندوز (Chrome/Edge):</b> آیکن نصب در نوار آدرس.','<b>Windows (Chrome/Edge):</b> install icon in the address bar.'],
+ in_file:['⚠️ صفحه به‌صورت فایل محلی باز شده؛ همه امکانات به‌جز نصب و همگام‌سازی رمزنگاری‌شده کار می‌کند. برای نصب، روی یک آدرس https قرار دهید.','⚠️ Opened as a local file; everything works except installing and encrypted sync. Host it on https to install.'],
+ set_reset:['پاک کردن همه اطلاعات این دستگاه','Erase all data on this device'],rs_btn:['حذف همه اطلاعات','Erase everything'],rs_q1:['همه اطلاعات این دستگاه حذف شود؟','Erase all data on this device?'],rs_q2:['مطمئن هستید؟ برگشت ندارد.','Are you sure? This cannot be undone.'],rs_ok:['همه اطلاعات حذف شد','All data erased'],rs_hint:['اگر همگام‌سازی فعال است، اول آن را قطع کنید وگرنه اطلاعات از ابر برمی‌گردد.','If sync is on, disconnect first or data will come back from the cloud.'],
+ storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
+};
+function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
+
+const FA='۰۱۲۳۴۵۶۷۸۹',AR='٠١٢٣٤٥٦٧٨٩';
+const toFa=s=>String(s).replace(/\d/g,d=>FA[d]);
+const toEn=s=>String(s==null?'':s).replace(/[۰-۹]/g,d=>FA.indexOf(d)).replace(/[٠-٩]/g,d=>AR.indexOf(d));
+const dg=s=>FA_LANG()?toFa(s):String(s);
+function parseAmount(s){const x=toEn(s).replace(/\D/g,'');return x?parseInt(x,10):NaN;}
+function num(n){const v=Math.round(Number(n)||0);return (v<0?'−':'')+dg(Math.abs(v).toLocaleString('en-US'));}
+const money=n=>num(n)+' '+tr('toman');
+const amtVal=n=>n?dg(Math.round(n).toLocaleString('en-US')):'';
+const pct=r=>dg(Math.round(r*100))+(FA_LANG()?'٪':'%');
+function compact(n){const a=Math.abs(n);if(a>=1e9)return dg(+(n/1e9).toFixed(1))+(FA_LANG()?' میلیارد':'B');if(a>=1e6)return dg(+(n/1e6).toFixed(1))+(FA_LANG()?'م':'M');if(a>=1e3)return dg(Math.round(n/1e3))+(FA_LANG()?' هزار':'K');return dg(Math.round(n));}
+const empty=x=>`<div class="empty">${x}</div>`;
+
+/* =====================================================================
+   2. JALALI CALENDAR (zero dependency)
+   ===================================================================== */
+function g2j(gy,gm,gd){const g=[0,31,59,90,120,151,181,212,243,273,304,334];const gy2=gm>2?gy+1:gy;let days=355666+365*gy+~~((gy2+3)/4)-~~((gy2+99)/100)+~~((gy2+399)/400)+gd+g[gm-1];let jy=-1595+33*~~(days/12053);days%=12053;jy+=4*~~(days/1461);days%=1461;if(days>365){jy+=~~((days-1)/365);days=(days-1)%365;}let jm,jd;if(days<186){jm=1+~~(days/31);jd=1+days%31;}else{jm=7+~~((days-186)/30);jd=1+(days-186)%30;}return[jy,jm,jd];}
+function j2g(jy,jm,jd){jy+=1595;let days=-355668+365*jy+~~(jy/33)*8+~~(((jy%33)+3)/4)+jd+(jm<7?(jm-1)*31:(jm-7)*30+186);let gy=400*~~(days/146097);days%=146097;if(days>36524){gy+=100*~~(--days/36524);days%=36524;if(days>=365)days++;}gy+=4*~~(days/1461);days%=1461;if(days>365){gy+=~~((days-1)/365);days=(days-1)%365;}let gd=days+1;const sa=[0,31,((gy%4===0&&gy%100!==0)||gy%400===0)?29:28,31,30,31,30,31,31,30,31,30,31];let gm;for(gm=0;gm<13&&gd>sa[gm];gm++)gd-=sa[gm];return[gy,gm,gd];}
+function jLeap(y){const g=j2g(y,12,30),b=g2j(g[0],g[1],g[2]);return b[0]===y&&b[1]===12&&b[2]===30;}
+function mLen(y,m){return m<=6?31:m<=11?30:(jLeap(y)?30:29);}
+const dToJ=d=>g2j(d.getFullYear(),d.getMonth()+1,d.getDate());
+const todayJ=()=>dToJ(new Date());
+function daysAgoJ(n){const d=new Date();d.setDate(d.getDate()-n);return dToJ(d);}
+function daysAheadJ(n){const d=new Date();d.setDate(d.getDate()+Math.round(n));return dToJ(d);}
+const pad=n=>String(n).padStart(2,'0');
+const jS=a=>`${a[0]}/${pad(a[1])}/${pad(a[2])}`;
+function parseJ(s){const m=toEn(s).trim().match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);if(!m)return null;const y=+m[1],mo=+m[2],d=+m[3];if(y<1300||y>1600||mo<1||mo>12||d<1||d>mLen(y,mo))return null;return[y,mo,d];}
+function jTime(a){const g=j2g(a[0],a[1],a[2]);return Date.UTC(g[0],g[1]-1,g[2]);}
+const dayDiff=(a,b)=>Math.round((jTime(b)-jTime(a))/864e5);
+const per=(y,m)=>`${y}/${pad(m)}`;
+function curPer(){const td=todayJ();return per(td[0],td[1]);}
+function perAdd(p,k){let[y,m]=p.split('/').map(Number);m+=k;while(m>12){m-=12;y++;}while(m<1){m+=12;y--;}return per(y,m);}
+const MONTHS={fa:['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'],en:['Farvardin','Ordibehesht','Khordad','Tir','Mordad','Shahrivar','Mehr','Aban','Azar','Dey','Bahman','Esfand']};
+const mName=m=>MONTHS[UI.lang][m-1];
+function perName(p){const[y,m]=p.split('/').map(Number);return mName(m)+' '+dg(y);}
+function dateLabel(s){const a=typeof s==='string'?parseJ(s):s;return a?`${dg(a[2])} ${mName(a[1])} ${dg(a[0])}`:String(s);}
+const MONTH_D=30.4375;
+function fmtDur(days){days=Math.max(0,Math.round(days));let m=Math.floor(days/MONTH_D),d=Math.round(days-m*MONTH_D);if(d>=30){m++;d=0;}const p=[];if(m)p.push(tr('dur_m',{a:dg(m)}));if(d||!m)p.push(tr('dur_d',{a:dg(d)}));return p.join(tr('dur_and'));}
+
+/* =====================================================================
+   3. STATE, STORAGE & MIGRATION
+   ===================================================================== */
+const KEY='dk2_state';
+const CATS={food:{fa:'خوراک و خواربار',en:'Food & groceries',i:'🛒',ess:true,c:'#0D9488'},housing:{fa:'اجاره و قبوض',en:'Rent & utilities',i:'🏠',ess:true,c:'#6366F1'},transport:{fa:'حمل‌ونقل',en:'Transport',i:'🚌',ess:true,c:'#0EA5E9'},fun:{fa:'تفریح و رستوران',en:'Dining & fun',i:'☕',ess:false,c:'#F59E0B'},clothing:{fa:'پوشاک',en:'Clothing',i:'👕',ess:false,c:'#EC4899'},health:{fa:'درمان و سلامت',en:'Health',i:'💊',ess:true,c:'#10B981'},misc:{fa:'متفرقه',en:'Misc',i:'📦',ess:false,c:'#94A3B8'}};
+const cat=k=>CATS[k]||CATS.misc;
+const cn=k=>cat(k)[UI.lang];
+const DEBT_KINDS=['loan','bnpl','personal','check'];
+const GOAL_TPLS={car:'🚗',immig:'✈️',lang:'🎓',emergency:'🛟',custom:'🎯'};
+const CURRENCIES=['EUR','USD','CAD','GBP','AUD','TRY'];
+const EXAMS=['IELTS','TOEFL','Goethe','TestDaF','Duolingo','Other'];
+
+function blank(){return{v:2,settings:{u:0,model:'503020',needs:50,wants:30,save:20,zbNeeds:0,zbSave:0,alertDays:3,opening:0},incomes:[],expenses:[],debts:[],goals:[]};}
+function normalize(o,stampOld){const d=blank();if(!o||typeof o!=='object')return d;const arr=x=>Array.isArray(x)?x:[];const st=u=>stampOld&&!u?1:u||Date.now();
+  const r={v:2,settings:Object.assign(d.settings,o.settings||{}),incomes:arr(o.incomes),expenses:arr(o.expenses),
+    debts:arr(o.debts).map(x=>Object.assign({prePaid:0,payments:[],kind:'loan'},x)),
+    goals:arr(o.goals).filter(g=>g.type!=='debt').map(g=>Object.assign({tpl:g.tpl||(g.type==='emergency'?'emergency':'custom'),initial:0,monthly:0,contributions:[]},g))};
+  r.settings.u=st(r.settings.u);['incomes','expenses','debts','goals'].forEach(k=>r[k].forEach(x=>{x.id=x.id||uid();x.u=st(x.u);}));
+  delete r.settings.lastBackup;return r;}
+let storageOK=true;try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){storageOK=false;}
+function loadState(){if(!storageOK)return blank();try{const v2=localStorage.getItem(KEY);if(v2)return normalize(JSON.parse(v2));const v1=localStorage.getItem('dakhlokharj_v1');if(v1)return normalize(JSON.parse(v1));}catch(e){}return blank();}
+let S=loadState();
+let META=loadJSON('dk2_meta',{deviceId:uid(),lastBackup:0,lastSync:0,notified:{}});saveJSON('dk2_meta',META);
+const live=a=>a.filter(x=>!x.del);
+const INC=()=>live(S.incomes),EXP=()=>live(S.expenses),DEB=()=>live(S.debts),GOA=()=>live(S.goals);
+const touch=r=>{r.u=Date.now();return r;};
+function persist(){if(storageOK&&!saveJSON(KEY,S))toast(tr('storeFull'),'bad');scheduleSync();}
+function tombstone(coll,id){const r=S[coll].find(x=>x.id===id);if(!r)return;Object.keys(r).forEach(k=>{if(k!=='id')delete r[k];});r.del=true;touch(r);}
+
+/* =====================================================================
+   4. DOMAIN: debts, monthly math, goals, advisor
+   ===================================================================== */
+const remCount=d=>Math.max(0,d.total-(d.prePaid||0)-d.payments.length);
+const paidIn=(d,p)=>d.payments.some(x=>x.period===p);
+function nextUnpaid(d){let q=d.start,g=0;while(paidIn(d,q)&&g++<600)q=perAdd(q,1);return q;}
+function unpaidDueCount(d,p){let c=0,q=d.start,g=0;while(q<=p&&g++<600){if(!paidIn(d,q))c++;q=perAdd(q,1);}return Math.min(c,remCount(d));}
+function debtAlerts(){const cp=curPer(),td=todayJ(),out=[];
+  DEB().forEach(d=>{if(remCount(d)<=0)return;const np=nextUnpaid(d),T=esc(d.title);
+    if(np<cp){const n=Math.max(1,unpaidDueCount(d,perAdd(cp,-1)));out.push({lvl:'bad',d,days:-999,txt:tr('a_late',{t:T,n:n>1?tr('a_monthsN',{a:dg(n)}):'',a:money(d.monthly*n)})});}
+    else if(np===cp){const days=Math.min(d.dueDay,mLen(td[0],td[1]))-td[2];
+      if(days<0)out.push({lvl:'bad',d,days,txt:tr('a_past',{t:T,d:dg(-days),a:money(d.monthly)})});
+      else if(days===0)out.push({lvl:'bad',d,days,txt:tr('a_today',{t:T,a:money(d.monthly)})});
+      else if(days<=S.settings.alertDays)out.push({lvl:'warn',d,days,txt:tr('a_soon',{t:T,d:dg(days),a:money(d.monthly)})});}});
+  return out.sort((a,b)=>a.days-b.days);}
+function snowball(extra){
+  const ds=DEB().filter(d=>remCount(d)>0).map(d=>({id:d.id,title:d.title,min:d.monthly,bal:d.monthly*remCount(d)})).sort((a,b)=>a.bal-b.bal);
+  const order=ds.map(d=>({id:d.id,title:d.title}));if(!ds.length)return{months:0,finish:{},order};
+  const budget=ds.reduce((s,d)=>s+d.min,0)+Math.max(0,extra||0);let m=0;const finish={};
+  while(ds.some(d=>d.bal>0.5)&&m<600){m++;let pool=budget;
+    for(const d of ds)if(d.bal>0.5){const p=Math.min(d.min,d.bal);d.bal-=p;pool-=p;}
+    for(const d of ds)if(d.bal>0.5&&pool>0){const p=Math.min(pool,d.bal);d.bal-=p;pool-=p;}
+    for(const d of ds)if(d.bal<=0.5&&!finish[d.id])finish[d.id]=m;}
+  return{months:m,finish,order};}
+
+/* Priority-first monthly engine */
+function calc(p){
+  p=p||curPer();const st=S.settings,td=todayJ(),isCur=p===curPer();const[y,m]=p.split('/').map(Number);const ml=mLen(y,m);
+  const I=sum(INC().filter(x=>x.date.startsWith(p)),'amount');
+  let paid=0,unpaid=0;DEB().forEach(d=>{d.payments.forEach(x=>{if(x.on.startsWith(p))paid+=x.amount;});if(isCur)unpaid+=unpaidDueCount(d,p)*d.monthly;});
+  const L=paid+unpaid,N=Math.max(0,I-L),shortfall=Math.max(0,L-I);
+  let needs,wants,save;
+  if(st.model==='zero'){save=Math.min(N,st.zbSave||0);needs=Math.min(N-save,st.zbNeeds||0);wants=N-save-needs;}
+  else{needs=N*st.needs/100;wants=N*st.wants/100;save=N*st.save/100;}
+  const ex=EXP().filter(x=>x.date.startsWith(p));const E=sum(ex,'amount'),Ess=sum(ex.filter(x=>x.ess),'amount'),NonEss=E-Ess;
+  const spendable=needs+wants,R=spendable-E;
+  const remDays=isCur?ml-td[2]+1:0;const todaySpent=isCur?sum(ex.filter(x=>x.date===jS(td)),'amount'):0;
+  const safeDaily=remDays>0?Math.max(0,R+todaySpent)/remDays:0;
+  const contrib=GOA().reduce((a,g)=>a+sum(g.contributions.filter(c=>c.date.startsWith(p)),'amount'),0);
+  const dayNow=isCur?td[2]:ml,burn=dayNow>0?E/dayNow:0,runOut=burn>0&&spendable>0?Math.ceil(spendable/burn):null;
+  return{p,y,m,ml,I,paid,unpaid,L,N,shortfall,needs,wants,save,E,Ess,NonEss,spendable,R,remDays,todaySpent,safeDaily,contrib,dayNow,burn,runOut,isCur,ex};}
+function cashBalance(){let c=S.settings.opening||0;c+=sum(INC(),'amount')-sum(EXP(),'amount');DEB().forEach(d=>c-=sum(d.payments,'amount'));GOA().forEach(g=>c-=sum(g.contributions,'amount'));return c;}
+
+/* Goals math (with inflation / FX growth buffer) */
+const goalSaved=g=>(+g.initial||0)+sum(g.contributions,'amount');
+function goalNeedNow(g){if(g.tpl==='immig')return sum(g.stages||[],'amt')*(+g.rate||0);if(g.tpl==='lang')return(+g.fee||0)+(+g.classes||0);return +g.target||0;}
+const growth=g=>(g.tpl==='car'||g.tpl==='immig')?(+g.infl||0)/100:0;
+const needAt=(g,mo)=>goalNeedNow(g)*Math.pow(1+growth(g),mo/12);
+function etaMonths(g,extra){const s=goalSaved(g),m=(+g.monthly||0)+(extra||0),n0=goalNeedNow(g);if(n0<=0)return null;if(s>=n0)return 0;if(m<=0)return Infinity;
+  if(!growth(g))return(n0-s)/m;for(let x=0;x<=600;x+=0.05)if(s+m*x>=needAt(g,x))return x;return Infinity;}
+function goalDeadline(g){return g.tpl==='lang'?g.examDate:g.deadline;}
+
+/* Substitution engine */
+const RULES=[
+ {k:'cafe',i:'☕',re:/کافه|قهوه|کافی ?شاپ|cafe|coffee|بستنی|کیک|شیرینی|starbucks/i,fa:['کافه و قهوه بیرون','قهوه یا چای را در خانه دم کنید و با فلاسک ببرید؛ کافه را به یک بار در هفته محدود کنید.'],en:['Cafés & coffee out','Brew at home and carry a flask; limit cafés to once a week.'],rate:.6},
+ {k:'foodout',i:'🍕',re:/رستوران|فست ?فود|پیتزا|ساندویچ|برگر|اسنپ ?فود|snappfood|سفارش غذا|restaurant|pizza|burger|takeaway|delivery/i,fa:['غذای بیرون و سفارش آنلاین','آخر هفته غذای چند روز را آماده و فریز کنید؛ سفارش غذا را به یک شب در هفته محدود کنید.'],en:['Eating out & delivery','Batch-cook and freeze on the weekend; keep delivery to one night a week.'],rate:.55},
+ {k:'taxi',i:'🚕',re:/اسنپ|تپسی|تاکسی|آژانس|ماکسیم|taxi|snapp|uber|cab/i,fa:['تاکسی اینترنتی','برای مسیرهای تکراری از مترو، اتوبوس یا سفر اشتراکی استفاده کنید؛ مسیرهای کوتاه را پیاده بروید.'],en:['Ride-hailing','Use metro, bus or shared rides for regular routes; walk short trips.'],rate:.5},
+ {k:'subs',i:'📺',re:/اشتراک|فیلیمو|نماوا|اسپاتیفای|spotify|netflix|subscription/i,fa:['اشتراک‌ها','اشتراک‌های کم‌استفاده را لغو کنید یا با یک نفر شریک شوید.'],en:['Subscriptions','Cancel rarely used subscriptions or share one.'],rate:.5},
+ {k:'online',i:'🛍️',re:/دیجی|آنلاین|ترب|باسلام|دیوار|حراج|تخفیف|online|amazon|shop/i,fa:['خریدهای آنی و آنلاین','قانون ۴۸ ساعت: کالا را در سبد بگذارید و دو روز بعد تصمیم بگیرید.'],en:['Impulse & online buys','48-hour rule: leave it in the cart and decide two days later.'],rate:.5}];
+const CAT_ALT={food:{fa:'تنقلات و خریدهای اضافه را با لیست خرید هفتگی و خرید عمده از میدان تره‌بار کم کنید.',en:'Cut snacks and extras with a weekly list and bulk buying at the market.',r:.35},housing:{fa:'مصرف برق، گاز و اینترنت را بهینه کنید و بسته‌ها را مقایسه کنید.',en:'Reduce power/gas use and compare internet plans.',r:.15},transport:{fa:'مسیرها را با هم ترکیب کنید و از حمل‌ونقل عمومی استفاده کنید.',en:'Combine trips and use public transport.',r:.4},fun:{fa:'تفریح کم‌هزینه (پارک، کوه، فیلم در خانه) و یک بودجه ثابت هفتگی برای تفریح.',en:'Low-cost fun (park, hiking, movie night) with a fixed weekly fun budget.',r:.5},clothing:{fa:'قانون ۳۰ روز انتظار برای لباس غیرضروری؛ خرید در حراج پایان فصل.',en:'30-day wait rule for non-essential clothes; buy at end-of-season sales.',r:.5},health:{fa:'برای لوازم آرایشی و بهداشتی غیرضروری، معادل ایرانی باکیفیت یا حراج‌ها.',en:'Choose quality local alternatives or sales for non-essential care products.',r:.3},misc:{fa:'یک سقف ماهانه ثابت برای متفرقه و قانون ۴۸ ساعت برای خرید آنی.',en:'A fixed monthly cap for misc and the 48-hour rule.',r:.5}};
+function potentialSavings(){const td=todayJ(),groups={};
+  EXP().forEach(x=>{if(x.ess)return;const pj=parseJ(x.date);if(!pj)return;const dd=dayDiff(pj,td);if(dd<0||dd>29)return;
+    const r=RULES.find(r=>r.re.test(x.desc||''));const ck=CATS[x.cat]?x.cat:'misc';
+    const def=r?{k:r.k,i:r.i,title:r[UI.lang][0],alt:r[UI.lang][1],rate:r.rate}:{k:'c_'+ck,i:cat(ck).i,title:cn(ck),alt:CAT_ALT[ck][UI.lang],rate:CAT_ALT[ck].r};
+    const g=groups[def.k]||(groups[def.k]=Object.assign(def,{total:0,count:0}));g.total+=x.amount;g.count++;});
+  const list=Object.values(groups).map(g=>Object.assign(g,{save:Math.round(g.total*g.rate/1000)*1000})).filter(g=>g.save>0).sort((a,b)=>b.save-a.save);
+  return{list,total:sum(list,'save')};}
+function impacts(saving){const out=[];const b=snowball(0);
+  if(b.order.length){const w=snowball(saving),f=b.order[0],dm=b.finish[f.id]-w.finish[f.id];if(dm>0)out.push(tr('imp_debt',{t:esc(f.title),a:fmtDur(dm*MONTH_D)}));}
+  GOA().filter(g=>['car','immig','lang'].includes(g.tpl)||out.length<1).slice(0,3).forEach(g=>{const e0=etaMonths(g,0),e1=etaMonths(g,saving);if(e0&&e1!=null&&e0!==Infinity&&e0>e1)out.push(tr('imp_goal',{t:esc(g.title),a:fmtDur((e0-e1)*MONTH_D)}));});
+  if(!out.length)out.push(tr('imp_year',{a:money(saving*12)}));return out;}
+
+function insights(c){const a=[];
+  if(c.I===0)a.push({lvl:'info',i:'💡',t:tr('i_noInc'),x:tr('i_noIncX')});
+  if(c.shortfall>0)a.push({lvl:'bad',i:'⛔',t:tr('i_short'),x:tr('i_shortX',{a:money(c.shortfall)})});
+  if(c.I>0){const r=c.L/c.I;if(r>.5)a.push({lvl:'bad',i:'⚠️',t:tr('i_dti',{a:pct(r)}),x:tr('i_dtiBad')});else if(r>.35)a.push({lvl:'warn',i:'⚠️',t:tr('i_dti',{a:pct(r)}),x:tr('i_dtiWarn')});}
+  if(c.R<0)a.push({lvl:'bad',i:'🔴',t:tr('i_over'),x:tr('i_overX',{a:money(-c.R)})});
+  else if(c.isCur&&c.runOut&&c.runOut<c.ml&&c.dayNow>=3)a.push({lvl:'warn',i:'📉',t:tr('i_burn'),x:tr('i_burnX',{a:money(c.burn),d:dg(c.runOut),m:mName(c.m),s:money(c.safeDaily)})});
+  if(c.isCur&&c.R>=0&&c.todaySpent>c.safeDaily&&c.todaySpent>0)a.push({lvl:'warn',i:'🧯',t:tr('i_todayOver'),x:tr('i_todayOverX',{a:money(c.todaySpent-c.safeDaily)})});
+  if(c.wants>0&&c.NonEss>c.wants)a.push({lvl:'warn',i:'🛍️',t:tr('i_wants'),x:tr('i_wantsX',{a:money(c.wants),b:money(c.NonEss)})});
+  if(c.isCur&&c.save>0&&c.contrib<c.save)a.push({lvl:'info',i:'🏦',t:tr('i_payFirst'),x:tr('i_payFirstX',{a:money(c.save),b:money(c.save-c.contrib)})});
+  if(!GOA().some(g=>g.tpl==='emergency'))a.push({lvl:'info',i:'🛟',t:tr('i_emerg'),x:tr('i_emergX')});
+  if(!SC.enabled&&(INC().length||EXP().length)&&(!META.lastBackup||Date.now()-META.lastBackup>7*864e5))a.push({lvl:'info',i:'💾',t:tr('i_backup'),x:tr('i_backupX')});
+  if(c.I>0&&!a.some(x=>x.lvl==='bad'||x.lvl==='warn'))a.push({lvl:'ok',i:'✅',t:tr('i_good'),x:tr('i_goodX')});
+  const o={bad:0,warn:1,ok:2,info:3};return a.sort((x,y)=>o[x.lvl]-o[y.lvl]);}
+const insHTML=x=>`<div class="insight ${x.lvl}"><div class="ii">${x.i}</div><div><b>${x.t}</b><p>${x.x}</p></div></div>`;
+
+/* =====================================================================
+   5. OFFLINE SVG CHARTS
+   ===================================================================== */
+function niceMax(m){if(m<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(m))),n=m/p;return(n<=1?1:n<=2?2:n<=5?5:10)*p;}
+function donutSVG(outer,inner,c1,c2,label){const cx=100,cy=100;
+  const ring=(rows,R,w)=>{const tot=sum(rows,'v');if(!tot)return`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="${w}"/>`;const C=2*Math.PI*R;let off=0;
+    return rows.filter(x=>x.v>0).map(x=>{const len=x.v/tot*C;const s=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${x.c}" stroke-width="${w}" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"><title>${esc(x.l)}: ${money(x.v)}</title></circle>`;off+=len;return s;}).join('');};
+  return `<svg viewBox="0 0 200 200" class="chart donut" role="img" aria-label="${esc(label)}">${ring(outer,82,22)}${ring(inner,60,12)}<text x="100" y="98" text-anchor="middle" class="c1">${c1}</text><text x="100" y="118" text-anchor="middle" class="c2">${c2}</text></svg>`;}
+function barsSVG(groups,series,label){const W=600,H=260,pl=58,pr=10,pt=12,pb=34,ih=H-pt-pb;const mx=niceMax(Math.max(0,...groups.flatMap(g=>g.v)));const gw=(W-pl-pr)/groups.length;const bw=Math.min(24,(gw-14)/series.length);
+  let s=`<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="${esc(label)}" direction="ltr">`;
+  for(let i=0;i<=4;i++){const y=pt+ih*(1-i/4);s+=`<line class="gl" x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}"/><text x="${pl-6}" y="${y+4}" text-anchor="end">${compact(mx*i/4)}</text>`;}
+  groups.forEach((g,gi)=>{const x0=pl+gi*gw+(gw-bw*series.length)/2;g.v.forEach((v,si)=>{const h=v/mx*ih;s+=`<rect x="${(x0+si*bw).toFixed(1)}" y="${(pt+ih-h).toFixed(1)}" width="${(bw-3).toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="3" fill="${series[si].c}"><title>${esc(series[si].l)} · ${esc(g.l)}: ${money(v)}</title></rect>`;});s+=`<text x="${pl+gi*gw+gw/2}" y="${H-12}" text-anchor="middle">${esc(g.l)}</text>`;});
+  return s+'</svg>';}
+function lineSVG(c,label){const W=600,H=250,pl=58,pr=14,pt=12,pb=30,iw=W-pl-pr,ih=H-pt-pb,ml=c.ml;
+  const daily=Array(ml+1).fill(0);c.ex.forEach(x=>{const d=+x.date.slice(8,10);if(d>=1&&d<=ml)daily[d]+=x.amount;});
+  const cum=[];let run=0;for(let d=1;d<=c.dayNow;d++){run+=daily[d];cum.push(run);}
+  const proj=c.isCur&&c.dayNow<ml&&c.burn>0?c.burn*ml:0;const mx=niceMax(Math.max(c.spendable,run,proj,1)*1.05);
+  const X=d=>pl+(d-1)/(ml-1)*iw,Y=v=>pt+ih*(1-v/mx);
+  let s=`<svg viewBox="0 0 ${W} ${H}" class="chart" role="img" aria-label="${esc(label)}" direction="ltr">`;
+  for(let i=0;i<=4;i++){const y=pt+ih*(1-i/4);s+=`<line class="gl" x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}"/><text x="${pl-6}" y="${y+4}" text-anchor="end">${compact(mx*i/4)}</text>`;}
+  for(let d=1;d<=ml;d+=(d===1?4:5))s+=`<text x="${X(d)}" y="${H-10}" text-anchor="middle">${dg(d)}</text>`;
+  if(c.spendable>0)s+=`<line x1="${X(1)}" y1="${Y(c.spendable/ml)}" x2="${X(ml)}" y2="${Y(c.spendable)}" stroke="var(--sec)" stroke-width="2.5" stroke-dasharray="7 5"><title>${tr('ch_pace')}</title></line>`;
+  if(proj&&cum.length)s+=`<line x1="${X(c.dayNow)}" y1="${Y(run)}" x2="${X(ml)}" y2="${Y(proj)}" stroke="var(--warn)" stroke-width="2" stroke-dasharray="2 5"/>`;
+  if(cum.length){s+=`<polyline fill="none" stroke="var(--pri)" stroke-width="3" stroke-linejoin="round" points="${cum.map((v,i)=>X(i+1).toFixed(1)+','+Y(v).toFixed(1)).join(' ')}"/>`;s+=`<circle cx="${X(c.dayNow)}" cy="${Y(run)}" r="4.5" fill="var(--pri)"><title>${money(run)}</title></circle>`;}
+  return s+'</svg>';}
+function donutFor(c){const rows=Object.keys(CATS).map(k=>({l:cn(k),c:CATS[k].c,v:sum(c.ex.filter(x=>x.cat===k),'amount')})).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);
+  const inner=[{l:tr('ess'),c:'#0F766E',v:c.Ess},{l:tr('noness'),c:'#F59E0B',v:c.NonEss}];
+  return{rows,svg:donutSVG(rows,inner,compact(c.E),tr('k_spent'),tr('ch_donut'))};}
+function legendHTML(rows,tot){return `<div class="legend col">${rows.map(r=>`<span><span><i style="background:${r.c}"></i>${esc(r.l)}</span><span class="num">${num(r.v)} (${pct(tot?r.v/tot:0)})</span></span>`).join('')}</div>`;}
+function monthsSeries(n){const out=[];for(let i=n-1;i>=0;i--){const p=perAdd(curPer(),-i),c=calc(p);out.push({l:mName(c.m),v:[c.I,c.L,c.contrib]});}return out;}
+
+/* =====================================================================
+   6. VIEWS
+   ===================================================================== */
+const V={};
+let tab='dash',viewPer=curPer(),whatIf=null,deferredPrompt=null;
+function dateField(val){return `<div class="fld"><span>${tr('date')}</span><div class="row"><input name="date" value="${dg(val||jS(todayJ()))}" inputmode="numeric" required aria-label="${tr('date')}"><button type="button" class="btn sm" data-act="dp" aria-label="${tr('date')}">📅</button><button type="button" class="btn sm" data-act="setDate" data-id="0">${tr('today')}</button><button type="button" class="btn sm" data-act="setDate" data-id="1">${tr('yesterday')}</button></div></div>`;}
+function bar(label,used,budget,cls){const p=budget>0?Math.min(100,used/budget*100):(used>0?100:0);return `<div class="bar"><div class="bar-h"><span>${label}</span><span class="num">${num(used)} ${tr('of')} ${num(budget)}</span></div><div class="track ${cls||''} ${used>budget&&used>0?'over':''}"><span style="width:${p}%"></span></div></div>`;}
+const led=(l,v,s,cls)=>`<div class="it ${cls||''}"><div class="lbl">${l}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
+function alertsHTML(al){if(!al.length)return'';const np=('Notification' in window)&&Notification.permission==='default';return `<section>${al.map(a=>`<div class="alert ${a.lvl}"><span>${a.lvl==='bad'?'⛔':'⏰'} ${a.txt}</span><button class="btn sm" data-act="pay" data-id="${a.d.id}">${tr('paidIt')}</button></div>`).join('')}${np?`<p class="hint"><button class="link" data-act="notif">${tr('notifEnable')}</button></p>`:''}</section>`;}
+function expItem(x,act){const c=cat(x.cat);return `<li><span class="ic">${c.i}</span><div class="grow"><div>${esc(x.desc)||cn(x.cat)} <span class="tag ${x.ess?'e':'n'}">${tr(x.ess?'ess':'noness')}</span></div><div class="muted sm">${dateLabel(x.date)} · ${cn(x.cat)}</div></div><b class="num neg" dir="ltr">−${num(x.amount)}</b>${act?`<button class="del" data-act="editExp" data-id="${x.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delExp" data-id="${x.id}" aria-label="${tr('del')}">🗑</button>`:''}</li>`;}
+function incItem(x,act){const s=x.type==='salary';return `<li><span class="ic">${s?'💼':'✨'}</span><div class="grow"><div>${esc(x.desc)||tr(s?'salary':'extra')}</div><div class="muted sm">${dateLabel(x.date)} · ${tr(s?'salary':'extra')}</div></div><b class="num pos" dir="ltr">+${num(x.amount)}</b>${act?`<button class="del" data-act="editInc" data-id="${x.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delInc" data-id="${x.id}" aria-label="${tr('del')}">🗑</button>`:''}</li>`;}
+function perNav(){return `<div class="pernav"><button class="btn sm" data-act="perPrev">${tr('prevM')}</button><b>${perName(viewPer)}</b><button class="btn sm" data-act="perNext" ${viewPer>=curPer()?'disabled':''}>${tr('nextM')}</button></div>`;}
+const byDesc=(a,b)=>a.date<b.date?1:a.date>b.date?-1:(b.ts||0)-(a.ts||0);
+
+V.dash=()=>{const c=calc();let h='';
+  if(!storageOK)h+=`<div class="notice">${tr('noStorage')}</div>`;
+  h+=alertsHTML(debtAlerts());
+  if(!INC().length&&!EXP().length&&!DEB().length)h+=`<section class="card"><h2>${tr('start3')}</h2><ol class="steps"><li>${tr('st1')}</li><li>${tr('st2')}</li><li>${tr('st3')}</li></ol><div class="btns"><button class="btn pri" data-act="tab" data-id="income">${tr('addInc')}</button><button class="btn" data-act="tab" data-id="debts">${tr('addDebtBtn')}</button></div></section>`;
+  const left=c.safeDaily-c.todaySpent,used=c.safeDaily>0?Math.min(1,c.todaySpent/c.safeDaily):(c.todaySpent>0?1:0),C=2*Math.PI*42;
+  h+=`<section class="hero ${c.R<0||left<0?'neg':''}"><div><div class="lbl">${tr('safeToday')}</div><div class="val">${num(c.safeDaily)} <small>${tr('toman')}</small></div>
+    <div class="sub">${c.I===0&&c.R<=0?tr('heroNoInc'):left>=0?tr('heroLeft',{a:money(c.todaySpent),b:money(left)}):tr('heroOver',{a:money(-left)})}</div>
+    ${c.I===0?`<button class="btn sm" data-act="tab" data-id="income">${tr('addSalary')}</button>`:''}</div>
+    <div class="ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="9"/><circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-used)}"/></svg><div class="t"><div><b>${dg(c.remDays)}</b>${tr('daysLeft')}</div></div></div></section>`;
+  const cash=cashBalance();
+  h+=`<section class="card"><h2>${perName(c.p)}</h2><div class="ledger">${led(tr('k_inc'),money(c.I))}${led(tr('k_lock'),money(c.L),tr('s_paidRem',{a:num(c.paid),b:num(c.unpaid)}))}${led(tr('k_spent'),money(c.E),tr('s_nonEss',{a:num(c.NonEss)}))}${led(tr('k_left'),money(c.R),'',c.R<0?'bad':'')}${led(tr('k_save'),money(c.save),tr('s_contrib',{a:num(c.contrib)}))}${led(tr('k_cash'),money(cash),'',cash<0?'bad':'')}</div></section>`;
+  const st=S.settings;h+=`<section class="card"><h3>${tr('budgetMonth')}</h3>${bar(tr('b_needs'),c.Ess,c.needs)}${bar(tr('b_wants'),c.NonEss,c.wants)}${bar(tr('b_save'),c.contrib,c.save,'sec')}
+    <p class="hint">${tr('splitLine',{a:num(c.I),b:num(c.L),c:num(c.N),d:st.model==='zero'?tr('m_zero'):tr('m_pct',{a:dg(st.needs+'/'+st.wants+'/'+st.save)})})}</p></section>`;
+  const ins=insights(c).slice(0,2);if(ins.length)h+=ins.map(insHTML).join('')+`<p style="margin:-4px 0 12px"><button class="link" data-act="tab" data-id="advisor">${tr('allTips')}</button></p>`;
+  const items=[...INC().map(x=>Object.assign({k:'i'},x)),...EXP().map(x=>Object.assign({k:'e'},x))].sort(byDesc).slice(0,6);
+  h+=`<section class="card"><h3>${tr('recent')}</h3>${items.length?`<ul class="list">${items.map(x=>x.k==='i'?incItem(x):expItem(x)).join('')}</ul>`:empty(tr('noTx'))}</section>`;
+  return h;};
+
+function expenseForm(x){x=x||{};const ck=x.cat||'food',es=x.id?x.ess:cat(ck).ess;return `<form data-form="expense" class="form" autocomplete="off"><input type="hidden" name="eid" value="${x.id||''}">
+  <label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" placeholder="${dg(0)}" value="${amtVal(x.amount)}" required></label>
+  <div class="fld"><span>${tr('category')}</span><div class="chips">${Object.keys(CATS).map(k=>`<label class="chip"><input type="radio" name="cat" value="${k}" ${k===ck?'checked':''}><span>${CATS[k].i} ${cn(k)}</span></label>`).join('')}</div></div>
+  <div class="fld"><span>${tr('kind')}</span><div class="seg"><label><input type="radio" name="ess" value="1" ${es?'checked':''}><span>${tr('ess')}</span></label><label><input type="radio" name="ess" value="0" ${es?'':'checked'}><span>${tr('noness')}</span></label></div></div>
+  ${dateField(x.date)}<label class="fld"><span>${tr('descHint')}</span><input name="desc" maxlength="80" placeholder="${tr('descPh')}" value="${esc(x.desc||'')}"></label>
+  <button class="btn pri wide">${x.id?tr('saveChanges'):tr('addExp')}</button></form>`;}
+V.expenses=()=>{const list=EXP().filter(x=>x.date.startsWith(viewPer)).sort(byDesc),days={};list.forEach(x=>(days[x.date]=days[x.date]||[]).push(x));
+  return `<section class="card"><h2>${tr('addExp')}</h2>${expenseForm()}</section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b> · ${tr('nonEssTotal')}: <b class="warnc">${money(sum(list.filter(x=>!x.ess),'amount'))}</b></p>
+  ${list.length?Object.keys(days).map(d=>`<div class="day-h"><span>${dateLabel(d)}</span><span class="num">${num(sum(days[d],'amount'))}</span></div><ul class="list">${days[d].map(x=>expItem(x,true)).join('')}</ul>`).join(''):empty(tr('noExpMonth'))}</section>`;};
+function incomeForm(x){x=x||{};const last=INC().filter(i=>i.type==='salary').sort(byDesc)[0],ty=x.type||'salary';return `<form data-form="income" class="form" autocomplete="off"><input type="hidden" name="eid" value="${x.id||''}">
+  <div class="seg"><label><input type="radio" name="type" value="salary" ${ty==='salary'?'checked':''}><span>💼 ${tr('salary')}</span></label><label><input type="radio" name="type" value="extra" ${ty==='extra'?'checked':''}><span>✨ ${tr('extra')}</span></label></div>
+  <label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(x.amount)}" placeholder="${last?amtVal(last.amount):dg(0)}"></label>
+  ${dateField(x.date)}<label class="fld"><span>${tr('desc')}</span><input name="desc" maxlength="80" placeholder="${tr('incPh')}" value="${esc(x.desc||'')}"></label>
+  <button class="btn pri wide">${x.id?tr('saveChanges'):tr('addInc')}</button></form>`;}
+V.income=()=>{const list=INC().filter(x=>x.date.startsWith(viewPer)).sort(byDesc);return `<section class="card"><h2>${tr('addInc')}</h2>${incomeForm()}<p class="hint">${tr('incLockHint')}</p></section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b></p>${list.length?`<ul class="list">${list.map(x=>incItem(x,true)).join('')}</ul>`:empty(tr('noIncMonth'))}</section>`;};
+
+function debtForm(){const cp=curPer();return `<form data-form="debt" class="form" autocomplete="off">
+  <label class="fld"><span>${tr('d_title')}</span><input name="title" required maxlength="40" placeholder="${tr('d_titlePh')}"></label>
+  <label class="fld"><span>${tr('d_type')}</span><select name="kind">${DEBT_KINDS.map(k=>`<option value="${k}">${tr('dk_'+k)}</option>`).join('')}</select></label>
+  <label class="fld"><span>${tr('d_monthly')}</span><input name="monthly" class="amt" inputmode="numeric" required></label>
+  <div class="row2"><label class="fld"><span>${tr('d_total')}</span><input name="total" inputmode="numeric" required placeholder="${dg(12)}"></label><label class="fld"><span>${tr('d_pre')}</span><input name="pre" inputmode="numeric" value="${dg(0)}"></label></div>
+  <div class="row2"><label class="fld"><span>${tr('d_due')}</span><input name="due" inputmode="numeric" required placeholder="${dg(5)}"></label><label class="fld"><span>${tr('d_start')}</span><select name="start"><option value="${perAdd(cp,-1)}">${perName(perAdd(cp,-1))} ${tr('d_late')}</option><option value="${cp}" selected>${perName(cp)}</option><option value="${perAdd(cp,1)}">${perName(perAdd(cp,1))}</option></select></label></div>
+  <p class="hint">${tr('d_checkHint')}</p><button class="btn pri wide">${tr('addDebtBtn')}</button></form>`;}
+function debtCard(d){const cp=curPer(),td=todayJ(),rc=remCount(d),done=d.total-rc,p=d.total?done/d.total*100:0,np=nextUnpaid(d);let s;
+  if(rc===0)s=`<span class="tag ok">${tr('d_done')}</span>`;else if(np<cp)s=`<span class="tag bad">${tr('d_overdue')}</span>`;
+  else if(np===cp){const days=Math.min(d.dueDay,mLen(td[0],td[1]))-td[2];s=days<0?`<span class="tag bad">${tr('d_daysPast',{a:dg(-days)})}</span>`:days===0?`<span class="tag bad">${tr('d_dueToday')}</span>`:`<span class="tag ${days<=S.settings.alertDays?'warn':''}">${tr('d_daysTo',{a:dg(days)})}</span>`;}
+  else if(paidIn(d,cp))s=`<span class="tag ok">${tr('d_paidThis')}</span>`;else s=`<span class="tag">${tr('d_first',{a:perName(np)})}</span>`;
+  return `<section class="card"><div class="card-h"><h3>${esc(d.title)} <span class="tag sec">${tr('dk_'+(d.kind||'loan'))}</span></h3><button class="del" data-act="delDebt" data-id="${d.id}" aria-label="${tr('del')}">🗑</button></div>
+  <p class="muted sm">${tr('d_line',{a:money(d.monthly),b:dg(d.dueDay)})}</p>
+  <div class="bar-h" style="margin-top:8px"><span>${tr('d_prog',{a:dg(done),b:dg(d.total)})}</span><span class="num">${tr('d_rem',{a:money(d.monthly*rc)})}</span></div><div class="track"><span style="width:${p}%"></span></div>
+  <div class="btns">${s}${rc>0?`<button class="btn sm pri" data-act="pay" data-id="${d.id}">${tr(np<=cp?'d_pay':'d_prepay',{a:perName(np)})}</button>`:''}${d.payments.length?`<button class="btn sm" data-act="undo" data-id="${d.id}">${tr('d_undo')}</button>`:''}</div></section>`;}
+V.debts=()=>{const act=DEB().filter(d=>remCount(d)>0);return alertsHTML(debtAlerts())+`<section class="card"><div class="ledger">${led(tr('d_monthlySum'),money(sum(act,'monthly')))}${led(tr('d_remSum'),money(act.reduce((s,d)=>s+d.monthly*remCount(d),0)))}${led(tr('d_active'),dg(act.length))}</div>${notifControl()}</section>
+  ${DEB().map(debtCard).join('')}<section class="card"><h2>${tr('d_add')}</h2>${debtForm()}</section>`;};
+
+/* ---- goals ---- */
+function goalForm(tpl,g){g=g||{};const T=x=>esc(x==null?'':x),A=n=>amtVal(n);const ttl=g.title||tr('tpl_'+tpl);
+  let f=`<form data-form="goal" class="form" autocomplete="off"><input type="hidden" name="gid" value="${g.id||''}"><input type="hidden" name="tpl" value="${tpl}">
+  <label class="fld"><span>${tr('g_title')}</span><input name="title" required maxlength="50" value="${T(ttl)}"></label>`;
+  if(tpl==='car')f+=`<div class="row2"><label class="fld"><span>${tr('g_price')}</span><input name="target" class="amt" inputmode="numeric" value="${A(g.target)}" required></label><label class="fld"><span>${tr('g_infl')}</span><input name="infl" inputmode="numeric" value="${dg(g.infl||0)}"></label></div>
+    <div class="fld"><span>${tr('g_deadline')}</span><div class="row"><input name="deadline" value="${g.deadline?dg(g.deadline):''}" inputmode="numeric" placeholder="${dg('1406/06/01')}"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;
+  else if(tpl==='immig'){const stages=g.stages||[{id:uid(),name:tr('st_trans')},{id:uid(),name:tr('st_emb')},{id:uid(),name:tr('st_pof')},{id:uid(),name:tr('st_fly')}];
+    f+=`<div class="row3"><label class="fld"><span>${tr('g_cur')}</span><select name="cur">${CURRENCIES.map(c=>`<option ${c===(g.cur||'EUR')?'selected':''}>${c}</option>`).join('')}</select></label><label class="fld"><span>${tr('g_rate')}</span><input name="rate" class="amt" inputmode="numeric" value="${A(g.rate)}" required></label><label class="fld"><span>${tr('g_curInfl')}</span><input name="infl" inputmode="numeric" value="${dg(g.infl||0)}"></label></div>
+    <div class="fld"><span>${tr('g_stages')}</span><div id="stageRows">${stages.map(stageRow).join('')}</div><button type="button" class="btn sm" data-act="addStage">${tr('g_addStage')}</button></div>
+    <div class="fld"><span>${tr('g_deadline')}</span><div class="row"><input name="deadline" value="${g.deadline?dg(g.deadline):''}" inputmode="numeric"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;}
+  else if(tpl==='lang')f+=`<label class="fld"><span>${tr('g_exam')}</span><select name="exam">${EXAMS.map(e=>`<option ${e===(g.exam||'IELTS')?'selected':''}>${e}</option>`).join('')}</select></label>
+    <div class="row2"><label class="fld"><span>${tr('g_fee')}</span><input name="fee" class="amt" inputmode="numeric" value="${A(g.fee)}"></label><label class="fld"><span>${tr('g_classes')}</span><input name="classes" class="amt" inputmode="numeric" value="${A(g.classes)}"></label></div>
+    <div class="fld"><span>${tr('g_examDate')}</span><div class="row"><input name="examDate" value="${g.examDate?dg(g.examDate):''}" inputmode="numeric"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;
+  else f+=`<label class="fld"><span>${tr('g_target')}</span><input name="target" class="amt" inputmode="numeric" value="${A(g.target)}" required></label>`;
+  f+=`<div class="row2"><label class="fld"><span>${tr('g_saved')}</span><input name="initial" class="amt" inputmode="numeric" value="${A(g.initial)}"></label><label class="fld"><span>${tr('g_monthly')}</span><input name="monthly" class="amt" inputmode="numeric" value="${A(g.monthly)}"></label></div>
+  <button class="btn pri wide">${g.id?tr('g_update'):tr('g_create')}</button></form>`;return f;}
+function stageRow(s){return `<div class="stage" data-sid="${s.id}" data-done="${s.done?1:0}"><input name="sname" value="${esc(s.name||'')}" aria-label="stage"><input name="samt" class="amt" inputmode="numeric" value="${amtVal(s.amt)}" aria-label="amount"><button type="button" class="btn sm" data-act="rmStage" aria-label="${tr('del')}">✕</button></div>`;}
+function etaLabel(m,mo){if(m===null)return tr('g_setTarget');if(m===Infinity)return mo>0?tr('g_never'):tr('g_noPlan');if(m===0)return tr('now');return `${dateLabel(daysAheadJ(m*MONTH_D))} (${fmtDur(m*MONTH_D)})`;}
+function goalCard(g){const saved=goalSaved(g),need=goalNeedNow(g),p=need>0?Math.min(100,saved/need*100):0,e0=etaMonths(g,0),e1=etaMonths(g,whatIf),td=todayJ();
+  let body=`<div class="bar-h"><span>${tr('g_progress',{a:money(saved),b:money(need)})}</span><span class="num">${pct(p/100)}</span></div><div class="track"><span style="width:${p}%"></span></div>`;
+  if(g.tpl==='immig'&&g.stages){let cum=0;body+=`<ul class="stages">${g.stages.map(s=>{const tom=(+s.amt||0)*(+g.rate||0);const cov=Math.min(tom,Math.max(0,saved-cum));cum+=tom;const sp=tom?cov/tom*100:0;return `<li><input type="checkbox" data-act="stage" data-id="${g.id}|${s.id}" ${s.done?'checked':''} aria-label="${esc(s.name)}"><span>${esc(s.name)}</span><span class="num muted sm"><bdi>${dg((+s.amt||0).toLocaleString('en-US'))} ${g.cur}</bdi> ≈ <bdi>${compact(tom)}</bdi></span><div class="track"><span style="width:${sp}%"></span></div></li>`;}).join('')}</ul>`;}
+  if(g.tpl==='lang'&&g.examDate){const ed=parseJ(g.examDate);if(ed){const dd=dayDiff(td,ed);body+=`<p><span class="tag ${dd<0?'bad':dd<30?'warn':'sec'}">${dd<0?tr('g_examPast'):tr('g_countdown',{a:dg(dd),e:esc(g.exam)})}</span></p>`;}}
+  if(e0===0)body+=`<p><span class="tag ok">${tr('g_doneTag')}</span></p>`;
+  else{body+=`<div class="eta"><div><span class="muted sm">${tr('g_now',{a:money(g.monthly||0)})}</span><b>${etaLabel(e0,+g.monthly||0)}</b></div><div><span class="muted sm">${tr('g_with',{a:money(whatIf)})}</span><b class="okc">${etaLabel(e1,(+g.monthly||0)+whatIf)}</b></div></div>`;
+    if(e0&&e0!==Infinity&&e1!=null&&e1<e0)body+=`<p class="okc sm">${tr('g_sooner',{a:fmtDur((e0-e1)*MONTH_D)})}</p>`;
+    if(growth(g)&&e0&&e0!==Infinity)body+=`<p class="hint">${tr('g_needEta')}: ${money(needAt(g,e0))}</p>`;
+    const dl=parseJ(goalDeadline(g)||'');if(!dl&&e0===Infinity&&need>0){const req=Math.max(0,(needAt(g,24)-saved)/24);body+=`<p class="hint">${tr('g_req24',{a:money(Math.ceil(req/1000)*1000)})}</p>`;}if(dl){const M=dayDiff(td,dl)/MONTH_D;if(M>0){const req=Math.max(0,(needAt(g,M)-saved)/M);body+=`<p class="hint">${tr('g_req',{d:dateLabel(dl),a:money(Math.ceil(req/1000)*1000)})}</p>`;if(e0===Infinity||e0>M)body+=`<p class="warnc sm">${tr('g_late',{d:dateLabel(dl)})}</p>`;}}
+    body+=`<div class="btns"><button class="btn sm pri" data-act="contrib" data-id="${g.id}">${tr('g_deposit')}</button></div>`;}
+  return `<section class="card"><div class="card-h"><h3>${GOAL_TPLS[g.tpl]||'🎯'} ${esc(g.title)}</h3><span><button class="del" data-act="editGoal" data-id="${g.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delGoal" data-id="${g.id}" aria-label="${tr('del')}">🗑</button></span></div>${body}</section>`;}
+function roadmapHTML(){const a=snowball(0),b=snowball(whatIf);if(!a.order.length)return `<p class="muted">${tr('sb_none')}</p>`;const cp=curPer(),nm=(r,id)=>perName(perAdd(cp,(r.finish[id]||r.months)-1));
+  return `<p class="hint">${tr('sb_hint',{a:money(DEB().reduce((s,d)=>s+d.monthly*remCount(d),0))})}</p><div class="tbl"><table><thead><tr><th>${tr('sb_debt')}</th><th>${tr('sb_now')}</th><th>${tr('sb_with')}</th></tr></thead><tbody>${a.order.map(o=>`<tr><td>${esc(o.title)}</td><td>${nm(a,o.id)}</td><td class="okc">${nm(b,o.id)}</td></tr>`).join('')}</tbody></table></div>
+  <div class="eta"><div><span class="muted sm">${tr('sb_free')}</span><b>${tr('sb_months',{a:dg(a.months)})}</b></div><div><span class="muted sm">${tr('g_with',{a:money(whatIf)})}</span><b class="okc">${tr('sb_months',{a:dg(b.months)})}${a.months>b.months?tr('sb_earlier',{a:dg(a.months-b.months)}):''}</b></div></div>`;}
+function goalsListHTML(){let h=GOA().map(goalCard).join('');if(DEB().some(d=>remCount(d)>0))h+=`<section class="card"><h3>${tr('sb_title')}</h3>${roadmapHTML()}</section>`;return h||`<section class="card">${empty(tr('noGoals'))}</section>`;}
+V.goals=()=>{const pot=potentialSavings();if(whatIf===null)whatIf=pot.total;const mx=Math.max(pot.total*2,20000000);if(whatIf>mx)whatIf=mx;
+  return `<section class="card"><h2>${tr('newGoal')}</h2><div class="tpls">${Object.keys(GOAL_TPLS).map(k=>`<button class="tpl" data-act="newGoal" data-id="${k}"><b>${GOAL_TPLS[k]} ${tr('tpl_'+k)}</b><span>${tr('tpld_'+k)}</span></button>`).join('')}</div></section>
+  <section class="card"><h2>${tr('wi_title')}</h2><label class="fld"><span>${tr('wi_lbl')}: <b id="wiVal">${money(whatIf)}</b></span><input type="range" name="whatif" min="0" max="${mx}" step="50000" value="${whatIf}"></label><p class="hint">${tr('wi_sugg',{a:money(pot.total)})} <button class="link" data-act="wiPot">${tr('wi_use')}</button></p></section>
+  <div id="goalsList">${goalsListHTML()}</div>`;};
+
+/* ---- reports ---- */
+V.reports=()=>{const c=calc(viewPer),dn=donutFor(c);
+  return `<section class="card">${perNav()}<div class="btns"><button class="btn secb" data-act="print">${tr('printBtn')}</button><button class="btn" data-act="expCsv">${tr('bk_csv')}</button></div></section>
+  <section class="card"><h3>${tr('ch_donut')}</h3>${c.E?`<div class="donut-wrap">${dn.svg}<div>${legendHTML(dn.rows,c.E)}<div class="legend"><span><i style="background:#0F766E"></i>${tr('ess')} ${pct(c.Ess/c.E)}</span><span><i style="background:#F59E0B"></i>${tr('noness')} ${pct(c.NonEss/c.E)}</span></div><p class="hint">${tr('ch_donutHint')}</p></div></div>`:empty(tr('noData'))}</section>
+  <section class="card"><h3>${tr('ch_line')}</h3>${lineSVG(c,tr('ch_line'))}<div class="legend"><span><i style="background:var(--pri)"></i>${tr('ch_actual')}</span><span><i style="background:var(--sec)"></i>${tr('ch_pace')}</span>${c.isCur?`<span><i style="background:var(--warn)"></i>${tr('ch_proj')}</span>`:''}</div></section>
+  <section class="card"><h3>${tr('ch_bars')}</h3>${barsSVG(monthsSeries(6),[{l:tr('ch_inc'),c:'#0D9488'},{l:tr('ch_inst'),c:'#6366F1'},{l:tr('ch_sav'),c:'#F59E0B'}],tr('ch_bars'))}<div class="legend"><span><i style="background:#0D9488"></i>${tr('ch_inc')}</span><span><i style="background:#6366F1"></i>${tr('ch_inst')}</span><span><i style="background:#F59E0B"></i>${tr('ch_sav')}</span></div></section>`;};
+
+/* ---- advisor ---- */
+V.advisor=()=>{const c=calc(),pot=potentialSavings(),st=S.settings;
+  return insights(c).map(insHTML).join('')+`<section class="card"><h2>${tr('subs_title')}</h2><p class="muted sm">${tr('subs_hint')}</p>
+  ${pot.list.length?pot.list.map(g=>`<div class="sub-card"><div class="bar-h"><b>${g.i} ${esc(g.title)}</b><span class="num">${tr('subs_times',{a:money(g.total),b:dg(g.count)})}</span></div><p>${g.alt}</p><p>${tr('subs_save',{a:`<b>${money(g.save)}</b>`})}</p><ul class="impact">${impacts(g.save).map(x=>`<li>🚀 ${x}</li>`).join('')}</ul></div>`).join('')+`<div class="total-save">${tr('subs_total',{a:`<b>${money(pot.total)}</b>`})}<ul class="impact">${impacts(pot.total).map(x=>`<li>🚀 ${x}</li>`).join('')}</ul><div class="btns"><button class="btn sm" data-act="applyPot">${tr('subs_see')}</button></div></div>`:empty(tr('subs_empty'))}</section>
+  <section class="card"><h3>${tr('how')}</h3><ol class="alloc"><li><b>${tr('r_inc')}</b><span>${money(c.I)}</span></li><li><b>${tr('r_lock')}</b><span>${money(c.L)}</span></li><li><b>${tr('r_net')}</b><span>${money(c.N)}</span></li><li><b>${tr('r_split')} ${st.model==='zero'?'':'('+dg(st.needs+'/'+st.wants+'/'+st.save)+')'}</b><span>${num(c.needs)} / ${num(c.wants)} / ${num(c.save)}</span></li><li><b>${tr('r_left')}</b><span>${money(c.R)}</span></li><li><b>${tr('r_daily',{a:dg(c.remDays)})}</b><span>${money(c.safeDaily)}</span></li></ol></section>`;};
+
+/* ---- settings ---- */
+function notifControl(){if(!('Notification' in window))return `<p class="hint">${tr('notifNA')}</p>`;const p=Notification.permission;
+  return `<div class="btns">${p==='granted'?`<span class="tag ok">🔔 ${tr('notifOn')}</span>`:p==='denied'?`<span class="tag bad">${tr('notifDenied')}</span>`:`<button class="btn sm" data-act="notif">${tr('notifEnable')}</button>`}</div><p class="hint">${tr('notifNote')}</p>`;}
+const FB_RULES=`{
+  "rules": {
+    "vaults": { "$k": { ".read": true, ".write": true } },
+    "users": { "$uid": {
+      ".read":  "auth != null && auth.uid === $uid",
+      ".write": "auth != null && auth.uid === $uid" } }
+  }
+}`;
+function syncSection(){if(SC.enabled){const last=META.lastSync?new Date(META.lastSync):null;const lj=last?dateLabel(dToJ(last))+' '+dg(pad(last.getHours())+':'+pad(last.getMinutes())):tr('sy_never');
+    return `<p><span class="tag ok">${tr('sy_on',{a:SC.provider==='firebase'?'Firebase'+(SC.mode==='email'?' · '+esc(SC.email):''):esc(SC.restUrl)})}</span></p><p class="hint">${tr('sy_last',{a:lj})}${syncState.err?' · '+esc(syncState.err):''}</p><div class="btns"><button class="btn pri" data-act="syncNow">${tr('sy_now')}</button><button class="btn" data-act="syncOff">${tr('sy_disc')}</button></div>`;}
+  return `<p class="hint">${tr('sy_intro')}</p><form data-form="sync" class="form" autocomplete="off">
+  <div class="row2"><label class="fld"><span>${tr('sy_provider')}</span><select name="provider"><option value="firebase">${tr('sy_fb')}</option><option value="rest">${tr('sy_rest')}</option></select></label><label class="fld"><span>${tr('sy_mode')}</span><select name="mode"><option value="key">${tr('sy_modeKey')}</option><option value="email">${tr('sy_modeEmail')}</option></select></label></div>
+  <label class="fld only-fb"><span>${tr('sy_db')}</span><input name="dbUrl" dir="ltr" placeholder="https://your-app-default-rtdb.firebaseio.com"></label>
+  <label class="fld only-rest"><span>${tr('sy_restUrl')}</span><input name="restUrl" dir="ltr" placeholder="https://example.com/api/vault"></label>
+  <label class="fld only-rest"><span>${tr('sy_restTok')}</span><input name="restToken" dir="ltr"></label>
+  <label class="fld only-email only-fb"><span>${tr('sy_api')}</span><input name="apiKey" dir="ltr"></label>
+  <label class="fld only-email only-fb"><span>${tr('sy_email')}</span><input name="email" type="email" dir="ltr"></label>
+  <label class="fld only-email only-fb"><span>${tr('sy_pass')}</span><input name="password" type="password" dir="ltr"></label>
+  <div class="fld only-key"><span>${tr('sy_key')}</span><div class="row"><input name="syncKey" class="keybox" dir="ltr"><button type="button" class="btn sm" data-act="genKey">${tr('sy_gen')}</button></div></div>
+  <button class="btn pri wide">${tr('sy_connect')}</button></form>
+  <details><summary>${tr('sy_rules')}</summary><pre>${esc(FB_RULES)}</pre></details><p class="hint">${tr('sy_note')}</p>`;}
+function installHTML(){if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)return `<p>${tr('in_done')}</p>`;
+  return `${deferredPrompt?`<div class="btns"><button class="btn pri" data-act="install">${tr('in_btn')}</button></div>`:''}<ul class="steps"><li>${tr('in_android')}</li><li>${tr('in_ios')}</li><li>${tr('in_win')}</li></ul>${location.protocol==='file:'?`<p class="hint">${tr('in_file')}</p>`:''}`;}
+V.settings=()=>{const st=S.settings;const seg=(name,opts,cur)=>`<div class="seg">${opts.map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}" ${v===cur?'checked':''} data-act="${name}Pick" data-id="${v}"><span>${l}</span></label>`).join('')}</div>`;
+  return `<section class="card"><h2>${tr('set_ui')}</h2><div class="row2"><div class="fld"><span>${tr('set_lang')}</span>${seg('uilang',[['fa','فارسی'],['en','English']],UI.lang)}</div><div class="fld"><span>${tr('set_theme')}</span>${seg('uitheme',[['system',tr('th_sys')],['light',tr('th_l')],['dark',tr('th_d')]],UI.theme)}</div></div></section>
+  <section class="card" id="syncCard"><h2>☁️ ${tr('set_sync')}</h2>${syncSection()}</section>
+  <section class="card"><h2>${tr('set_budget')}</h2><form data-form="settings" class="form" autocomplete="off">
+   <div class="seg"><label><input type="radio" name="model" value="503020" ${st.model!=='zero'?'checked':''}><span>${tr('m_pctL')}</span></label><label><input type="radio" name="model" value="zero" ${st.model==='zero'?'checked':''}><span>${tr('m_zeroL')}</span></label></div>
+   <div class="m503"><p class="hint">${tr('m_pctH')}</p><div class="row3"><label class="fld"><span>${tr('m_needs')}</span><input name="needs" inputmode="numeric" value="${dg(st.needs)}"></label><label class="fld"><span>${tr('m_wants')}</span><input name="wants" inputmode="numeric" value="${dg(st.wants)}"></label><label class="fld"><span>${tr('m_save')}</span><input name="save" inputmode="numeric" value="${dg(st.save)}"></label></div></div>
+   <div class="mzero"><p class="hint">${tr('m_zeroH')}</p><div class="row2"><label class="fld"><span>${tr('m_zNeeds')}</span><input name="zbNeeds" class="amt" inputmode="numeric" value="${amtVal(st.zbNeeds)}"></label><label class="fld"><span>${tr('m_zSave')}</span><input name="zbSave" class="amt" inputmode="numeric" value="${amtVal(st.zbSave)}"></label></div></div>
+   <div class="row2"><label class="fld"><span>${tr('m_opening')}</span><input name="opening" class="amt" inputmode="numeric" value="${amtVal(st.opening)}"></label><label class="fld"><span>${tr('m_alert')}</span><input name="alertDays" inputmode="numeric" value="${dg(st.alertDays)}"></label></div>
+   <button class="btn pri wide">${tr('m_saveBtn')}</button></form></section>
+  <section class="card"><h2>🔔 ${tr('set_notif')}</h2>${notifControl()}</section>
+  <section class="card"><h2>${tr('set_backup')}</h2><div class="btns"><button class="btn" data-act="expJson">${tr('bk_json')}</button><button class="btn" data-act="shareJson">${tr('bk_share')}</button><label class="btn">${tr('bk_imp')}<input type="file" id="impJson" accept=".json,application/json" hidden></label></div>
+   <div class="btns"><button class="btn" data-act="expCsv">${tr('bk_csv')}</button><label class="btn">${tr('bk_impCsv')}<input type="file" id="impCsv" accept=".csv,text/csv" hidden></label><button class="btn secb" data-act="print">${tr('printBtn')}</button></div><p class="hint">${tr('bk_hint')}</p></section>
+  <section class="card"><h2>${tr('set_install')}</h2>${installHTML()}</section>
+  <section class="card"><h2>${tr('set_reset')}</h2><p class="hint">${tr('rs_hint')}</p><button class="btn bad" data-act="reset">${tr('rs_btn')}</button></section>`;};
+
+/* ---- render ---- */
+const TABS=['dash','expenses','income','debts','goals','reports','advisor','settings'];
+const ICONS={dash:'📊',expenses:'🧾',income:'💼',debts:'📅',goals:'🎯',reports:'📈',advisor:'🧠',settings:'⚙️'};
+function applyChrome(){const r=document.documentElement;r.lang=UI.lang;r.dir=FA_LANG()?'rtl':'ltr';if(UI.theme==='system')r.removeAttribute('data-theme');else r.setAttribute('data-theme',UI.theme);
+  document.title=tr('app');
+  $('#nav').innerHTML=`<div class="brand"><span class="logo">◎</span>${tr('app')}</div>`+TABS.map(k=>`<button data-act="tab" data-id="${k}" class="${k===tab?'on':''} ${k==='settings'?'wide':''}"><span class="i">${ICONS[k]}</span>${tr('tab_'+k)}</button>`).join('');
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.id===UI.lang));
+  const th={system:['🖥️','th_system'],light:['☀️','th_light'],dark:['🌙','th_dark']}[UI.theme];$('#themeBtn').textContent=th[0];$('#themeBtn').setAttribute('aria-label',tr(th[1]));$('#themeBtn').title=tr(th[1]);
+  $('#fab').setAttribute('aria-label',tr('quickExp'));$('#gearBtn').setAttribute('aria-label',tr('tab_settings'));paintSync();}
+function render(){applyChrome();const td=todayJ();$('#hdrTitle').textContent=D['ttl_'+tab]?tr('ttl_'+tab):tr('tab_'+tab);$('#hdrDate').textContent=dateLabel(td);$('#view').innerHTML=V[tab]();$('#fab').hidden=tab==='settings';}
+let pendingRender=false;
+function safeRender(){const a=document.activeElement;if(a&&a.closest&&a.closest('#view form, #modal')&&a.matches('input,select,textarea')){pendingRender=true;return;}render();}
+document.addEventListener('focusout',()=>{if(pendingRender)setTimeout(()=>{if(pendingRender&&!(document.activeElement&&document.activeElement.matches('input,select,textarea'))){pendingRender=false;render();}},150);});
+function openModal(html){$('#modalBody').innerHTML=`<button class="x" data-act="close" aria-label="${tr('close')}">✕</button>`+html;$('#modal').classList.add('open');const i=$('#modalBody').querySelector('input.amt');if(i&&!i.value)setTimeout(()=>i.focus(),60);}
+function closeModal(){$('#modal').classList.remove('open');}
+let tt;function toast(m,l){const el=$('#toast');el.textContent=m;el.className='show '+(l||'');clearTimeout(tt);tt=setTimeout(()=>el.className='',3200);}
+
+/* =====================================================================
+   7. PERSIAN DATE PICKER
+   ===================================================================== */
+let DP=null;
+function openDP(input){const a=parseJ(input.value)||todayJ();DP={input,y:a[0],m:a[1],sel:parseJ(input.value)};drawDP();$('#dp').classList.add('open');}
+function drawDP(){const{y,m}=DP,g=j2g(y,m,1),wd=(new Date(g[0],g[1]-1,g[2]).getDay()+1)%7,ml=mLen(y,m),td=todayJ();
+  const wk=FA_LANG()?['ش','ی','د','س','چ','پ','ج']:['Sa','Su','Mo','Tu','We','Th','Fr'];let cells='';for(let i=0;i<wd;i++)cells+='<span></span>';
+  for(let d=1;d<=ml;d++){const isT=y===td[0]&&m===td[1]&&d===td[2],isS=DP.sel&&y===DP.sel[0]&&m===DP.sel[1]&&d===DP.sel[2];cells+=`<button type="button" class="${isT?'today':''} ${isS?'sel':''}" data-act="dpPick" data-id="${d}">${dg(d)}</button>`;}
+  const prev=FA_LANG()?'›':'‹',next=FA_LANG()?'‹':'›';
+  $('#dpBody').innerHTML=`<div class="dp-h"><button type="button" data-act="dpNav" data-id="-1" aria-label="${tr('prevM')}">${prev}</button><b>${mName(m)} ${dg(y)}</b><button type="button" data-act="dpNav" data-id="1" aria-label="${tr('nextM')}">${next}</button></div><div class="dp-w">${wk.map(x=>`<span>${x}</span>`).join('')}</div><div class="dp-g">${cells}</div><div class="btns"><button type="button" class="btn sm" data-act="dpToday">${tr('today')}</button><button type="button" class="btn sm" data-act="dpClose">${tr('cancel')}</button></div>`;}
+
+/* =====================================================================
+   8. CLOUD SYNC ENGINE (encrypted, last-write-wins per record)
+   ===================================================================== */
+let SC=loadJSON('dk2_sync',{enabled:false});
+const saveSC=()=>saveJSON('dk2_sync',SC);
+const syncState={status:'local',err:''};
+function paintSync(){const st=!SC.enabled?'local':syncState.status;const map={local:['','s_local'],offline:['off','s_off'],syncing:['ing','s_ing'],synced:['ok','s_ok'],error:['err','s_err']}[st];const p=$('#syncPill');p.className='pill '+map[0];$('#syncTxt').textContent=tr(map[1]);p.title=syncState.err||'';}
+function setSync(s,err){syncState.status=s;syncState.err=err||'';paintSync();}
+function b64e(buf){const a=new Uint8Array(buf);let s='';for(let i=0;i<a.length;i+=0x8000)s+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000));return btoa(s);}
+const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const enc8=s=>new TextEncoder().encode(s);
+async function sha(s){const h=await crypto.subtle.digest('SHA-256',enc8(s));return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,40);}
+async function deriveKey(pass,salt){const base=await crypto.subtle.importKey('raw',enc8(pass),'PBKDF2',false,['deriveBits']);return b64e(await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc8(salt),iterations:150000,hash:'SHA-256'},base,256));}
+const aesKey=()=>crypto.subtle.importKey('raw',b64d(SC.keyB64),'AES-GCM',false,['encrypt','decrypt']);
+async function seal(obj){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},await aesKey(),enc8(JSON.stringify(obj)));return{v:2,iv:b64e(iv),ct:b64e(ct),at:Date.now(),dev:META.deviceId};}
+async function open_(env){if(!env||!env.ct)return null;try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(env.iv)},await aesKey(),b64d(env.ct));return JSON.parse(new TextDecoder().decode(pt));}catch(e){throw new Error(tr('sy_wrongKey'));}}
+/* Firebase Auth (REST) */
+async function fbCall(ep,body,form){const r=await fetch(`https://${ep.startsWith('token')?'securetoken':'identitytoolkit'}.googleapis.com/v1/${ep}?key=${encodeURIComponent(SC.apiKey)}`,{method:'POST',headers:{'Content-Type':form?'application/x-www-form-urlencoded':'application/json'},body:form?body:JSON.stringify(body)});let j={};try{j=await r.json();}catch(e){}return{ok:r.ok,j};}
+async function fbSignIn(email,pw){const b={email,password:pw,returnSecureToken:true};let x=await fbCall('accounts:signInWithPassword',b);
+  if(!x.ok){const msg=(x.j.error&&x.j.error.message)||'';if(/EMAIL_NOT_FOUND|INVALID_LOGIN_CREDENTIALS/.test(msg)){const y=await fbCall('accounts:signUp',b);if(y.ok)x=y;else throw new Error(/EMAIL_EXISTS/.test((y.j.error||{}).message||'')?tr('sy_wrongPass'):tr('sy_authErr')+': '+((y.j.error||{}).message||''));}else throw new Error(tr('sy_authErr')+': '+msg);}
+  return{uid:x.j.localId,idToken:x.j.idToken,refreshToken:x.j.refreshToken,exp:Date.now()+(+x.j.expiresIn||3600)*1000};}
+async function fbToken(){const a=SC.auth;if(Date.now()<a.exp-60000)return a.idToken;const x=await fbCall('token','grant_type=refresh_token&refresh_token='+encodeURIComponent(a.refreshToken),true);if(!x.ok)throw new Error(tr('sy_authErr'));Object.assign(a,{idToken:x.j.id_token,refreshToken:x.j.refresh_token,exp:Date.now()+(+x.j.expires_in)*1000});saveSC();return a.idToken;}
+/* Adapter: Firebase RTDB REST or a generic REST endpoint (GET/PUT JSON) */
+async function remoteURL(){if(SC.provider==='firebase'){const base=SC.dbUrl.replace(/\/+$/,'');return SC.mode==='email'?`${base}/users/${SC.auth.uid}/vault.json?auth=${encodeURIComponent(await fbToken())}`:`${base}/vaults/${SC.keyHash}.json`;}return `${SC.restUrl.replace(/\/+$/,'')}/${SC.keyHash}`;}
+const restHdr=()=>SC.provider==='rest'&&SC.restToken?{Authorization:'Bearer '+SC.restToken}:{};
+async function remoteGet(){const r=await fetch(await remoteURL(),{headers:restHdr(),cache:'no-store'});if(r.status===404)return null;if(!r.ok)throw new Error('HTTP '+r.status);const x=await r.text();return x&&x!=='null'?JSON.parse(x):null;}
+async function remotePut(o){const r=await fetch(await remoteURL(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},restHdr()),body:JSON.stringify(o)});if(!r.ok)throw new Error('HTTP '+r.status);}
+/* Merge: newest `u` wins per record; deletions are tombstones */
+const COLLS=['incomes','expenses','debts','goals'];
+function mergeColl(a,b){const m=new Map();[...(a||[]),...(b||[])].forEach(r=>{if(!r||!r.id)return;const x=m.get(r.id);if(!x||(r.u||0)>(x.u||0))m.set(r.id,r);});const cut=Date.now()-180*864e5;return [...m.values()].filter(r=>!(r.del&&r.u<cut)).sort((x,y)=>x.id<y.id?-1:1);}
+function mergeState(l,r){const o={v:2,settings:((r.settings||{}).u||0)>((l.settings||{}).u||0)?r.settings:l.settings};COLLS.forEach(k=>o[k]=mergeColl(l[k],r[k]));return o;}
+const canon=s=>JSON.stringify({settings:s.settings,incomes:mergeColl(s.incomes,[]),expenses:mergeColl(s.expenses,[]),debts:mergeColl(s.debts,[]),goals:mergeColl(s.goals,[])});
+let syncing=false,again=false,syncTimer=null;
+function scheduleSync(){if(!SC.enabled)return;clearTimeout(syncTimer);syncTimer=setTimeout(syncNow,1500);}
+async function syncNow(){if(!SC.enabled){setSync('local');return;}if(!navigator.onLine){setSync('offline');return;}if(syncing){again=true;return;}
+  syncing=true;setSync('syncing');
+  try{const remote=await open_(await remoteGet());const merged=remote?mergeState(S,normalize(remote,true)):S;const mc=canon(merged);
+    if(mc!==canon(S)){S=merged;saveJSON(KEY,S);safeRender();}
+    if(!remote||mc!==canon(remote))await remotePut(await seal(JSON.parse(mc)));
+    META.lastSync=Date.now();saveJSON('dk2_meta',META);setSync('synced');if(tab==='settings')safeRender();}
+  catch(e){setSync(navigator.onLine?'error':'offline',e.message||String(e));}
+  finally{syncing=false;if(again){again=false;syncNow();}}}
+async function connectSync(f){const E=f.elements,v=n=>(E[n]&&E[n].value||'').trim();
+  if(!(window.crypto&&crypto.subtle))return toast(tr('sy_needHttps'),'bad');
+  const cfg={enabled:true,provider:v('provider'),mode:v('provider')==='rest'?'key':v('mode'),dbUrl:v('dbUrl'),apiKey:v('apiKey'),email:v('email').toLowerCase(),restUrl:v('restUrl'),restToken:v('restToken')};
+  if((cfg.provider==='firebase'&&!/^https:\/\//.test(cfg.dbUrl))||(cfg.provider==='rest'&&!/^https?:\/\//.test(cfg.restUrl)))return toast(tr('sy_fill'),'bad');
+  setSync('syncing');
+  try{if(cfg.mode==='email'){if(!cfg.apiKey||!cfg.email||!v('password'))throw new Error(tr('sy_fill'));SC=Object.assign({},cfg,{enabled:false});cfg.auth=await fbSignIn(cfg.email,v('password'));cfg.keyHash=cfg.auth.uid;cfg.keyB64=await deriveKey(v('password'),'dk2|'+cfg.email);}
+    else{const k=v('syncKey');if(k.replace(/\W/g,'').length<16)throw new Error(tr('sy_keyShort'));cfg.keyHash=await sha('dk2-vault|'+k);cfg.keyB64=await deriveKey(k,'dk2|'+cfg.keyHash);}
+    SC=cfg;saveSC();await syncNow();if(syncState.status==='error'){const m=syncState.err;SC={enabled:false};saveSC();setSync('local');render();return toast(m,'bad');}
+    toast(tr('sy_connected'));render();}
+  catch(e){SC={enabled:false};saveSC();setSync('local');toast(e.message||String(e),'bad');}}
+function genKey(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(24));let s='';r.forEach((b,i)=>{s+=a[b%a.length];if(i%4===3&&i<23)s+='-';});return s;}
+
+/* =====================================================================
+   9. NOTIFICATIONS
+   ===================================================================== */
+async function notifyDue(){if(!('Notification' in window)||Notification.permission!=='granted')return;const td=jS(todayJ());const al=debtAlerts();let changed=false;
+  for(const a of al){const k=a.d.id+'|'+td;if(META.notified[k])continue;META.notified[k]=1;changed=true;const body=a.txt.replace(/&[^;]+;/g,'');
+    try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.showNotification(tr('nTitle'),{body,tag:k,icon:ICON192,badge:ICON192,lang:UI.lang,dir:FA_LANG()?'rtl':'ltr'});else new Notification(tr('nTitle'),{body,tag:k,icon:ICON192});}catch(e){}}
+  if(changed){Object.keys(META.notified).forEach(k=>{if(!k.endsWith(td))delete META.notified[k];});saveJSON('dk2_meta',META);}}
+
+/* =====================================================================
+   10. FILES: CSV / JSON / PRINT
+   ===================================================================== */
+function download(name,text,mime){const blob=new Blob([text],{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}
+const stamp=()=>{const td=todayJ();return `${td[0]}-${pad(td[1])}-${pad(td[2])}`;};
+const csvCell=v=>{const s=String(v==null?'':v);return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+function toCSV(){const rows=[['type','date','amount','category','essential','description','ref']];
+  INC().forEach(x=>rows.push(['income-'+x.type,x.date,x.amount,'','',x.desc,'']));
+  EXP().forEach(x=>rows.push(['expense',x.date,x.amount,x.cat,x.ess?'1':'0',x.desc,'']));
+  DEB().forEach(d=>d.payments.forEach(p=>rows.push(['debt-payment',p.on,p.amount,'','',d.title,p.period])));
+  GOA().forEach(g=>{rows.push(['goal',jS(todayJ()),Math.round(goalNeedNow(g)),g.tpl,'',g.title,'saved:'+goalSaved(g)]);g.contributions.forEach(c=>rows.push(['goal-contribution',c.date,c.amount,'','',g.title,'']));});
+  return '\uFEFF'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');}
+function parseCSV(t){const rows=[];let row=[],cell='',q=false;t=t.replace(/^\uFEFF/,'');for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=c;}else if(c==='"')q=true;else if(c===','){row.push(cell);cell='';}else if(c==='\n'){row.push(cell);rows.push(row);row=[];cell='';}else if(c!=='\r')cell+=c;}if(cell||row.length){row.push(cell);rows.push(row);}return rows;}
+function readFile(file,cb){if(!file)return;const r=new FileReader();r.onload=()=>cb(String(r.result));r.onerror=()=>toast(tr('readErr'),'bad');r.readAsText(file,'utf-8');}
+function importJSON(file){readFile(file,txt=>{let o;try{o=JSON.parse(txt.replace(/^\uFEFF/,''));}catch(e){return toast(tr('bk_badJson'),'bad');}if(!o||!Array.isArray(o.incomes)||!Array.isArray(o.expenses))return toast(tr('bk_bad'),'bad');if(!confirm(tr('bk_mergeQ')))return;S=mergeState(S,normalize(o,true));persist();toast(tr('bk_merged'));render();});}
+function importCSV(file){readFile(file,txt=>{const rows=parseCSV(txt);if(!rows.length||rows[0][0]!=='type')return toast(tr('bk_csvBad'),'bad');const key=(a,b,c,d)=>[a,b,c,d].join('|');
+  const seen=new Set([...INC().map(x=>key('income-'+x.type,x.date,x.amount,x.desc)),...EXP().map(x=>key('expense',x.date,x.amount,x.desc))]);let n=0;
+  rows.slice(1).forEach(r=>{const ty=r[0],dj=parseJ(r[1]||''),amount=parseAmount(r[2]),desc=r[5]||'';if(!dj||!(amount>0))return;const ds=jS(dj),k=key(ty,ds,amount,desc);if(seen.has(k))return;
+    if(ty==='income-salary'||ty==='income-extra')S.incomes.push(touch({id:uid(),ts:Date.now()+n,type:ty.slice(7),amount,date:ds,desc}));
+    else if(ty==='expense')S.expenses.push(touch({id:uid(),ts:Date.now()+n,amount,cat:CATS[r[3]]?r[3]:'misc',ess:r[4]==='1',date:ds,desc}));else return;seen.add(k);n++;});
+  persist();toast(tr('bk_rows',{a:dg(n)}));render();});}
+function printReport(){const c=calc(viewPer),dn=donutFor(c),cp=curPer(),td=todayJ();
+  const kp=(l,v)=>`<div><small>${l}</small><b>${v}</b></div>`;
+  const inst=DEB().map(d=>{const rc=remCount(d);return `<tr><td>${esc(d.title)}</td><td>${money(d.monthly)}</td><td>${dg(d.total-rc)}/${dg(d.total)}</td><td>${money(d.monthly*rc)}</td><td>${rc===0?tr('d_done'):paidIn(d,c.p)?tr('d_paidThis'):nextUnpaid(d)<cp?tr('d_overdue'):'—'}</td></tr>`;}).join('');
+  const goals=GOA().map(g=>{const s=goalSaved(g),n=goalNeedNow(g),e=etaMonths(g,0);return `<tr><td>${esc(g.title)}</td><td>${money(s)}</td><td>${money(n)}</td><td>${pct(n?Math.min(1,s/n):0)}</td><td>${etaLabel(e,+g.monthly||0)}</td></tr>`;}).join('');
+  const tx=[...INC().filter(x=>x.date.startsWith(c.p)).map(x=>({d:x.date,t:tr(x.type==='salary'?'salary':'extra'),c:'',s:x.desc,a:x.amount})),...EXP().filter(x=>x.date.startsWith(c.p)).map(x=>({d:x.date,t:tr(x.ess?'ess':'noness'),c:cn(x.cat),s:x.desc,a:-x.amount})),...DEB().flatMap(d=>d.payments.filter(p=>p.on.startsWith(c.p)).map(p=>({d:p.on,t:tr('ch_inst'),c:'',s:d.title,a:-p.amount})))].sort((a,b)=>a.d<b.d?-1:1);
+  $('#print').setAttribute('dir',FA_LANG()?'rtl':'ltr');
+  $('#print').innerHTML=`<div class="ph"><div><h1>${tr('p_title')}</h1><div>${perName(c.p)}</div></div><div style="text-align:end"><b>${tr('app')}</b><div class="sm">${tr('p_gen')} ${dateLabel(td)}</div></div></div>
+   <h2>${tr('p_kpi')}</h2><div class="kpis">${kp(tr('k_inc'),money(c.I))}${kp(tr('k_lock'),money(c.L))}${kp(tr('k_spent'),money(c.E))}${kp(tr('k_left'),money(c.R))}${kp(tr('k_save'),money(c.save))}${kp(tr('k_cash'),money(cashBalance()))}</div>
+   <div class="two" style="margin-top:10px">${c.E?dn.svg:''}<div>${c.E?legendHTML(dn.rows,c.E):''}</div></div>
+   <h2>${tr('p_inst')}</h2>${inst?`<table><thead><tr><th>${tr('sb_debt')}</th><th>${tr('d_monthly')}</th><th>#</th><th>${tr('d_remSum')}</th><th>${tr('p_status')}</th></tr></thead><tbody>${inst}</tbody></table>`:'—'}
+   <h2>${tr('p_goals')}</h2>${goals?`<table><thead><tr><th>${tr('g_title')}</th><th>${tr('g_saved')}</th><th>${tr('g_target')}</th><th>%</th><th>${tr('p_eta')}</th></tr></thead><tbody>${goals}</tbody></table>`:'—'}
+   <h2>${tr('p_ledger')}</h2><table><thead><tr><th>${tr('date')}</th><th>${tr('p_type')}</th><th>${tr('category')}</th><th>${tr('desc')}</th><th>${tr('amount')}</th></tr></thead><tbody>${tx.map(x=>`<tr><td>${dg(x.d)}</td><td>${x.t}</td><td>${x.c}</td><td>${esc(x.s)}</td><td class="num" dir="ltr">${x.a<0?'−':'+'}${num(Math.abs(x.a))}</td></tr>`).join('')}</tbody></table>
+   <div class="foot">${tr('p_foot')}</div>`;
+  setTimeout(()=>window.print(),50);}
+
+/* =====================================================================
+   11. ACTIONS, FORMS & EVENTS
+   ===================================================================== */
+const findD=id=>DEB().find(x=>x.id===id),findG=id=>GOA().find(x=>x.id===id);
+function readDate(f,name){const v=f.elements[name||'date'].value;if(!v.trim()&&name)return '';const dj=parseJ(v);if(!dj){toast(tr('badDate'),'bad');return null;}return jS(dj);}
+const ACT={
+ tab:id=>{tab=id;viewPer=curPer();closeModal();render();window.scrollTo(0,0);},
+ lang:id=>{UI.lang=id;saveJSON('dk2_ui',UI);setupManifest();render();},
+ theme:()=>{UI.theme={system:'light',light:'dark',dark:'system'}[UI.theme];saveJSON('dk2_ui',UI);applyChrome();},
+ uilangPick:id=>ACT.lang(id),uithemePick:id=>{UI.theme=id;saveJSON('dk2_ui',UI);applyChrome();},
+ fab:()=>openModal(`<h2>${tr('quickExp')}</h2>`+expenseForm()),close:closeModal,
+ setDate:(n,b)=>{b.closest('form').elements.date.value=dg(jS(daysAgoJ(+n)));},
+ dp:(n,b)=>openDP(b.parentElement.querySelector('input')),
+ dpNav:n=>{DP.m+=+n;if(DP.m>12){DP.m=1;DP.y++;}if(DP.m<1){DP.m=12;DP.y--;}drawDP();},
+ dpPick:d=>{DP.input.value=dg(jS([DP.y,DP.m,+d]));$('#dp').classList.remove('open');},
+ dpToday:()=>{DP.input.value=dg(jS(todayJ()));$('#dp').classList.remove('open');},
+ dpClose:()=>$('#dp').classList.remove('open'),
+ perPrev:()=>{viewPer=perAdd(viewPer,-1);render();},perNext:()=>{if(viewPer<curPer()){viewPer=perAdd(viewPer,1);render();}},
+ pay:id=>{const d=findD(id);if(!d||remCount(d)<=0)return;d.payments.push({period:nextUnpaid(d),on:jS(todayJ()),amount:d.monthly});touch(d);persist();const rc=remCount(d);toast(rc?tr('payOk',{t:d.title,n:dg(rc)}):tr('payDone',{t:d.title}));render();},
+ undo:id=>{const d=findD(id);if(d&&d.payments.length&&confirm(tr('undoQ'))){d.payments.pop();touch(d);persist();render();}},
+ delExp:id=>{if(confirm(tr('confirmDel'))){tombstone('expenses',id);persist();render();}},
+ delInc:id=>{if(confirm(tr('confirmDel'))){tombstone('incomes',id);persist();render();}},
+ delDebt:id=>{if(confirm(tr('delDebtQ'))){tombstone('debts',id);persist();render();}},
+ delGoal:id=>{if(confirm(tr('delGoalQ'))){tombstone('goals',id);persist();render();}},
+ editExp:id=>{const x=EXP().find(e=>e.id===id);if(x)openModal(`<h2>${tr('editExp')}</h2>`+expenseForm(x));},
+ editInc:id=>{const x=INC().find(e=>e.id===id);if(x)openModal(`<h2>${tr('editInc')}</h2>`+incomeForm(x));},
+ newGoal:tpl=>openModal(`<h2>${GOAL_TPLS[tpl]} ${tr('tpl_'+tpl)}</h2>`+goalForm(tpl)),
+ editGoal:id=>{const g=findG(id);if(g)openModal(`<h2>${GOAL_TPLS[g.tpl]} ${esc(g.title)}</h2>`+goalForm(g.tpl,g));},
+ addStage:()=>{$('#stageRows').insertAdjacentHTML('beforeend',stageRow({id:uid()}));},
+ rmStage:(n,b)=>b.closest('.stage').remove(),
+ stage:(ids,b)=>{const[gid,sid]=ids.split('|'),g=findG(gid);if(!g)return;const s=g.stages.find(x=>x.id===sid);if(s){s.done=b.checked;touch(g);persist();}},
+ contrib:id=>{const g=findG(id);if(g)openModal(`<h2>${tr('g_depTitle',{t:esc(g.title)})}</h2><form data-form="contrib" class="form" autocomplete="off"><input type="hidden" name="gid" value="${g.id}"><label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required></label>${dateField()}<button class="btn pri wide">${tr('g_depSave')}</button></form>`);},
+ wiPot:()=>{whatIf=potentialSavings().total;render();},applyPot:()=>{whatIf=potentialSavings().total;tab='goals';render();window.scrollTo(0,0);},
+ print:()=>printReport(),
+ expJson:()=>{download(`dakhlokharj-${stamp()}.json`,JSON.stringify(S),'application/json');META.lastBackup=Date.now();saveJSON('dk2_meta',META);toast(tr('bk_ok'));},
+ expCsv:()=>{download(`dakhlokharj-${stamp()}.csv`,toCSV(),'text/csv;charset=utf-8');toast(tr('bk_csvOk'));},
+ shareJson:async()=>{let file;try{file=new File([JSON.stringify(S)],`dakhlokharj-${stamp()}.json`,{type:'application/json'});}catch(e){}if(file&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:tr('app')});META.lastBackup=Date.now();saveJSON('dk2_meta',META);}catch(e){}}else toast(tr('bk_shareNA'),'warn');},
+ notif:async()=>{if(!('Notification' in window))return toast(tr('notifNA'),'warn');try{await Notification.requestPermission();}catch(e){}render();notifyDue();},
+ genKey:(n,b)=>{b.closest('form').elements.syncKey.value=genKey();},
+ syncNow:()=>syncNow(),syncOff:()=>{if(confirm(tr('sy_discQ'))){SC={enabled:false};saveSC();setSync('local');render();}},
+ reset:()=>{if(confirm(tr('rs_q1'))&&confirm(tr('rs_q2'))){S=blank();saveJSON(KEY,S);tab='dash';render();toast(tr('rs_ok'));}},
+ install:async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(e){}deferredPrompt=null;render();}
+};
+const FORMS={
+ expense:f=>{const E=f.elements,amount=parseAmount(E.amount.value);if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;const ck=(f.querySelector('[name=cat]:checked')||{}).value,es=(f.querySelector('[name=ess]:checked')||{}).value;if(!ck||!es)return toast(tr('pickCat'),'bad');
+   const data={amount,cat:ck,ess:es==='1',date,desc:E.desc.value.trim()};const x=E.eid.value&&EXP().find(e=>e.id===E.eid.value);if(x)Object.assign(x,data,{u:Date.now()});else S.expenses.push(touch(Object.assign({id:uid(),ts:Date.now()},data)));
+   persist();closeModal();render();const c=calc(),left=c.safeDaily-c.todaySpent;if(!x&&date===jS(todayJ()))toast(left>=0?tr('expSavedLeft',{a:money(left)}):tr('expSavedOver',{a:money(-left)}),left>=0?'':'warn');else toast(tr('saved'));},
+ income:f=>{const E=f.elements,amount=parseAmount(E.amount.value);if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;const before=calc();
+   const data={type:E.type.value,amount,date,desc:E.desc.value.trim()};const x=E.eid.value&&INC().find(e=>e.id===E.eid.value);if(x)Object.assign(x,data,{u:Date.now()});else S.incomes.push(touch(Object.assign({id:uid(),ts:Date.now()},data)));
+   persist();render();if(x){closeModal();return toast(tr('saved'));}
+   if(date.startsWith(curPer())){const a=calc(),lock=Math.min(amount,Math.max(0,before.L-before.I));
+     openModal(`<h2>${tr('incSaved')}</h2><p class="muted">${tr('allocOf',{a:money(amount)})}</p><ol class="alloc"><li><b>${tr('al_lock')}</b><span>${money(lock)}</span></li><li><b>${tr('al_needs')}</b><span>${money(a.needs-before.needs)}</span></li><li><b>${tr('al_save')}</b><span>${money(a.save-before.save)}</span></li><li><b>${tr('al_wants')}</b><span>${money(a.wants-before.wants)}</span></li></ol>
+     ${a.shortfall>0?insHTML({lvl:'bad',i:'⛔',t:tr('al_short'),x:tr('al_shortX',{a:money(a.shortfall)})}):''}<div class="mini"><span>${tr('safeFrom')}</span><b>${money(a.safeDaily)}</b></div><button class="btn pri wide" data-act="close">${tr('gotIt')}</button>`);}
+   else toast(tr('saved'));},
+ debt:f=>{const E=f.elements,title=E.title.value.trim(),monthly=parseAmount(E.monthly.value),total=parseInt(toEn(E.total.value),10),pre=parseInt(toEn(E.pre.value||'0'),10)||0,due=parseInt(toEn(E.due.value),10);
+   if(!title)return toast(tr('v_title'),'bad');if(!(monthly>0))return toast(tr('badAmount'),'bad');if(!(total>=1))return toast(tr('v_total'),'bad');if(pre<0||pre>=total)return toast(tr('v_pre'),'bad');if(!(due>=1&&due<=31))return toast(tr('v_due'),'bad');
+   S.debts.push(touch({id:uid(),title,kind:E.kind.value,monthly,total,prePaid:pre,dueDay:due,start:E.start.value,payments:[]}));persist();toast(tr('saved'));render();},
+ goal:f=>{const E=f.elements,tpl=E.tpl.value,A=n=>E[n]?parseAmount(E[n].value)||0:0,title=E.title.value.trim();if(!title)return toast(tr('v_title'),'bad');
+   const g={tpl,title,initial:A('initial'),monthly:A('monthly')};
+   if(tpl==='car'||tpl==='immig'){g.infl=parseFloat(toEn(E.infl.value))||0;const dl=readDate(f,'deadline');if(dl===null)return;g.deadline=dl;}
+   if(tpl==='immig'){g.cur=E.cur.value;g.rate=A('rate');if(!(g.rate>0))return toast(tr('v_rate'),'bad');g.stages=[...f.querySelectorAll('.stage')].map(r=>({id:r.dataset.sid,name:r.querySelector('[name=sname]').value.trim(),amt:parseAmount(r.querySelector('[name=samt]').value)||0,done:r.dataset.done==='1'})).filter(s=>s.name||s.amt);}
+   else if(tpl==='lang'){g.exam=E.exam.value;g.fee=A('fee');g.classes=A('classes');const ed=readDate(f,'examDate');if(ed===null)return;g.examDate=ed;if(!(g.fee+g.classes>0))return toast(tr('v_target'),'bad');}
+   else{g.target=A('target');if(!(g.target>0))return toast(tr('v_target'),'bad');}
+   const ex=E.gid.value&&findG(E.gid.value);if(ex)Object.assign(ex,g,{u:Date.now()});else S.goals.push(touch(Object.assign({id:uid(),contributions:[]},g)));
+   persist();closeModal();toast(tr(ex?'saved':'g_created'));render();},
+ contrib:f=>{const E=f.elements,g=findG(E.gid.value),amount=parseAmount(E.amount.value);if(!g)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;g.contributions.push({id:uid(),date,amount});touch(g);persist();closeModal();toast(tr('g_depOk'));render();},
+ settings:f=>{const E=f.elements,model=E.model.value,n=parseInt(toEn(E.needs.value),10),w=parseInt(toEn(E.wants.value),10),s=parseInt(toEn(E.save.value),10);
+   if(model==='503020'&&([n,w,s].some(x=>!(x>=0))||n+w+s!==100))return toast(tr('m_sum'),'bad');
+   Object.assign(S.settings,{model,zbNeeds:parseAmount(E.zbNeeds.value)||0,zbSave:parseAmount(E.zbSave.value)||0,opening:parseAmount(E.opening.value)||0,alertDays:Math.max(0,parseInt(toEn(E.alertDays.value),10)||0),u:Date.now()});
+   if(model==='503020')Object.assign(S.settings,{needs:n,wants:w,save:s});persist();toast(tr('m_ok'));render();},
+ sync:f=>connectSync(f)
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const fn=ACT[b.dataset.act];if(!fn)return;if(!(b.type==='checkbox'||b.type==='radio'))e.preventDefault();fn(b.dataset.id,b);});
+document.addEventListener('submit',e=>{const f=e.target;if(f.dataset&&FORMS[f.dataset.form]){e.preventDefault();FORMS[f.dataset.form](f);}});
+document.addEventListener('input',e=>{const el=e.target;
+  if(el.classList.contains('amt')){const n=parseAmount(el.value);el.value=isNaN(n)?'':dg(n.toLocaleString('en-US'));}
+  if(el.name==='whatif'){whatIf=+el.value;$('#wiVal').textContent=money(whatIf);$('#goalsList').innerHTML=goalsListHTML();}});
+document.addEventListener('change',e=>{const el=e.target;
+  if(el.name==='cat'&&el.form&&!el.form.elements.eid.value){const r=el.form.querySelector(`[name=ess][value="${cat(el.value).ess?'1':'0'}"]`);if(r)r.checked=true;}
+  if(el.id==='impJson'){importJSON(el.files[0]);el.value='';}if(el.id==='impCsv'){importCSV(el.files[0]);el.value='';}});
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+$('#dp').addEventListener('click',e=>{if(e.target.id==='dp')$('#dp').classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#dp').classList.contains('open'))$('#dp').classList.remove('open');else closeModal();}});
+let lastDay=jS(todayJ());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)return;const d=jS(todayJ());if(d!==lastDay){lastDay=d;viewPer=curPer();safeRender();}notifyDue();syncNow();});
+window.addEventListener('online',()=>syncNow());window.addEventListener('offline',()=>{if(SC.enabled)setSync('offline');});
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(tab==='settings')safeRender();});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyChrome());
+
+/* =====================================================================
+   12. BOOT: dynamic manifest + icons, service worker, timers
+   ===================================================================== */
+function makeIcon(s){const c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d'),u=s/100,g=x.createLinearGradient(0,0,s,s);g.addColorStop(0,'#0D9488');g.addColorStop(1,'#6366F1');x.fillStyle=g;x.fillRect(0,0,s,s);x.strokeStyle='#fff';x.lineWidth=7*u;x.beginPath();x.arc(50*u,50*u,26*u,0,Math.PI*2);x.stroke();x.fillStyle='#FBBF24';x.beginPath();x.arc(50*u,50*u,12*u,0,Math.PI*2);x.fill();return c.toDataURL('image/png');}
+const ICON192=makeIcon(192),ICON512=makeIcon(512);
+function setupManifest(){const base=location.href.split('#')[0].split('?')[0];const m={name:tr('app'),short_name:tr('app'),lang:UI.lang,dir:FA_LANG()?'rtl':'ltr',start_url:base,scope:base.replace(/[^/]*$/,''),display:'standalone',background_color:'#F8FAFC',theme_color:'#0D9488',icons:[{src:ICON192,sizes:'192x192',type:'image/png'},{src:ICON512,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+  $('#manifestLink').href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));$('#favLink').href=ICON192;$('#appleLink').href=ICON192;}
+setupManifest();
+render();
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+notifyDue();setInterval(notifyDue,30*60*1000);
+syncNow();setInterval(()=>{if(!document.hidden)syncNow();},60000);
+</script>
+</body>
+</html>
