@@ -296,7 +296,7 @@ table.cb td{border-bottom:0;padding:5px 4px}
     <header class="top">
       <div><div class="ttl" id="hdrTitle"></div><div class="muted sm" id="hdrDate"></div></div>
       <div class="tools">
-        <button class="pill" id="syncPill" data-act="tab" data-id="settings"><span class="dot"></span><span id="syncTxt"></span></button>
+        <button class="pill" id="syncPill" data-act="pill"><span class="dot"></span><span id="syncTxt"></span></button>
         <div class="lang" role="group" aria-label="Language"><button data-act="lang" data-id="fa">FA</button><button data-act="lang" data-id="en">EN</button></div>
         <button class="icon-btn" id="themeBtn" data-act="theme"></button>
         <button class="icon-btn gear" data-act="tab" data-id="settings" id="gearBtn">⚙️</button>
@@ -329,7 +329,7 @@ const D={
  app:['دخل‌وخرج','Dakhl-o-Kharj'],
  tab_dash:['داشبورد','Dashboard'],tab_expenses:['هزینه‌ها','Expenses'],tab_income:['درآمد','Income'],tab_debts:['اقساط','Debts'],tab_goals:['اهداف','Goals'],tab_reports:['گزارش','Reports'],tab_advisor:['مشاور','Advisor'],tab_settings:['تنظیمات','Settings'],
  ttl_debts:['اقساط و بدهی‌ها','Installments & debts'],ttl_goals:['اهداف و نقشه راه','Goals & milestones'],ttl_reports:['نمودارها و گزارش','Charts & reports'],ttl_advisor:['مشاور مالی','Financial advisor'],ttl_settings:['تنظیمات، همگام‌سازی و پشتیبان','Settings, sync & backup'],
- s_local:['فقط روی این دستگاه','Local only'],s_off:['آفلاین — ذخیره محلی','Offline – saved locally'],s_ing:['در حال همگام‌سازی…','Syncing…'],s_ok:['همگام شد','Synced online'],s_err:['خطای همگام‌سازی','Sync error'],
+ s_local:['فقط روی این دستگاه','Local only'],s_off:['آفلاین — ذخیره محلی، تلاش دوباره خودکار','Offline – saved locally, retrying'],s_ing:['در حال همگام‌سازی…','Syncing…'],s_ok:['همگام شد','Synced online'],s_err:['خطای همگام‌سازی','Sync error'],
  th_system:['تم: سیستم','Theme: system'],th_light:['تم: روشن','Theme: light'],th_dark:['تم: تیره','Theme: dark'],
  toman:['تومان','Toman'],today:['امروز','Today'],yesterday:['دیروز','Yesterday'],cancel:['انصراف','Cancel'],close:['بستن','Close'],save:['ذخیره','Save'],del:['حذف','Delete'],edit:['ویرایش','Edit'],
  prevM:['ماه قبل','Previous month'],nextM:['ماه بعد','Next month'],
@@ -397,7 +397,7 @@ const D={
  subs_empty:['هنوز هزینه غیرضروری در ۳۰ روز اخیر ثبت نشده. هزینه‌ها را با برچسب «غیرضروری» و یک توضیح کوتاه ثبت کنید.','No non-essential spending in the last 30 days. Tag expenses “Non-essential” with a short description.'],
  imp_debt:['«{t}» {a} زودتر تسویه می‌شود','“{t}” is paid off {a} sooner'],imp_goal:['«{t}»: {a} زودتر','“{t}”: {a} sooner'],imp_year:['یعنی {a} پس‌انداز در یک سال','That is {a} saved per year'],
  how:['حساب این ماه چطور انجام شد','How this month was calculated'],
- r_inc:['درآمد ماه','Month income'],r_lock:['اولویت اول: اقساط این ماه','Priority 1: this month’s installments'],r_net:['قابل تقسیم (درآمد − اقساط)','To split (income − installments)'],r_split:['ضروری / غیرضروری / پس‌انداز','Needs / wants / savings'],r_left:['مانده قابل خرج','Spendable left'],r_daily:['سقف امن روزانه (مانده ÷ {a} روز)','Safe daily (left ÷ {a} days)'],
+ r_inc:['درآمد ماه','Month income'],r_lock:['اولویت اول: اقساطی که این ماه پرداخت شده یا سررسیدش این ماه است','Priority 1: installments paid or due this month'],r_net:['قابل تقسیم (درآمد − اقساط)','To split (income − installments)'],r_split:['ضروری / غیرضروری / پس‌انداز','Needs / wants / savings'],r_left:['مانده قابل خرج','Spendable left'],r_daily:['سقف امن روزانه (مانده ÷ {a} روز)','Safe daily (left ÷ {a} days)'],
  i_noInc:['درآمد این ماه ثبت نشده','No income this month'],i_noIncX:['حقوق یا درآمد این ماه را ثبت کنید تا سهم اقساط، بودجه و سقف خرج روزانه حساب شود.','Add this month’s income to calculate installments, budget and the safe daily limit.'],
  i_short:['درآمد کمتر از اقساط است','Income is below installments'],i_shortX:['برای پوشش اقساط این ماه {a} کم دارید. قبل از هر خرج دیگری این مبلغ را تأمین کنید یا درباره تمدید سررسید با طلبکار صحبت کنید.','You are {a} short for this month’s installments. Cover this before anything else, or ask the lender to move the due date.'],
  i_dti:['{a} درآمد صرف اقساط می‌شود','{a} of income goes to installments'],i_dtiBad:['بیش از نیمی از درآمد قفل اقساط است. تا تسویه حداقل یک بدهی، هیچ قسط جدیدی قبول نکنید.','Over half your income is locked in installments. Take no new installments until one debt is finished.'],i_dtiWarn:['سهم اقساط از حد امن (حدود ۳۵٪) بالاتر است. با روش گلوله‌برفی، کوچک‌ترین بدهی را زودتر تمام کنید.','Installments are above the safe level (~35%). Use the snowball method to finish the smallest debt first.'],
@@ -451,6 +451,10 @@ const D={
  p_balance:['مانده','Balance'],p_openBal:['موجودی ابتدای ماه','Opening balance'],p_closeBal:['موجودی پایان دوره','Closing balance'],p_goalDep:['واریز به هدف','Goal deposit'],
  pl_auto:['هزینه‌های این دسته خودکار از این مبلغ کم شوند','Auto-deduct every expense in this category'],pl_autoHint:['مثلاً هر کرایه‌ای با دسته «حمل‌ونقل» ثبت کنید، از «رفت‌وآمد» کم می‌شود؛ هزینه‌های قبلی این ماه هم حساب می‌شوند. برای هزینه‌ای مثل ناخن که دسته‌اش با خرج‌های دیگر مشترک است، تیک نزنید و هنگام ثبت از کادر «مربوط به هزینه ثابت» انتخابش کنید.','E.g. every “Transport” expense is deducted from “Commute”, including earlier ones this month. For costs whose category is shared with other spending (e.g. nails), leave unticked and pick it in “Linked fixed cost”.'],
  rc_btn:['تطبیق با موجودی واقعی','Match real balance'],rc_title:['تطبیق موجودی','Match your real balance'],rc_hint:['برنامه موجودی را از تراکنش‌های ثبت‌شده حساب می‌کند: الان {a}. موجودی واقعی همه حساب‌ها و پول نقدتان را وارد کنید تا برنامه با آن یکی شود. هیچ تراکنشی تغییر نمی‌کند.','The app computes cash from recorded transactions: now {a}. Enter your real total (accounts + cash) to match. No transaction changes.'],rc_lbl:['موجودی واقعی الان (تومان)','Real balance now (Toman)'],rc_neg:['موجودی منفی است (بدهکار)','Balance is negative (overdrawn)'],rc_save:['تطبیق بده','Match'],rc_ok:['موجودی روی {a} تنظیم شد','Balance set to {a}'],
+ sy_timeout:['سرور جواب نداد (اتصال کند یا قطع)','Server did not respond (slow or blocked connection)'],sy_net:['اتصال به سرور برقرار نشد','Could not reach the server'],
+ py_for:['پرداخت قسط {a}','Payment for {a}'],py_dateHint:['تاریخ را روزی بگذارید که واقعاً پول از حسابتان رفت؛ برنامه آن پرداخت را در همان ماه حساب می‌کند.','Use the day the money actually left your account; it is counted in that month.'],py_save:['ثبت پرداخت','Save payment'],
+ py_hist:['تاریخچه پرداخت‌ها ({a})','Payment history ({a})'],py_row:['قسط {a}','Installment {a}'],py_paidOn:['پرداخت در {a}','Paid on {a}'],py_delQ:['این پرداخت حذف شود؟','Delete this payment?'],
+ nx_title:['اقساط {a}','Installments in {a}'],nx_due:['(روز {a})','(day {a})'],nx_none:['قسطی برای ماه آینده نمانده؛ همه پیش‌پرداخت شده‌اند 👏','Nothing due next month; all prepaid 👏'],nx_hint:['قسط‌هایی که از قبل پرداخت کرده‌اید در این لیست نیستند.','Installments you already prepaid are not listed.'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -727,9 +731,12 @@ function debtCard(d){const cp=curPer(),td=todayJ(),rc=remCount(d),done=d.total-r
   return `<section class="card"><div class="card-h"><h3>${esc(d.title)} <span class="tag sec">${tr('dk_'+(d.kind||'loan'))}</span></h3><span><button class="del" data-act="editDebt" data-id="${d.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delDebt" data-id="${d.id}" aria-label="${tr('del')}">🗑</button></span></div>
   <p class="muted sm">${tr('d_line',{a:money(d.monthly),b:dg(d.dueDay)})}</p>
   <div class="bar-h" style="margin-top:8px"><span>${tr('d_prog',{a:dg(done),b:dg(d.total)})}</span><span class="num">${tr('d_rem',{a:money(d.monthly*rc)})}</span></div><div class="track"><span style="width:${p}%"></span></div>
-  <div class="btns">${s}${rc>0?`<button class="btn sm pri" data-act="pay" data-id="${d.id}">${tr(np<=cp?'d_pay':'d_prepay',{a:perName(np)})}</button>`:''}${d.payments.length?`<button class="btn sm" data-act="undo" data-id="${d.id}">${tr('d_undo')}</button>`:''}</div></section>`;}
+  <div class="btns">${s}${rc>0?`<button class="btn sm pri" data-act="pay" data-id="${d.id}">${tr(np<=cp?'d_pay':'d_prepay',{a:perName(np)})}</button>`:''}</div>${d.payments.length?`<details><summary class="sm">${tr('py_hist',{a:dg(d.payments.length)})}</summary><ul class="list">${d.payments.map((q,i)=>`<li><div class="grow"><div>${tr('py_row',{a:perName(q.period)})}</div><div class="muted sm">${tr('py_paidOn',{a:dateLabel(q.on)})}</div></div><b class="num">${num(q.amount)}</b><button class="del" data-act="editPay" data-id="${d.id}|${i}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delPay" data-id="${d.id}|${i}" aria-label="${tr('del')}">🗑</button></li>`).join('')}</ul></details>`:''}</section>`;}
 V.debts=()=>{const act=DEB().filter(d=>remCount(d)>0);return alertsHTML(debtAlerts())+`<section class="card"><div class="ledger">${led(tr('d_monthlySum'),money(sum(act,'monthly')))}${led(tr('d_remSum'),money(act.reduce((s,d)=>s+d.monthly*remCount(d),0)))}${led(tr('d_active'),dg(act.length))}</div>${notifControl()}</section>
-  ${DEB().map(debtCard).join('')}<section class="card"><h2>${tr('d_add')}</h2>${debtForm()}</section>`;};
+  ${nextMonthHTML()}${DEB().map(debtCard).join('')}<section class="card"><h2>${tr('d_add')}</h2>${debtForm()}</section>`;};
+function nextMonthDue(){const cp=curPer(),nx=perAdd(cp,1);return DEB().filter(d=>remCount(d)>0&&d.start<=nx&&!paidIn(d,nx)&&remCount(d)>unpaidDueCount(d,cp));}
+function nextMonthHTML(){const nx=perAdd(curPer(),1),list=nextMonthDue();if(!DEB().length)return '';const tot=sum(list,'monthly');
+  return `<section class="card"><h3>📆 ${tr('nx_title',{a:perName(nx)})}</h3>${list.length?`<ol class="alloc">${list.map(d=>`<li><b>${esc(d.title)} <span class="muted sm">${tr('nx_due',{a:dg(Math.min(d.dueDay,30))})}</span></b><span>${money(d.monthly)}</span></li>`).join('')}<li><b>${tr('total')}</b><span><b>${money(tot)}</b></span></li></ol>`:empty(tr('nx_none'))}<p class="hint">${tr('nx_hint')}</p></section>`;}
 
 /* ---- goals ---- */
 function goalForm(tpl,g){g=g||{};const T=x=>esc(x==null?'':x),A=n=>amtVal(n);const ttl=g.title||tr('tpl_'+tpl);
@@ -874,7 +881,7 @@ function drawDP(){const{y,m}=DP,g=j2g(y,m,1),wd=(new Date(g[0],g[1]-1,g[2]).getD
 let SC=loadJSON('dk2_sync',{enabled:false});
 const saveSC=()=>saveJSON('dk2_sync',SC);
 const syncState={status:'local',err:''};
-function paintSync(){const st=!SC.enabled?'local':syncState.status;const map={local:['','s_local'],offline:['off','s_off'],syncing:['ing','s_ing'],synced:['ok','s_ok'],error:['err','s_err']}[st];const p=$('#syncPill');p.className='pill '+map[0];$('#syncTxt').textContent=tr(map[1]);p.title=syncState.err||'';}
+function paintSync(){const st=!SC.enabled?'local':syncState.status;const map={local:['','s_local'],offline:['off','s_off'],syncing:['ing','s_ing'],synced:['ok','s_ok'],error:['err','s_err']}[st];const p=$('#syncPill');p.className='pill '+map[0];$('#syncTxt').textContent=tr(map[1]);p.title=syncState.err||(META.lastSync?tr('sy_last',{a:new Date(META.lastSync).toLocaleTimeString()}):'');}
 function setSync(s,err){syncState.status=s;syncState.err=err||'';paintSync();}
 function b64e(buf){const a=new Uint8Array(buf);let s='';for(let i=0;i<a.length;i+=0x8000)s+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000));return btoa(s);}
 const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
@@ -885,7 +892,8 @@ const aesKey=()=>crypto.subtle.importKey('raw',b64d(SC.keyB64),'AES-GCM',false,[
 async function seal(obj){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},await aesKey(),enc8(JSON.stringify(obj)));return{v:2,iv:b64e(iv),ct:b64e(ct),at:Date.now(),dev:META.deviceId};}
 async function open_(env){if(!env||!env.ct)return null;try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(env.iv)},await aesKey(),b64d(env.ct));return JSON.parse(new TextDecoder().decode(pt));}catch(e){throw new Error(tr('sy_wrongKey'));}}
 /* Firebase Auth (REST) */
-async function fbCall(ep,body,form){const r=await fetch(`https://${ep.startsWith('token')?'securetoken':'identitytoolkit'}.googleapis.com/v1/${ep}?key=${encodeURIComponent(SC.apiKey)}`,{method:'POST',headers:{'Content-Type':form?'application/x-www-form-urlencoded':'application/json'},body:form?body:JSON.stringify(body)});let j={};try{j=await r.json();}catch(e){}return{ok:r.ok,j};}
+async function fetchT(url,opts,ms){const ac=new AbortController(),t=setTimeout(()=>ac.abort(),ms||15000);try{return await fetch(url,Object.assign({},opts,{signal:ac.signal}));}catch(e){throw new Error(e.name==='AbortError'?tr('sy_timeout'):tr('sy_net'));}finally{clearTimeout(t);}}
+async function fbCall(ep,body,form){const r=await fetchT(`https://${ep.startsWith('token')?'securetoken':'identitytoolkit'}.googleapis.com/v1/${ep}?key=${encodeURIComponent(SC.apiKey)}`,{method:'POST',headers:{'Content-Type':form?'application/x-www-form-urlencoded':'application/json'},body:form?body:JSON.stringify(body)});let j={};try{j=await r.json();}catch(e){}return{ok:r.ok,j};}
 async function fbSignIn(email,pw){const b={email,password:pw,returnSecureToken:true};let x=await fbCall('accounts:signInWithPassword',b);
   if(!x.ok){const msg=(x.j.error&&x.j.error.message)||'';if(/EMAIL_NOT_FOUND|INVALID_LOGIN_CREDENTIALS/.test(msg)){const y=await fbCall('accounts:signUp',b);if(y.ok)x=y;else throw new Error(/EMAIL_EXISTS/.test((y.j.error||{}).message||'')?tr('sy_wrongPass'):tr('sy_authErr')+': '+((y.j.error||{}).message||''));}else throw new Error(tr('sy_authErr')+': '+msg);}
   return{uid:x.j.localId,idToken:x.j.idToken,refreshToken:x.j.refreshToken,exp:Date.now()+(+x.j.expiresIn||3600)*1000};}
@@ -893,22 +901,23 @@ async function fbToken(){const a=SC.auth;if(Date.now()<a.exp-60000)return a.idTo
 /* Adapter: Firebase RTDB REST or a generic REST endpoint (GET/PUT JSON) */
 async function remoteURL(){if(SC.provider==='firebase'){const base=SC.dbUrl.replace(/\/+$/,'');return SC.mode==='email'?`${base}/users/${SC.auth.uid}/vault.json?auth=${encodeURIComponent(await fbToken())}`:`${base}/vaults/${SC.keyHash}.json`;}return `${SC.restUrl.replace(/\/+$/,'')}/${SC.keyHash}`;}
 const restHdr=()=>SC.provider==='rest'&&SC.restToken?{Authorization:'Bearer '+SC.restToken}:{};
-async function remoteGet(){const r=await fetch(await remoteURL(),{headers:restHdr(),cache:'no-store'});if(r.status===404)return null;if(!r.ok)throw new Error('HTTP '+r.status);const x=await r.text();return x&&x!=='null'?JSON.parse(x):null;}
-async function remotePut(o){const r=await fetch(await remoteURL(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},restHdr()),body:JSON.stringify(o)});if(!r.ok)throw new Error('HTTP '+r.status);}
+async function remoteGet(){const r=await fetchT(await remoteURL(),{headers:restHdr(),cache:'no-store'});if(r.status===404)return null;if(!r.ok)throw new Error('HTTP '+r.status);const x=await r.text();return x&&x!=='null'?JSON.parse(x):null;}
+async function remotePut(o){const r=await fetchT(await remoteURL(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},restHdr()),body:JSON.stringify(o)});if(!r.ok)throw new Error('HTTP '+r.status);}
 /* Merge: newest `u` wins per record; deletions are tombstones */
 const COLLS=['incomes','expenses','debts','goals','plans'];
 function mergeColl(a,b){const m=new Map();[...(a||[]),...(b||[])].forEach(r=>{if(!r||!r.id)return;const x=m.get(r.id);if(!x||(r.u||0)>(x.u||0))m.set(r.id,r);});const cut=Date.now()-180*864e5;return [...m.values()].filter(r=>!(r.del&&r.u<cut)).sort((x,y)=>x.id<y.id?-1:1);}
 function mergeState(l,r){const o={v:2,settings:((r.settings||{}).u||0)>((l.settings||{}).u||0)?r.settings:l.settings};COLLS.forEach(k=>o[k]=mergeColl(l[k],r[k]));return o;}
 const canon=s=>JSON.stringify({settings:s.settings,incomes:mergeColl(s.incomes,[]),expenses:mergeColl(s.expenses,[]),debts:mergeColl(s.debts,[]),goals:mergeColl(s.goals,[]),plans:mergeColl(s.plans||[],[])});
-let syncing=false,again=false,syncTimer=null;
+let syncing=false,syncStart=0,again=false,syncTimer=null,retryTimer=null,retryN=0;const RETRY=[5,15,30,60];
+function scheduleRetry(){clearTimeout(retryTimer);const s=RETRY[Math.min(retryN,RETRY.length-1)];retryN++;retryTimer=setTimeout(()=>syncNow(),s*1000);}
 function scheduleSync(){if(!SC.enabled)return;clearTimeout(syncTimer);syncTimer=setTimeout(syncNow,1500);}
-async function syncNow(){if(!SC.enabled){setSync('local');return;}if(!navigator.onLine){setSync('offline');return;}if(syncing){again=true;return;}
+async function syncNow(){if(!SC.enabled){setSync('local');return;}if(syncing&&Date.now()-syncStart>40000)syncing=false;if(syncing){again=true;return;}if(!navigator.onLine){setSync('offline');scheduleRetry();return;}clearTimeout(retryTimer);syncStart=Date.now();
   syncing=true;setSync('syncing');
   try{const remote=await open_(await remoteGet());const merged=remote?mergeState(S,normalize(remote,true)):S;const mc=canon(merged);
     if(mc!==canon(S)){S=merged;saveJSON(KEY,S);safeRender();}
     if(!remote||mc!==canon(remote))await remotePut(await seal(JSON.parse(mc)));
-    META.lastSync=Date.now();saveJSON('dk2_meta',META);setSync('synced');if(tab==='settings')safeRender();}
-  catch(e){setSync(navigator.onLine?'error':'offline',e.message||String(e));}
+    META.lastSync=Date.now();saveJSON('dk2_meta',META);retryN=0;setSync('synced');if(tab==='settings')safeRender();}
+  catch(e){const m=e.message||String(e);setSync(!navigator.onLine||m===tr('sy_timeout')||m===tr('sy_net')?'offline':'error',m);scheduleRetry();}
   finally{syncing=false;if(again){again=false;syncNow();}}}
 async function connectSync(f){const E=f.elements,v=n=>(E[n]&&E[n].value||'').trim();
   if(!(window.crypto&&crypto.subtle))return toast(tr('sy_needHttps'),'bad');
@@ -988,11 +997,14 @@ const ACT={
  dpToday:()=>{DP.input.value=dg(jS(todayJ()));$('#dp').classList.remove('open');},
  dpClose:()=>$('#dp').classList.remove('open'),
  perPrev:()=>{viewPer=perAdd(viewPer,-1);render();},perNext:()=>{if(viewPer<curPer()){viewPer=perAdd(viewPer,1);render();}},
- pay:id=>{const d=findD(id);if(!d||remCount(d)<=0)return;d.payments.push({period:nextUnpaid(d),on:jS(todayJ()),amount:d.monthly});touch(d);persist();const rc=remCount(d);toast(rc?tr('payOk',{t:d.title,n:dg(rc)}):tr('payDone',{t:d.title}));render();},
+ pay:id=>{const d=findD(id);if(!d||remCount(d)<=0)return;const np=nextUnpaid(d);openModal(`<h2>💳 ${esc(d.title)}</h2><p class="muted">${tr('py_for',{a:perName(np)})}</p><form data-form="pay" class="form" autocomplete="off"><input type="hidden" name="did" value="${d.id}"><label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(d.monthly)}"></label>${dateField()}<p class="hint">${tr('py_dateHint')}</p><button class="btn pri wide">${tr('py_save')}</button></form>`);},
+ editPay:ids=>{const[id,i]=ids.split('|'),d=findD(id),q=d&&d.payments[+i];if(!q)return;openModal(`<h2>✏️ ${esc(d.title)} · ${perName(q.period)}</h2><form data-form="payEdit" class="form" autocomplete="off"><input type="hidden" name="ref" value="${ids}"><label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(q.amount)}"></label>${dateField(q.on)}<p class="hint">${tr('py_dateHint')}</p><button class="btn pri wide">${tr('saveChanges')}</button></form>`);},
+ delPay:ids=>{const[id,i]=ids.split('|'),d=findD(id);if(!d||!d.payments[+i]||!confirm(tr('py_delQ')))return;d.payments.splice(+i,1);touch(d);persist();render();},
  undo:id=>{const d=findD(id);if(d&&d.payments.length&&confirm(tr('undoQ'))){d.payments.pop();touch(d);persist();render();}},
  delExp:id=>{if(confirm(tr('confirmDel'))){tombstone('expenses',id);persist();render();}},
  delInc:id=>{if(confirm(tr('confirmDel'))){tombstone('incomes',id);INC().forEach(a=>{if(a.settledBy===id){delete a.settledBy;delete a.settledOn;touch(a);}});persist();render();}},
  editDebt:id=>{const d=findD(id);if(d)openModal(`<h2>✏️ ${esc(d.title)}</h2>`+debtForm(d));},
+ pill:()=>{if(!SC.enabled){ACT.tab('settings');return;}retryN=0;syncing=false;toast(tr('s_ing'));syncNow().then(()=>toast(syncState.status==='synced'?tr('s_ok')+' ✓':tr('s_err')+': '+syncState.err,syncState.status==='synced'?'':'bad'));},
  reconcile:()=>openModal(`<h2>🏦 ${tr('rc_title')}</h2><p class="hint">${tr('rc_hint',{a:money(cashBalance())})}</p><form data-form="reconcile" class="form" autocomplete="off"><label class="fld big"><span>${tr('rc_lbl')}</span><input name="amount" class="amt" inputmode="numeric" required></label><label class="row" style="align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" name="neg"> ${tr('rc_neg')}</label><button class="btn pri wide">${tr('rc_save')}</button></form>`),
  newPlan:()=>openModal(`<h2>📌 ${tr('pl_add')}</h2>`+planForm()),
  editPlan:id=>{const pl=PLN().find(x=>x.id===id);if(pl)openModal(`<h2>✏️ ${esc(pl.title)}</h2>`+planForm(pl));},
@@ -1048,6 +1060,9 @@ const FORMS={
    const ex=E.gid.value&&findG(E.gid.value);if(ex)Object.assign(ex,g,{u:Date.now()});else S.goals.push(touch(Object.assign({id:uid(),contributions:[]},g)));
    persist();closeModal();toast(tr(ex?'saved':'g_created'));render();},
  reconcile:f=>{const E=f.elements;let v=parseAmount(E.amount.value);if(isNaN(v))return toast(tr('badAmount'),'bad');if(E.neg.checked)v=-v;const flows=cashBalance()-(S.settings.opening||0);S.settings.opening=v-flows;S.settings.u=Date.now();persist();closeModal();toast(tr('rc_ok',{a:money(v)}));render();},
+ pay:f=>{const E=f.elements,d=findD(E.did.value),amount=parseAmount(E.amount.value);if(!d||remCount(d)<=0)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;
+   d.payments.push({period:nextUnpaid(d),on:date,amount});touch(d);persist();closeModal();const rc=remCount(d);toast(rc?tr('payOk',{t:d.title,n:dg(rc)}):tr('payDone',{t:d.title}));render();},
+ payEdit:f=>{const E=f.elements,[id,i]=E.ref.value.split('|'),d=findD(id),q=d&&d.payments[+i],amount=parseAmount(E.amount.value);if(!q)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;q.on=date;q.amount=amount;touch(d);persist();closeModal();toast(tr('saved'));render();},
  plan:f=>{const E=f.elements,title=E.title.value.trim(),amount=parseAmount(E.amount.value);if(!title)return toast(tr('v_title'),'bad');if(!(amount>0))return toast(tr('badAmount'),'bad');const ck=(f.querySelector('[name=cat]:checked')||{}).value||'misc',es=(f.querySelector('[name=ess]:checked')||{}).value==='1';
    const data={title,amount,cat:ck,ess:es,autoCat:E.autoCat.checked};const ex=E.pid.value&&PLN().find(x=>x.id===E.pid.value);if(ex){Object.assign(ex,data);touch(ex);}else{S.plans=S.plans||[];S.plans.push(touch(Object.assign({id:uid()},data)));}persist();closeModal();toast(tr('saved'));render();},
  contrib:f=>{const E=f.elements,g=findG(E.gid.value),amount=parseAmount(E.amount.value);if(!g)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;g.contributions.push({id:uid(),date,amount});touch(g);persist();closeModal();toast(tr('g_depOk'));render();},
@@ -1071,7 +1086,8 @@ $('#dp').addEventListener('click',e=>{if(e.target.id==='dp')$('#dp').classList.r
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#dp').classList.contains('open'))$('#dp').classList.remove('open');else closeModal();}});
 let lastDay=jS(todayJ());
 document.addEventListener('visibilitychange',()=>{if(document.hidden)return;const d=jS(todayJ());if(d!==lastDay){lastDay=d;viewPer=curPer();safeRender();}notifyDue();syncNow();});
-window.addEventListener('online',()=>syncNow());window.addEventListener('offline',()=>{if(SC.enabled)setSync('offline');});
+window.addEventListener('online',()=>{retryN=0;syncNow();});window.addEventListener('focus',()=>syncNow());window.addEventListener('pageshow',()=>syncNow());
+if(navigator.connection&&navigator.connection.addEventListener)navigator.connection.addEventListener('change',()=>{retryN=0;setTimeout(syncNow,1500);});window.addEventListener('offline',()=>{if(SC.enabled)setSync('offline');});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(tab==='settings')safeRender();});
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyChrome());
 
