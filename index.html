@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0D9488">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>دخل‌وخرج</title>
+<title>دخل و خرج Nana 💕</title>
 <link rel="manifest" id="manifestLink" href="manifest.webmanifest">
 <link rel="icon" id="favLink" href="icon-192.png">
 <link rel="apple-touch-icon" id="appleLink" href="icon-192.png">
@@ -240,6 +240,9 @@ pre{background:var(--sunk);border-radius:10px;padding:10px;overflow:auto;font-si
 .dot.ok{background:#047857}.dot.warn{background:#D97706}.dot.bad{background:#DC2626}
 .hb{display:flex;height:10px;background:var(--line);border-radius:5px;overflow:hidden;min-width:60px}.hb>span{display:block;height:100%}
 table.cb td{border-bottom:0;padding:5px 4px}
+.sumfoot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px 10px;border-top:2px solid var(--line);margin-top:8px;padding-top:8px;font-weight:700}
+table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tfoot tr.net td{font-size:15px;color:var(--pri-strong)}
+#print tfoot td{font-weight:700;border-top:2px solid #94A3B8}
 /* fab, modal, picker, toast */
 .fab{position:fixed;inset-inline-start:auto;inset-inline-end:18px;bottom:calc(80px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:18px;border:0;background:linear-gradient(135deg,var(--pri-strong),var(--sec-strong));color:#fff;font-size:32px;line-height:1;box-shadow:0 8px 22px rgba(79,70,229,.3);cursor:pointer;z-index:25}
 :root[dir=rtl] .fab{inset-inline-end:auto;inset-inline-start:auto;left:18px;right:auto}
@@ -326,7 +329,7 @@ function saveJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true
 let UI=loadJSON('dk2_ui',{lang:'fa',theme:'system'});
 const FA_LANG=()=>UI.lang==='fa';
 const D={
- app:['دخل‌وخرج','Dakhl-o-Kharj'],
+ app:['دخل و خرج Nana 💕','Dakhl-o-Kharj Nana 💕'],
  tab_dash:['داشبورد','Dashboard'],tab_expenses:['هزینه‌ها','Expenses'],tab_income:['درآمد','Income'],tab_debts:['اقساط','Debts'],tab_goals:['اهداف','Goals'],tab_reports:['گزارش','Reports'],tab_advisor:['مشاور','Advisor'],tab_settings:['تنظیمات','Settings'],
  ttl_debts:['اقساط و بدهی‌ها','Installments & debts'],ttl_goals:['اهداف و نقشه راه','Goals & milestones'],ttl_reports:['نمودارها و گزارش','Charts & reports'],ttl_advisor:['مشاور مالی','Financial advisor'],ttl_settings:['تنظیمات، همگام‌سازی و پشتیبان','Settings, sync & backup'],
  s_local:['فقط روی این دستگاه','Local only'],s_off:['آفلاین — ذخیره محلی، تلاش دوباره خودکار','Offline – saved locally, retrying'],s_ing:['در حال همگام‌سازی…','Syncing…'],s_ok:['همگام شد','Synced online'],s_err:['خطای همگام‌سازی','Sync error'],
@@ -455,6 +458,12 @@ const D={
  py_for:['پرداخت قسط {a}','Payment for {a}'],py_dateHint:['تاریخ را روزی بگذارید که واقعاً پول از حسابتان رفت؛ برنامه آن پرداخت را در همان ماه حساب می‌کند.','Use the day the money actually left your account; it is counted in that month.'],py_save:['ثبت پرداخت','Save payment'],
  py_hist:['تاریخچه پرداخت‌ها ({a})','Payment history ({a})'],py_row:['قسط {a}','Installment {a}'],py_paidOn:['پرداخت در {a}','Paid on {a}'],py_delQ:['این پرداخت حذف شود؟','Delete this payment?'],
  nx_title:['اقساط {a}','Installments in {a}'],nx_due:['(روز {a})','(day {a})'],nx_none:['قسطی برای ماه آینده نمانده؛ همه پیش‌پرداخت شده‌اند 👏','Nothing due next month; all prepaid 👏'],nx_hint:['قسط‌هایی که از قبل پرداخت کرده‌اید در این لیست نیستند.','Installments you already prepaid are not listed.'],
+ sf_exp:['جمع هزینه‌های این ماه','Total expenses this month'],sf_inc:['جمع درآمد این ماه','Total income this month'],sf_paid:['جمع پرداخت‌شده','Total paid'],sf_debtsMonth:['جمع اقساط پرداخت‌شده در {a}','Installments paid in {a}'],
+ rt_inc:['درآمد','Income'],rt_exp:['هزینه','Expenses'],rt_inst:['اقساط','Installments'],rt_dep:['واریز به اهداف','Goal deposits'],
+ rf_title:['گزارش و فیلتر','Report & filters'],rf_month:['ماه','Month'],rf_year:['کل سال','Whole year'],rf_range:['بازه دلخواه','Custom range'],rf_yearN:['سال {a}','Year {a}'],rf_prevY:['سال قبل','Previous year'],rf_nextY:['سال بعد','Next year'],rf_from:['از تاریخ','From'],rf_to:['تا تاریخ','To'],rf_fromTo:['از {a} تا {b}','{a} to {b}'],
+ rf_types:['چه چیزهایی در گزارش باشد','Include'],rf_cat:['دسته هزینه','Expense category'],rf_all:['همه','All'],rf_debt:['کدام قسط','Which installment'],rf_q:['جستجو در توضیح','Search description'],rf_qPh:['مثلاً اسنپ، ناخن، ویپاد','e.g. snapp, nails'],
+ rf_sum:['خلاصه: {a}','Summary: {a}'],rf_essSplit:['ضروری {a} · غیرضروری {b}','Essential {a} · non-essential {b}'],rf_net:['خالص (درآمد − هزینه − اقساط − واریز)','Net (income − expenses − installments − deposits)'],rf_netHint:['آنچه در این بازه برایتان ماند','What you kept in this period'],
+ rf_byDebt:['جمع به تفکیک قسط','Totals by installment'],rf_payments:['پرداخت','payments'],rf_list:['تراکنش‌ها ({a} مورد)','Transactions ({a})'],rf_print:['🖨️ چاپ همین گزارش','🖨️ Print this report'],rf_csv:['⬇️ اکسل همین گزارش','⬇️ Excel of this report'],rf_pTitle:['گزارش مالی','Financial report'],rf_filters:['فیلترها','Filters'],rf_yearChart:['درآمد، اقساط و پس‌انداز ماه‌به‌ماه — سال {a}','Monthly income, installments & savings — {a}'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -698,7 +707,7 @@ function expenseForm(x){x=x||{};const ck=x.cat||'food',es=x.id?x.ess:cat(ck).ess
   <button class="btn pri wide">${x.id?tr('saveChanges'):tr('addExp')}</button></form>`;}
 V.expenses=()=>{const list=EXP().filter(x=>x.date.startsWith(viewPer)).sort(byDesc),days={};list.forEach(x=>(days[x.date]=days[x.date]||[]).push(x));
   return plansHTML()+`<section class="card"><h2>${tr('addExp')}</h2>${expenseForm()}</section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b> · ${tr('nonEssTotal')}: <b class="warnc">${money(sum(list.filter(x=>!x.ess),'amount'))}</b></p>
-  ${list.length?Object.keys(days).map(d=>`<div class="day-h"><span>${dateLabel(d)}</span><span class="num">${num(sum(days[d],'amount'))}</span></div><ul class="list">${days[d].map(x=>expItem(x,true)).join('')}</ul>`).join(''):empty(tr('noExpMonth'))}</section>`;};
+  ${list.length?Object.keys(days).map(d=>`<div class="day-h"><span>${dateLabel(d)}</span><span class="num">${num(sum(days[d],'amount'))}</span></div><ul class="list">${days[d].map(x=>expItem(x,true)).join('')}</ul>`).join(''):empty(tr('noExpMonth'))}${list.length?`<div class="sumfoot"><span>${tr('sf_exp')}</span><span>${money(sum(list,'amount'))}</span><span class="muted sm">${tr('rf_essSplit',{a:num(sum(list.filter(x=>x.ess),'amount')),b:num(sum(list.filter(x=>!x.ess),'amount'))})}</span></div>`:''}</section>`;};
 function plansHTML(){const c=calc(viewPer);return `<section class="card"><div class="card-h"><h2>📌 ${tr('pl_title')} · ${perName(c.p)}</h2><button class="btn sm pri" data-act="newPlan">${tr('pl_add')}</button></div><p class="hint">${tr('pl_hint')}</p>
   ${c.plans.length?`<ul class="list">${c.plans.map(r=>{const p=r.pl.amount?Math.min(100,r.spent/r.pl.amount*100):0;return `<li><span class="ic">${cat(r.pl.cat).i}</span><div class="grow"><div>${esc(r.pl.title)} <span class="tag ${r.pl.ess?'e':'n'}">${tr(r.pl.ess?'ess':'noness')}</span>${r.pl.autoCat?` <span class="tag sec">⚡ ${cn(r.pl.cat)}</span>`:''}</div><div class="track ${r.spent>r.pl.amount?'over':''}" style="margin:5px 0"><span style="width:${p}%"></span></div><div class="muted sm">${tr('pl_line',{a:num(r.spent),b:num(r.pl.amount),c:num(r.rem)})}</div></div>${c.isCur&&r.rem>0?`<button class="btn sm" data-act="payPlan" data-id="${r.pl.id}">${tr('pl_pay')}</button>`:''}<button class="del" data-act="editPlan" data-id="${r.pl.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delPlan" data-id="${r.pl.id}" aria-label="${tr('del')}">🗑</button></li>`;}).join('')}</ul>
   <p>${tr('pl_sum',{a:`<b>${money(c.planned)}</b>`,b:money(c.planSpent),c:`<b>${money(c.reserveAll)}</b>`})}</p>`:empty(tr('pl_empty'))}</section>`;}
@@ -714,7 +723,7 @@ function incomeForm(x){x=x||{};const last=INC().filter(i=>i.type==='salary').sor
   <label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(x.amount)}" placeholder="${last?amtVal(last.amount):dg(0)}"></label>
   ${dateField(x.date)}<label class="fld"><span>${tr('desc')}</span><input name="desc" maxlength="80" placeholder="${tr('incPh')}" value="${esc(x.desc||'')}"></label>
   <button class="btn pri wide">${x.id?tr('saveChanges'):tr('addInc')}</button></form>`;}
-V.income=()=>{const list=INC().filter(x=>x.date.startsWith(viewPer)).sort(byDesc);return `<section class="card"><h2>${tr('addInc')}</h2>${incomeForm()}<p class="hint">${tr('incLockHint')}</p></section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b></p>${list.length?`<ul class="list">${list.map(x=>incItem(x,true)).join('')}</ul>`:empty(tr('noIncMonth'))}</section>`;};
+V.income=()=>{const list=INC().filter(x=>x.date.startsWith(viewPer)).sort(byDesc);return `<section class="card"><h2>${tr('addInc')}</h2>${incomeForm()}<p class="hint">${tr('incLockHint')}</p></section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b></p>${list.length?`<ul class="list">${list.map(x=>incItem(x,true)).join('')}</ul><div class="sumfoot"><span>${tr('sf_inc')}</span><span>${money(sum(list,'amount'))}</span></div>`:empty(tr('noIncMonth'))}</section>`;};
 
 function debtForm(d){d=d||{};const cp=curPer(),st=d.start||cp;const opts=[...new Set([perAdd(cp,-1),cp,perAdd(cp,1),st])].sort();
   return `<form data-form="debt" class="form" autocomplete="off"><input type="hidden" name="did" value="${d.id||''}">
@@ -731,9 +740,9 @@ function debtCard(d){const cp=curPer(),td=todayJ(),rc=remCount(d),done=d.total-r
   return `<section class="card"><div class="card-h"><h3>${esc(d.title)} <span class="tag sec">${tr('dk_'+(d.kind||'loan'))}</span></h3><span><button class="del" data-act="editDebt" data-id="${d.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delDebt" data-id="${d.id}" aria-label="${tr('del')}">🗑</button></span></div>
   <p class="muted sm">${tr('d_line',{a:money(d.monthly),b:dg(d.dueDay)})}</p>
   <div class="bar-h" style="margin-top:8px"><span>${tr('d_prog',{a:dg(done),b:dg(d.total)})}</span><span class="num">${tr('d_rem',{a:money(d.monthly*rc)})}</span></div><div class="track"><span style="width:${p}%"></span></div>
-  <div class="btns">${s}${rc>0?`<button class="btn sm pri" data-act="pay" data-id="${d.id}">${tr(np<=cp?'d_pay':'d_prepay',{a:perName(np)})}</button>`:''}</div>${d.payments.length?`<details><summary class="sm">${tr('py_hist',{a:dg(d.payments.length)})}</summary><ul class="list">${d.payments.map((q,i)=>`<li><div class="grow"><div>${tr('py_row',{a:perName(q.period)})}</div><div class="muted sm">${tr('py_paidOn',{a:dateLabel(q.on)})}</div></div><b class="num">${num(q.amount)}</b><button class="del" data-act="editPay" data-id="${d.id}|${i}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delPay" data-id="${d.id}|${i}" aria-label="${tr('del')}">🗑</button></li>`).join('')}</ul></details>`:''}</section>`;}
+  <div class="btns">${s}${rc>0?`<button class="btn sm pri" data-act="pay" data-id="${d.id}">${tr(np<=cp?'d_pay':'d_prepay',{a:perName(np)})}</button>`:''}</div>${d.payments.length?`<details><summary class="sm">${tr('py_hist',{a:dg(d.payments.length)})}</summary><ul class="list">${d.payments.map((q,i)=>`<li><div class="grow"><div>${tr('py_row',{a:perName(q.period)})}</div><div class="muted sm">${tr('py_paidOn',{a:dateLabel(q.on)})}</div></div><b class="num">${num(q.amount)}</b><button class="del" data-act="editPay" data-id="${d.id}|${i}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delPay" data-id="${d.id}|${i}" aria-label="${tr('del')}">🗑</button></li>`).join('')}</ul><div class="sumfoot"><span>${tr('sf_paid')}</span><span>${money(sum(d.payments,'amount'))}</span></div></details>`:''}</section>`;}
 V.debts=()=>{const act=DEB().filter(d=>remCount(d)>0);return alertsHTML(debtAlerts())+`<section class="card"><div class="ledger">${led(tr('d_monthlySum'),money(sum(act,'monthly')))}${led(tr('d_remSum'),money(act.reduce((s,d)=>s+d.monthly*remCount(d),0)))}${led(tr('d_active'),dg(act.length))}</div>${notifControl()}</section>
-  ${nextMonthHTML()}${DEB().map(debtCard).join('')}<section class="card"><h2>${tr('d_add')}</h2>${debtForm()}</section>`;};
+  ${nextMonthHTML()}${DEB().map(debtCard).join('')}${DEB().length?`<section class="card"><div class="sumfoot" style="border:0;margin:0;padding:0"><span>${tr('sf_debtsMonth',{a:perName(curPer())})}</span><span>${money(DEB().reduce((s,d)=>s+sum(d.payments.filter(q=>q.on.startsWith(curPer())),'amount'),0))}</span></div><div class="sumfoot"><span>${tr('d_monthlySum')}</span><span>${money(sum(act,'monthly'))}</span></div><div class="sumfoot"><span>${tr('d_remSum')}</span><span>${money(act.reduce((s,d)=>s+d.monthly*remCount(d),0))}</span></div></section>`:''}<section class="card"><h2>${tr('d_add')}</h2>${debtForm()}</section>`;};
 function nextMonthDue(){const cp=curPer(),nx=perAdd(cp,1);return DEB().filter(d=>remCount(d)>0&&d.start<=nx&&!paidIn(d,nx)&&remCount(d)>unpaidDueCount(d,cp));}
 function nextMonthHTML(){const nx=perAdd(curPer(),1),list=nextMonthDue();if(!DEB().length)return '';const tot=sum(list,'monthly');
   return `<section class="card"><h3>📆 ${tr('nx_title',{a:perName(nx)})}</h3>${list.length?`<ol class="alloc">${list.map(d=>`<li><b>${esc(d.title)} <span class="muted sm">${tr('nx_due',{a:dg(Math.min(d.dueDay,30))})}</span></b><span>${money(d.monthly)}</span></li>`).join('')}<li><b>${tr('total')}</b><span><b>${money(tot)}</b></span></li></ol>`:empty(tr('nx_none'))}<p class="hint">${tr('nx_hint')}</p></section>`;}
@@ -779,10 +788,56 @@ V.goals=()=>{const pot=potentialSavings();if(whatIf===null)whatIf=pot.total;cons
   <div id="goalsList">${goalsListHTML()}</div>`;};
 
 /* ---- reports ---- */
-V.reports=()=>{const c=calc(viewPer),dn=donutFor(c);
-  return `<section class="card">${perNav()}<div class="btns"><button class="btn secb" data-act="print">${tr('printBtn')}</button><button class="btn" data-act="expCsv">${tr('bk_csv')}</button></div></section>
+let RF={mode:'month',year:0,from:'',to:'',types:['inc','exp','inst','dep'],cat:'',ess:'',debt:'',q:''};
+function rfRange(){const td=todayJ();if(RF.mode==='year'){const y=RF.year||td[0];return{from:`${y}/01/01`,to:`${y}/12/31`,label:tr('rf_yearN',{a:dg(y)})};}
+  if(RF.mode==='range'){const f=RF.from||(curPer()+'/01'),t=RF.to||jS(td);return{from:f<t?f:t,to:f<t?t:f,label:tr('rf_fromTo',{a:dateLabel(f<t?f:t),b:dateLabel(f<t?t:f)})};}
+  return{from:viewPer+'/01',to:viewPer+'/31',label:perName(viewPer)};}
+function allTx(){const t=[];INC().forEach(x=>t.push({k:'inc',d:x.date,a:x.amount,lbl:typeLbl(x.type),s:x.desc||typeLbl(x.type)}));
+  EXP().forEach(x=>t.push({k:'exp',d:x.date,a:x.amount,cat:x.cat,ess:!!x.ess,lbl:cn(x.cat),s:x.desc||cn(x.cat)}));
+  DEB().forEach(d=>d.payments.forEach(q=>t.push({k:'inst',d:q.on,a:q.amount,debt:d.id,lbl:tr('rt_inst'),s:d.title+' · '+perName(q.period)})));
+  GOA().forEach(g=>g.contributions.forEach(q=>t.push({k:'dep',d:q.date,a:q.amount,lbl:tr('rt_dep'),s:g.title})));return t;}
+function filteredTx(){const {from,to}=rfRange(),q=(RF.q||'').trim().toLowerCase();
+  return allTx().filter(t=>t.d>=from&&t.d<=to+'~'&&RF.types.includes(t.k)&&(t.k!=='exp'||((!RF.cat||t.cat===RF.cat)&&(!RF.ess||(RF.ess==='1')===t.ess)))&&(t.k!=='inst'||!RF.debt||t.debt===RF.debt)&&(!q||(t.s||'').toLowerCase().includes(q))).sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:0);}
+function rfTotals(tx){const s=k=>sum(tx.filter(t=>t.k===k),'a'),ex=tx.filter(t=>t.k==='exp');const T={inc:s('inc'),exp:s('exp'),ess:sum(ex.filter(t=>t.ess),'a'),non:sum(ex.filter(t=>!t.ess),'a'),inst:s('inst'),dep:s('dep'),n:tx.length};T.net=T.inc-T.exp-T.inst-T.dep;return T;}
+const RT=['inc','exp','inst','dep'];
+function rfDateBox(k,label){return `<div class="fld"><span>${label}</span><div class="row"><input data-rf="${k}" value="${RF[k]?dg(RF[k]):''}" inputmode="numeric" placeholder="${dg(k==='from'?curPer()+'/01':jS(todayJ()))}"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;}
+function rfHTML(){const y=RF.year||todayJ()[0];let nav='';
+  if(RF.mode==='month')nav=perNav();
+  else if(RF.mode==='year')nav=`<div class="pernav"><button class="btn sm" data-act="yrPrev">${tr('rf_prevY')}</button><b>${tr('rf_yearN',{a:dg(y)})}</b><button class="btn sm" data-act="yrNext" ${y>=todayJ()[0]?'disabled':''}>${tr('rf_nextY')}</button></div>`;
+  else nav=`<div class="row2">${rfDateBox('from',tr('rf_from'))}${rfDateBox('to',tr('rf_to'))}</div>`;
+  return `<div class="seg">${[['month',tr('rf_month')],['year',tr('rf_year')],['range',tr('rf_range')]].map(([v,l])=>`<label><input type="radio" name="rfmode" data-rf="mode" value="${v}" ${RF.mode===v?'checked':''}><span>${l}</span></label>`).join('')}</div>${nav}
+  <div class="fld"><span>${tr('rf_types')}</span><div class="chips">${RT.map(k=>`<label class="chip"><input type="checkbox" data-rf="type" value="${k}" ${RF.types.includes(k)?'checked':''}><span>${tr('rt_'+k)}</span></label>`).join('')}</div></div>
+  <div class="row2">${RF.types.includes('exp')?`<label class="fld"><span>${tr('rf_cat')}</span><select data-rf="cat"><option value="">${tr('rf_all')}</option>${Object.keys(CATS).map(k=>`<option value="${k}" ${RF.cat===k?'selected':''}>${CATS[k].i} ${cn(k)}</option>`).join('')}</select></label><label class="fld"><span>${tr('kind')}</span><select data-rf="ess"><option value="">${tr('rf_all')}</option><option value="1" ${RF.ess==='1'?'selected':''}>${tr('ess')}</option><option value="0" ${RF.ess==='0'?'selected':''}>${tr('noness')}</option></select></label>`:''}
+  ${RF.types.includes('inst')?`<label class="fld"><span>${tr('rf_debt')}</span><select data-rf="debt"><option value="">${tr('rf_all')}</option>${DEB().map(d=>`<option value="${d.id}" ${RF.debt===d.id?'selected':''}>${esc(d.title)}</option>`).join('')}</select></label>`:''}</div>
+  <label class="fld"><span>${tr('rf_q')}</span><input data-rf="q" value="${esc(RF.q)}" placeholder="${tr('rf_qPh')}"></label>`;}
+function rfRow(t){const neg=t.k!=='inc';return `<tr><td class="num">${dg(t.d)}</td><td>${t.lbl}${t.k==='exp'?` <span class="tag ${t.ess?'e':'n'}">${tr(t.ess?'ess':'noness')}</span>`:''}</td><td>${esc(t.s)}</td><td class="num ${neg?'neg':'pos'}" dir="ltr" style="text-align:end">${neg?'−':'+'}${num(t.a)}</td></tr>`;}
+function rfFoot(T,cols){const r=(l,v,sg,b)=>`<tr class="${b?'net':''}"><td colspan="${cols-1}">${l}</td><td class="num" dir="ltr" style="text-align:end">${sg}${num(Math.abs(v))}</td></tr>`;let f='';
+  if(RF.types.includes('inc'))f+=r(tr('rt_inc'),T.inc,'+');if(RF.types.includes('exp'))f+=r(tr('rt_exp'),T.exp,'−');if(RF.types.includes('inst'))f+=r(tr('rt_inst'),T.inst,'−');if(RF.types.includes('dep'))f+=r(tr('rt_dep'),T.dep,'−');
+  return f+r(tr('rf_net'),T.net,T.net<0?'−':'+',true);}
+function rfByDebt(tx){const by={};tx.filter(t=>t.k==='inst').forEach(t=>{const b=by[t.debt]||(by[t.debt]={s:t.s.split(' · ')[0],n:0,a:0});b.n++;b.a+=t.a;});return Object.values(by).sort((a,b)=>b.a-a.a);}
+function reportResultsHTML(){const {label}=rfRange(),tx=filteredTx(),T=rfTotals(tx);
+  let h=`<section class="card"><h3>📊 ${tr('rf_sum',{a:label})}</h3><div class="ledger">${RF.types.includes('inc')?led(tr('rt_inc'),money(T.inc)):''}${RF.types.includes('exp')?led(tr('rt_exp'),money(T.exp),tr('rf_essSplit',{a:num(T.ess),b:num(T.non)})):''}${RF.types.includes('inst')?led(tr('rt_inst'),money(T.inst)):''}${RF.types.includes('dep')?led(tr('rt_dep'),money(T.dep)):''}${led(tr('rf_net'),money(T.net),tr('rf_netHint'),T.net<0?'bad':'')}</div></section>`;
+  const ex=tx.filter(t=>t.k==='exp');if(ex.length)h+=`<section class="card"><h3>${tr('ch_donut')}</h3>${catBarsHTML({ex:ex.map(t=>({cat:t.cat,ess:t.ess,amount:t.a})),E:T.exp,Ess:T.ess,NonEss:T.non})}</section>`;
+  const bd=rfByDebt(tx);if(bd.length)h+=`<section class="card"><h3>💳 ${tr('rf_byDebt')}</h3><ol class="alloc">${bd.map(x=>`<li><b>${esc(x.s)} <span class="muted sm">(${dg(x.n)} ${tr('rf_payments')})</span></b><span>${money(x.a)}</span></li>`).join('')}<li><b>${tr('total')}</b><span><b>${money(T.inst)}</b></span></li></ol></section>`;
+  h+=`<section class="card"><h3>🧾 ${tr('rf_list',{a:dg(T.n)})}</h3>${tx.length?`<div class="tbl"><table class="rft"><thead><tr><th>${tr('date')}</th><th>${tr('p_type')}</th><th>${tr('desc')}</th><th style="text-align:end">${tr('amount')}</th></tr></thead><tbody>${tx.map(rfRow).join('')}</tbody><tfoot>${rfFoot(T,4)}</tfoot></table></div>`:empty(tr('noData'))}</section>`;
+  return h;}
+function printRF(){const {label}=rfRange(),tx=filteredTx(),T=rfTotals(tx),td=todayJ(),bd=rfByDebt(tx),ex=tx.filter(t=>t.k==='exp');
+  const flt=[RF.types.map(k=>tr('rt_'+k)).join('، '),RF.cat?cn(RF.cat):'',RF.ess?tr(RF.ess==='1'?'ess':'noness'):'',RF.debt?esc((findD(RF.debt)||{}).title||''):'',RF.q?'«'+esc(RF.q)+'»':''].filter(Boolean).join(' · ');
+  const kp=(l,v)=>`<div><small>${l}</small><b>${v}</b></div>`;
+  $('#print').setAttribute('dir',FA_LANG()?'rtl':'ltr');
+  $('#print').innerHTML=`<div class="ph"><div><h1>${tr('rf_pTitle')}</h1><div>${label}</div><div class="sm">${tr('rf_filters')}: ${flt}</div></div><div style="text-align:end"><b>${tr('app')}</b><div class="sm">${tr('p_gen')} ${dateLabel(td)}</div></div></div>
+   <h2>${tr('p_kpi')}</h2><div class="kpis">${RF.types.includes('inc')?kp(tr('rt_inc'),money(T.inc)):''}${RF.types.includes('exp')?kp(tr('rt_exp'),money(T.exp)):''}${RF.types.includes('inst')?kp(tr('rt_inst'),money(T.inst)):''}${RF.types.includes('dep')?kp(tr('rt_dep'),money(T.dep)):''}${kp(tr('rf_net'),money(T.net))}</div>
+   ${ex.length?`<h2>${tr('ch_donut')}</h2>${catBarsHTML({ex:ex.map(t=>({cat:t.cat,ess:t.ess,amount:t.a})),E:T.exp,Ess:T.ess,NonEss:T.non})}`:''}
+   ${bd.length?`<h2>${tr('rf_byDebt')}</h2><table><tbody>${bd.map(x=>`<tr><td>${esc(x.s)} (${dg(x.n)} ${tr('rf_payments')})</td><td class="num">${num(x.a)}</td></tr>`).join('')}<tr><td><b>${tr('total')}</b></td><td class="num"><b>${num(T.inst)}</b></td></tr></tbody></table>`:''}
+   <h2>${tr('rf_list',{a:dg(T.n)})}</h2><table><thead><tr><th>${tr('date')}</th><th>${tr('p_type')}</th><th>${tr('desc')}</th><th>${tr('amount')}</th></tr></thead><tbody>${tx.slice().reverse().map(t=>`<tr><td>${dg(t.d)}</td><td>${t.lbl}${t.k==='exp'?' ('+tr(t.ess?'ess':'noness')+')':''}</td><td>${esc(t.s)}</td><td class="num" dir="ltr">${t.k==='inc'?'+':'−'}${num(t.a)}</td></tr>`).join('')}</tbody><tfoot>${rfFoot(T,4)}</tfoot></table>
+   <div class="foot">${tr('p_foot')}</div>`;
+  setTimeout(()=>window.print(),50);}
+function rfCSV(){const rows=[['date','type','category','essential','description','amount']];filteredTx().slice().reverse().forEach(t=>rows.push([t.d,tr('rt_'+t.k),t.k==='exp'?cn(t.cat):'',t.k==='exp'?(t.ess?'1':'0'):'',t.s,(t.k==='inc'?1:-1)*t.a]));const T=rfTotals(filteredTx());rows.push([]);RT.filter(k=>RF.types.includes(k)).forEach(k=>rows.push(['',tr('rt_'+k),'','','',(k==='inc'?1:-1)*T[k]]));rows.push(['',tr('rf_net'),'','','',T.net]);return '\uFEFF'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n');}
+V.reports=()=>{const c=calc(viewPer);let h=`<section class="card"><h2>🔎 ${tr('rf_title')}</h2>${rfHTML()}<div class="btns"><button class="btn secb" data-act="printRF">${tr('rf_print')}</button><button class="btn" data-act="csvRF">${tr('rf_csv')}</button>${RF.mode==='month'?`<button class="btn" data-act="print">${tr('printBtn')}</button>`:''}</div></section><div id="repRes">${reportResultsHTML()}</div>`;
+  if(RF.mode==='year'){const y=RF.year||todayJ()[0];const g=[];for(let m=1;m<=12;m++){const p=per(y,m);if(p>curPer())break;const cc=calc(p);g.push({l:mName(m),v:[cc.I,cc.L,cc.contrib]});}h+=`<section class="card"><h3>${tr('rf_yearChart',{a:dg(y)})}</h3>${barsSVG(g,[{l:tr('ch_inc'),c:'#0D9488'},{l:tr('ch_inst'),c:'#6366F1'},{l:tr('ch_sav'),c:'#F59E0B'}],'year')}<div class="legend"><span><i style="background:#0D9488"></i>${tr('ch_inc')}</span><span><i style="background:#6366F1"></i>${tr('ch_inst')}</span><span><i style="background:#F59E0B"></i>${tr('ch_sav')}</span></div></section>`;}
+  if(RF.mode!=='month')return h;
+  return h+`
   <section class="card"><h3>📋 ${tr('ev_title')}</h3>${evalHTML(evalRows(c))}</section>
-  <section class="card"><h3>${tr('ch_donut')}</h3>${catBarsHTML(c)}</section>
   <section class="card"><h3>${tr('ch_line')}</h3>${lineSVG(c,tr('ch_line'))}<div class="legend"><span><i style="background:var(--pri)"></i>${tr('ch_actual')}</span><span><i style="background:var(--sec)"></i>${tr('ch_pace')}</span>${c.isCur?`<span><i style="background:var(--warn)"></i>${tr('ch_proj')}</span>`:''}</div></section>
   <section class="card"><h3>${tr('ch_bars')}</h3>${barsSVG(monthsSeries(6),[{l:tr('ch_inc'),c:'#0D9488'},{l:tr('ch_inst'),c:'#6366F1'},{l:tr('ch_sav'),c:'#F59E0B'}],tr('ch_bars'))}<div class="legend"><span><i style="background:#0D9488"></i>${tr('ch_inc')}</span><span><i style="background:#6366F1"></i>${tr('ch_inst')}</span><span><i style="background:#F59E0B"></i>${tr('ch_sav')}</span></div></section>`;};
 
@@ -975,7 +1030,7 @@ function printReport(){const c=calc(viewPer),dn=donutFor(c),cp=curPer(),td=today
    ${plansT?`<h2>${tr('pl_title')}</h2><table><thead><tr><th>${tr('pl_name')}</th><th>${tr('pl_planned')}</th><th>${tr('k_spent')}</th><th>${tr('pl_remain')}</th></tr></thead><tbody>${plansT}</tbody></table>`:''}
    <h2>${tr('p_inst')}</h2>${inst?`<table><thead><tr><th>${tr('sb_debt')}</th><th>${tr('d_monthly')}</th><th>#</th><th>${tr('d_remSum')}</th><th>${tr('p_status')}</th></tr></thead><tbody>${inst}</tbody></table>`:'—'}
    <h2>${tr('p_goals')}</h2>${goals?`<table><thead><tr><th>${tr('g_title')}</th><th>${tr('g_saved')}</th><th>${tr('g_target')}</th><th>%</th><th>${tr('p_eta')}</th></tr></thead><tbody>${goals}</tbody></table>`:'—'}
-   <h2>${tr('p_ledger')}</h2><table><thead><tr><th>${tr('date')}</th><th>${tr('p_type')}</th><th>${tr('category')}</th><th>${tr('desc')}</th><th>${tr('amount')}</th><th>${tr('p_balance')}</th></tr></thead><tbody><tr><td></td><td colspan="4"><b>${tr('p_openBal')}</b></td><td class="num"><b>${num(openBal)}</b></td></tr>${tx.map(x=>{bal+=x.a;return `<tr><td>${dg(x.d)}</td><td>${x.t}</td><td>${x.c}</td><td>${esc(x.s)}</td><td class="num" dir="ltr">${x.a<0?'−':'+'}${num(Math.abs(x.a))}</td><td class="num ${bal<0?'neg':''}">${num(bal)}</td></tr>`;}).join('')}<tr><td></td><td colspan="4"><b>${tr('p_closeBal')}</b></td><td class="num"><b>${num(bal)}</b></td></tr></tbody></table>
+   <h2>${tr('p_ledger')}</h2><table><thead><tr><th>${tr('date')}</th><th>${tr('p_type')}</th><th>${tr('category')}</th><th>${tr('desc')}</th><th>${tr('amount')}</th><th>${tr('p_balance')}</th></tr></thead><tbody><tr><td></td><td colspan="4"><b>${tr('p_openBal')}</b></td><td class="num"><b>${num(openBal)}</b></td></tr>${tx.map(x=>{bal+=x.a;return `<tr><td>${dg(x.d)}</td><td>${x.t}</td><td>${x.c}</td><td>${esc(x.s)}</td><td class="num" dir="ltr">${x.a<0?'−':'+'}${num(Math.abs(x.a))}</td><td class="num ${bal<0?'neg':''}">${num(bal)}</td></tr>`;}).join('')}<tr><td></td><td colspan="4"><b>${tr('p_closeBal')}</b></td><td class="num"><b>${num(bal)}</b></td></tr></tbody></table>${(()=>{const s=f=>sum(tx.filter(f),'a');const I=s(x=>x.a>0),Ex=-s(x=>x.a<0&&x.c),In=-s(x=>x.a<0&&x.t===tr('ch_inst')),Dp=-s(x=>x.a<0&&x.t===tr('p_goalDep'));return `<table style="margin-top:6px"><tbody><tr><td>${tr('rt_inc')}</td><td class="num">+${num(I)}</td></tr><tr><td>${tr('rt_exp')}</td><td class="num">−${num(Ex)}</td></tr><tr><td>${tr('rt_inst')}</td><td class="num">−${num(In)}</td></tr><tr><td>${tr('rt_dep')}</td><td class="num">−${num(Dp)}</td></tr><tr><td><b>${tr('rf_net')}</b></td><td class="num"><b>${num(I-Ex-In-Dp)}</b></td></tr></tbody></table>`;})()}
    <div class="foot">${tr('p_foot')}</div>`;
   setTimeout(()=>window.print(),50);}
 
@@ -993,9 +1048,11 @@ const ACT={
  setDate:(n,b)=>{b.closest('form').elements.date.value=dg(jS(daysAgoJ(+n)));},
  dp:(n,b)=>openDP(b.parentElement.querySelector('input')),
  dpNav:n=>{DP.m+=+n;if(DP.m>12){DP.m=1;DP.y++;}if(DP.m<1){DP.m=12;DP.y--;}drawDP();},
- dpPick:d=>{DP.input.value=dg(jS([DP.y,DP.m,+d]));$('#dp').classList.remove('open');},
+ dpPick:d=>{DP.input.value=dg(jS([DP.y,DP.m,+d]));$('#dp').classList.remove('open');DP.input.dispatchEvent(new Event('change',{bubbles:true}));},
  dpToday:()=>{DP.input.value=dg(jS(todayJ()));$('#dp').classList.remove('open');},
  dpClose:()=>$('#dp').classList.remove('open'),
+ yrPrev:()=>{RF.year=(RF.year||todayJ()[0])-1;render();},yrNext:()=>{RF.year=Math.min(todayJ()[0],(RF.year||todayJ()[0])+1);render();},
+ printRF:()=>printRF(),csvRF:()=>{download(`nana-report-${stamp()}.csv`,rfCSV(),'text/csv;charset=utf-8');toast(tr('bk_csvOk'));},
  perPrev:()=>{viewPer=perAdd(viewPer,-1);render();},perNext:()=>{if(viewPer<curPer()){viewPer=perAdd(viewPer,1);render();}},
  pay:id=>{const d=findD(id);if(!d||remCount(d)<=0)return;const np=nextUnpaid(d);openModal(`<h2>💳 ${esc(d.title)}</h2><p class="muted">${tr('py_for',{a:perName(np)})}</p><form data-form="pay" class="form" autocomplete="off"><input type="hidden" name="did" value="${d.id}"><label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(d.monthly)}"></label>${dateField()}<p class="hint">${tr('py_dateHint')}</p><button class="btn pri wide">${tr('py_save')}</button></form>`);},
  editPay:ids=>{const[id,i]=ids.split('|'),d=findD(id),q=d&&d.payments[+i];if(!q)return;openModal(`<h2>✏️ ${esc(d.title)} · ${perName(q.period)}</h2><form data-form="payEdit" class="form" autocomplete="off"><input type="hidden" name="ref" value="${ids}"><label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(q.amount)}"></label>${dateField(q.on)}<p class="hint">${tr('py_dateHint')}</p><button class="btn pri wide">${tr('saveChanges')}</button></form>`);},
@@ -1075,9 +1132,11 @@ const FORMS={
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const fn=ACT[b.dataset.act];if(!fn)return;if(!(b.type==='checkbox'||b.type==='radio'))e.preventDefault();fn(b.dataset.id,b);});
 document.addEventListener('submit',e=>{const f=e.target;if(f.dataset&&FORMS[f.dataset.form]){e.preventDefault();FORMS[f.dataset.form](f);}});
 document.addEventListener('input',e=>{const el=e.target;
+  if(el.dataset&&el.dataset.rf==='q'){RF.q=el.value;const r=$('#repRes');if(r)r.innerHTML=reportResultsHTML();return;}
   if(el.classList.contains('amt')){const n=parseAmount(el.value);el.value=isNaN(n)?'':dg(n.toLocaleString('en-US'));}
   if(el.name==='whatif'){whatIf=+el.value;$('#wiVal').textContent=money(whatIf);$('#goalsList').innerHTML=goalsListHTML();}});
 document.addEventListener('change',e=>{const el=e.target;
+  if(el.dataset&&el.dataset.rf&&el.dataset.rf!=='q'){const k=el.dataset.rf;if(k==='mode')RF.mode=el.value;else if(k==='type')RF.types=[...document.querySelectorAll('[data-rf=type]:checked')].map(x=>x.value);else if(k==='from'||k==='to'){const j=parseJ(el.value);RF[k]=j?jS(j):'';}else RF[k]=el.value;render();return;}
   if(el.name==='plan'&&el.form&&el.value){const pl=PLN().find(x=>x.id===el.value);if(pl){const c1=el.form.querySelector(`[name=cat][value="${pl.cat}"]`),e1=el.form.querySelector(`[name=ess][value="${pl.ess?'1':'0'}"]`);if(c1)c1.checked=true;if(e1)e1.checked=true;if(!el.form.elements.desc.value)el.form.elements.desc.value=pl.title;}}
   if(el.name==='cat'&&el.form&&!((el.form.elements.eid||el.form.elements.pid||{}).value)){const r=el.form.querySelector(`[name=ess][value="${cat(el.value).ess?'1':'0'}"]`);if(r)r.checked=true;}
   if(el.id==='impJson'){importJSON(el.files[0]);el.value='';}if(el.id==='impCsv'){importCSV(el.files[0]);el.value='';}});
