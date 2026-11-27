@@ -7,9 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>دخل‌وخرج</title>
-<link rel="manifest" id="manifestLink">
-<link rel="icon" id="favLink">
-<link rel="apple-touch-icon" id="appleLink">
+<link rel="manifest" id="manifestLink" href="manifest.webmanifest">
+<link rel="icon" id="favLink" href="icon-192.png">
+<link rel="apple-touch-icon" id="appleLink" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
@@ -996,7 +996,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>applyCh
    ===================================================================== */
 function makeIcon(s){const c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d'),u=s/100,g=x.createLinearGradient(0,0,s,s);g.addColorStop(0,'#0D9488');g.addColorStop(1,'#6366F1');x.fillStyle=g;x.fillRect(0,0,s,s);x.strokeStyle='#fff';x.lineWidth=7*u;x.beginPath();x.arc(50*u,50*u,26*u,0,Math.PI*2);x.stroke();x.fillStyle='#FBBF24';x.beginPath();x.arc(50*u,50*u,12*u,0,Math.PI*2);x.fill();return c.toDataURL('image/png');}
 const ICON192=makeIcon(192),ICON512=makeIcon(512);
-function setupManifest(){const base=location.href.split('#')[0].split('?')[0];const m={name:tr('app'),short_name:tr('app'),lang:UI.lang,dir:FA_LANG()?'rtl':'ltr',start_url:base,scope:base.replace(/[^/]*$/,''),display:'standalone',background_color:'#F8FAFC',theme_color:'#0D9488',icons:[{src:ICON192,sizes:'192x192',type:'image/png'},{src:ICON512,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+function setupManifest(){if(/^https?:$/.test(location.protocol))return;const base=location.href.split('#')[0].split('?')[0];const m={name:tr('app'),short_name:tr('app'),lang:UI.lang,dir:FA_LANG()?'rtl':'ltr',start_url:base,scope:base.replace(/[^/]*$/,''),display:'standalone',background_color:'#F8FAFC',theme_color:'#0D9488',icons:[{src:ICON192,sizes:'192x192',type:'image/png'},{src:ICON512,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
   $('#manifestLink').href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));$('#favLink').href=ICON192;$('#appleLink').href=ICON192;}
 setupManifest();
 render();
