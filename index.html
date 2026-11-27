@@ -351,7 +351,7 @@ const D={
  /* debts */
  dk_loan:['وام بانکی','Bank loan'],dk_bnpl:['خرید اقساطی','BNPL'],dk_personal:['بدهی شخصی','Personal debt'],dk_check:['چک','Check'],
  d_title:['عنوان','Title'],d_titlePh:['مثلاً وام بانک، قسط گوشی','e.g. bank loan, phone'],d_type:['نوع','Type'],d_monthly:['مبلغ هر قسط (تومان)','Installment amount (Toman)'],d_total:['تعداد کل اقساط','Total installments'],d_pre:['اقساط قبلاً پرداخت‌شده','Already paid'],d_due:['روز سررسید در ماه','Due day of month'],d_start:['اولین قسط پرداخت‌نشده','First unpaid installment'],d_late:['(عقب‌افتاده)','(overdue)'],
- d_checkHint:['برای چک یا بدهی یک‌باره، تعداد کل اقساط را ۱ بگذارید.','For a check or one-time debt, set total installments to 1.'],d_add:['افزودن قسط، بدهی یا چک','Add installment, debt or check'],
+ d_editPaid:['{a} پرداخت ثبت‌شده در برنامه حفظ می‌شود. تغییر مبلغ قسط فقط روی اقساط بعدی اثر دارد.','{a} recorded payments are kept. A new amount only affects future installments.'],v_totalPaid:['تعداد کل باید حداقل {a} باشد (اقساط پرداخت‌شده)','Total must be at least {a} (installments already paid)'],d_checkHint:['برای چک یا بدهی یک‌باره، تعداد کل اقساط را ۱ بگذارید.','For a check or one-time debt, set total installments to 1.'],d_add:['افزودن قسط، بدهی یا چک','Add installment, debt or check'],
  d_monthlySum:['جمع اقساط ماهانه','Monthly installments'],d_remSum:['کل بدهی باقی‌مانده','Total debt remaining'],d_active:['بدهی‌های فعال','Active debts'],
  d_line:['قسط ماهانه {a} · سررسید روز {b} هر ماه','{a} per month · due on day {b}'],d_prog:['{a} از {b} قسط پرداخت شده','{a} of {b} paid'],d_rem:['مانده {a}','{a} left'],
  d_done:['تسویه شد 🎉','Paid off 🎉'],d_overdue:['عقب‌افتاده','Overdue'],d_daysPast:['{a} روز گذشته','{a} days late'],d_dueToday:['امروز سررسید','Due today'],d_daysTo:['{a} روز تا سررسید','Due in {a} days'],d_paidThis:['قسط این ماه پرداخت شد ✓','This month paid ✓'],d_first:['اولین سررسید: {a}','First due: {a}'],
@@ -666,18 +666,19 @@ function incomeForm(x){x=x||{};const last=INC().filter(i=>i.type==='salary').sor
   <button class="btn pri wide">${x.id?tr('saveChanges'):tr('addInc')}</button></form>`;}
 V.income=()=>{const list=INC().filter(x=>x.date.startsWith(viewPer)).sort(byDesc);return `<section class="card"><h2>${tr('addInc')}</h2>${incomeForm()}<p class="hint">${tr('incLockHint')}</p></section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b></p>${list.length?`<ul class="list">${list.map(x=>incItem(x,true)).join('')}</ul>`:empty(tr('noIncMonth'))}</section>`;};
 
-function debtForm(){const cp=curPer();return `<form data-form="debt" class="form" autocomplete="off">
-  <label class="fld"><span>${tr('d_title')}</span><input name="title" required maxlength="40" placeholder="${tr('d_titlePh')}"></label>
-  <label class="fld"><span>${tr('d_type')}</span><select name="kind">${DEBT_KINDS.map(k=>`<option value="${k}">${tr('dk_'+k)}</option>`).join('')}</select></label>
-  <label class="fld"><span>${tr('d_monthly')}</span><input name="monthly" class="amt" inputmode="numeric" required></label>
-  <div class="row2"><label class="fld"><span>${tr('d_total')}</span><input name="total" inputmode="numeric" required placeholder="${dg(12)}"></label><label class="fld"><span>${tr('d_pre')}</span><input name="pre" inputmode="numeric" value="${dg(0)}"></label></div>
-  <div class="row2"><label class="fld"><span>${tr('d_due')}</span><input name="due" inputmode="numeric" required placeholder="${dg(5)}"></label><label class="fld"><span>${tr('d_start')}</span><select name="start"><option value="${perAdd(cp,-1)}">${perName(perAdd(cp,-1))} ${tr('d_late')}</option><option value="${cp}" selected>${perName(cp)}</option><option value="${perAdd(cp,1)}">${perName(perAdd(cp,1))}</option></select></label></div>
-  <p class="hint">${tr('d_checkHint')}</p><button class="btn pri wide">${tr('addDebtBtn')}</button></form>`;}
+function debtForm(d){d=d||{};const cp=curPer(),st=d.start||cp;const opts=[...new Set([perAdd(cp,-1),cp,perAdd(cp,1),st])].sort();
+  return `<form data-form="debt" class="form" autocomplete="off"><input type="hidden" name="did" value="${d.id||''}">
+  <label class="fld"><span>${tr('d_title')}</span><input name="title" required maxlength="40" placeholder="${tr('d_titlePh')}" value="${esc(d.title||'')}"></label>
+  <label class="fld"><span>${tr('d_type')}</span><select name="kind">${DEBT_KINDS.map(k=>`<option value="${k}" ${k===(d.kind||'loan')?'selected':''}>${tr('dk_'+k)}</option>`).join('')}</select></label>
+  <label class="fld"><span>${tr('d_monthly')}</span><input name="monthly" class="amt" inputmode="numeric" required value="${amtVal(d.monthly)}"></label>
+  <div class="row2"><label class="fld"><span>${tr('d_total')}</span><input name="total" inputmode="numeric" required placeholder="${dg(12)}" value="${d.total?dg(d.total):''}"></label><label class="fld"><span>${tr('d_pre')}</span><input name="pre" inputmode="numeric" value="${dg(d.prePaid||0)}"></label></div>
+  <div class="row2"><label class="fld"><span>${tr('d_due')}</span><input name="due" inputmode="numeric" required placeholder="${dg(5)}" value="${d.dueDay?dg(d.dueDay):''}"></label><label class="fld"><span>${tr('d_start')}</span><select name="start">${opts.map(o=>`<option value="${o}" ${o===st?'selected':''}>${perName(o)}${o<cp?' '+tr('d_late'):''}</option>`).join('')}</select></label></div>
+  ${d.id&&d.payments.length?`<p class="hint">${tr('d_editPaid',{a:dg(d.payments.length)})}</p>`:`<p class="hint">${tr('d_checkHint')}</p>`}<button class="btn pri wide">${d.id?tr('saveChanges'):tr('addDebtBtn')}</button></form>`;}
 function debtCard(d){const cp=curPer(),td=todayJ(),rc=remCount(d),done=d.total-rc,p=d.total?done/d.total*100:0,np=nextUnpaid(d);let s;
   if(rc===0)s=`<span class="tag ok">${tr('d_done')}</span>`;else if(np<cp)s=`<span class="tag bad">${tr('d_overdue')}</span>`;
   else if(np===cp){const days=Math.min(d.dueDay,mLen(td[0],td[1]))-td[2];s=days<0?`<span class="tag bad">${tr('d_daysPast',{a:dg(-days)})}</span>`:days===0?`<span class="tag bad">${tr('d_dueToday')}</span>`:`<span class="tag ${days<=S.settings.alertDays?'warn':''}">${tr('d_daysTo',{a:dg(days)})}</span>`;}
   else if(paidIn(d,cp))s=`<span class="tag ok">${tr('d_paidThis')}</span>`;else s=`<span class="tag">${tr('d_first',{a:perName(np)})}</span>`;
-  return `<section class="card"><div class="card-h"><h3>${esc(d.title)} <span class="tag sec">${tr('dk_'+(d.kind||'loan'))}</span></h3><button class="del" data-act="delDebt" data-id="${d.id}" aria-label="${tr('del')}">🗑</button></div>
+  return `<section class="card"><div class="card-h"><h3>${esc(d.title)} <span class="tag sec">${tr('dk_'+(d.kind||'loan'))}</span></h3><span><button class="del" data-act="editDebt" data-id="${d.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delDebt" data-id="${d.id}" aria-label="${tr('del')}">🗑</button></span></div>
   <p class="muted sm">${tr('d_line',{a:money(d.monthly),b:dg(d.dueDay)})}</p>
   <div class="bar-h" style="margin-top:8px"><span>${tr('d_prog',{a:dg(done),b:dg(d.total)})}</span><span class="num">${tr('d_rem',{a:money(d.monthly*rc)})}</span></div><div class="track"><span style="width:${p}%"></span></div>
   <div class="btns">${s}${rc>0?`<button class="btn sm pri" data-act="pay" data-id="${d.id}">${tr(np<=cp?'d_pay':'d_prepay',{a:perName(np)})}</button>`:''}${d.payments.length?`<button class="btn sm" data-act="undo" data-id="${d.id}">${tr('d_undo')}</button>`:''}</div></section>`;}
@@ -924,6 +925,7 @@ const ACT={
  undo:id=>{const d=findD(id);if(d&&d.payments.length&&confirm(tr('undoQ'))){d.payments.pop();touch(d);persist();render();}},
  delExp:id=>{if(confirm(tr('confirmDel'))){tombstone('expenses',id);persist();render();}},
  delInc:id=>{if(confirm(tr('confirmDel'))){tombstone('incomes',id);persist();render();}},
+ editDebt:id=>{const d=findD(id);if(d)openModal(`<h2>✏️ ${esc(d.title)}</h2>`+debtForm(d));},
  delDebt:id=>{if(confirm(tr('delDebtQ'))){tombstone('debts',id);persist();render();}},
  delGoal:id=>{if(confirm(tr('delGoalQ'))){tombstone('goals',id);persist();render();}},
  editExp:id=>{const x=EXP().find(e=>e.id===id);if(x)openModal(`<h2>${tr('editExp')}</h2>`+expenseForm(x));},
@@ -958,7 +960,9 @@ const FORMS={
    else toast(tr('saved'));},
  debt:f=>{const E=f.elements,title=E.title.value.trim(),monthly=parseAmount(E.monthly.value),total=parseInt(toEn(E.total.value),10),pre=parseInt(toEn(E.pre.value||'0'),10)||0,due=parseInt(toEn(E.due.value),10);
    if(!title)return toast(tr('v_title'),'bad');if(!(monthly>0))return toast(tr('badAmount'),'bad');if(!(total>=1))return toast(tr('v_total'),'bad');if(pre<0||pre>=total)return toast(tr('v_pre'),'bad');if(!(due>=1&&due<=31))return toast(tr('v_due'),'bad');
-   S.debts.push(touch({id:uid(),title,kind:E.kind.value,monthly,total,prePaid:pre,dueDay:due,start:E.start.value,payments:[]}));persist();toast(tr('saved'));render();},
+   const ex=E.did.value&&findD(E.did.value);if(ex&&pre+ex.payments.length>total)return toast(tr('v_totalPaid',{a:dg(pre+ex.payments.length)}),'bad');
+   const data={title,kind:E.kind.value,monthly,total,prePaid:pre,dueDay:due,start:E.start.value};
+   if(ex){Object.assign(ex,data);touch(ex);closeModal();}else S.debts.push(touch(Object.assign({id:uid(),payments:[]},data)));persist();toast(tr('saved'));render();},
  goal:f=>{const E=f.elements,tpl=E.tpl.value,A=n=>E[n]?parseAmount(E[n].value)||0:0,title=E.title.value.trim();if(!title)return toast(tr('v_title'),'bad');
    const g={tpl,title,initial:A('initial'),monthly:A('monthly')};
    if(tpl==='car'||tpl==='immig'){g.infl=parseFloat(toEn(E.infl.value))||0;const dl=readDate(f,'deadline');if(dl===null)return;g.deadline=dl;}
