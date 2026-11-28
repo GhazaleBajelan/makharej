@@ -244,6 +244,13 @@ table.cb td{border-bottom:0;padding:5px 4px}
 .sumfoot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px 10px;border-top:2px solid var(--line);margin-top:8px;padding-top:8px;font-weight:700}
 table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tfoot tr.net td{font-size:15px;color:var(--pri-strong)}
 #print tfoot td{font-weight:700;border-top:2px solid #94A3B8}
+.chip-b{border:1px solid var(--line);background:var(--sunk);border-radius:999px;padding:6px 12px;font-size:13.5px;cursor:pointer;font-weight:600}
+.chip-b:hover{border-color:var(--pri)}
+.qk{display:inline-flex;align-items:center;gap:0}
+.emo{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px;margin-top:6px;max-height:150px;overflow:auto}
+.emo button{border:1px solid transparent;background:var(--sunk);border-radius:10px;font-size:20px;height:38px;cursor:pointer}
+.emo button.on{border-color:var(--pri);background:var(--pri-soft)}
+.icon-in{font-size:20px;text-align:center;max-width:90px}
 /* fab, modal, picker, toast */
 .fab{position:fixed;inset-inline-start:auto;inset-inline-end:18px;bottom:calc(80px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:18px;border:0;background:linear-gradient(135deg,var(--pri-strong),var(--sec-strong));color:#fff;font-size:32px;line-height:1;box-shadow:0 8px 22px rgba(79,70,229,.3);cursor:pointer;z-index:25}
 :root[dir=rtl] .fab{inset-inline-end:auto;inset-inline-start:auto;left:18px;right:auto}
@@ -319,7 +326,7 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 
 <script>
 'use strict';
-const APP_VERSION='3.5';let lastDiag='';
+const APP_VERSION='3.6';let lastDiag='';
 /* =====================================================================
    1. UTILITIES, I18N & FORMATTING
    ===================================================================== */
@@ -478,6 +485,8 @@ const D={
  sy_ghBadTok:['توکن GitHub درست نیست یا منقضی شده','GitHub token is invalid or expired'],sy_ghScope:['توکن اجازه gist ندارد','Token lacks the gist permission'],
  hol_approx:['تاریخ تعطیلات مذهبی این سال تقریبی است و ممکن است با رؤیت هلال یک روز جابه‌جا شود.','Religious holidays for this year are approximate and may shift by a day.'],hol_none:['این ماه تعطیل رسمی ندارد (فقط جمعه‌ها)','No official holidays this month (Fridays only)'],friday:['جمعه','Friday'],nx_off:['تعطیل','holiday'],
  set_cal:['تقویم','Calendar'],cal_j:['فقط شمسی','Solar only'],cal_jg:['شمسی + میلادی','Solar + Gregorian'],cal_gj:['میلادی + شمسی','Gregorian + Solar'],set_hol:['یادداشت تعطیلات این کشورها','Holiday notes for these countries'],hol_hint:['تعطیلات فقط به صورت یادداشت زیر تقویم و بالای برنامه نشان داده می‌شوند. بودجه ماهانه همچنان بر اساس ماه شمسی است.','Holidays appear as notes under the calendar and in the header. Monthly budgets still follow the solar month.'],hol_none2:['این ماه تعطیلی برای کشورهای انتخاب‌شده ندارد','No holidays this month for the selected countries'],hol_partial:['— برای همه تعطیل نیست','— not a day off for everyone'],
+ qk_title:['هزینه‌های پرتکرار','Frequent expenses'],qk_add:['+ پرتکرار','+ Frequent'],qk_hint:['هزینه‌هایی که زیاد تکرار می‌شوند (بنزین، قهوه، نان…). با یک لمس فرم ثبت هزینه پر می‌شود.','Expenses you repeat often (fuel, coffee…). One tap fills the expense form.'],qk_empty:['هنوز چیزی اضافه نکرده‌اید. مثلاً «⛽ بنزین».','Nothing yet. E.g. “⛽ Fuel”.'],qk_name:['عنوان','Title'],qk_namePh:['مثلاً بنزین، قهوه، نان','e.g. fuel, coffee, bread'],qk_amount:['مبلغ معمول (اختیاری)','Usual amount (optional)'],qk_icon:['آیکون','Icon'],qk_iconHint:['اگر آیکون انتخاب نکنید، آیکون دسته استفاده می‌شود.','Leave empty to use the category icon.'],
+ uc_title:['دسته‌های من','My categories'],uc_add:['+ دسته جدید','+ New category'],uc_empty:['می‌توانید دسته دلخواه با آیکون خودتان بسازید؛ مثلاً 💅 ناخن یا 🏋️ باشگاه.','Create your own categories with an icon, e.g. 💅 Nails or 🏋️ Gym.'],uc_name:['اسم دسته','Category name'],uc_namePh:['مثلاً ناخن، باشگاه، گربه','e.g. nails, gym, pet'],uc_delQ:['این دسته حذف شود؟ هزینه‌های قبلی این دسته در «متفرقه» نشان داده می‌شوند.','Delete this category? Its past expenses will show under “Misc”.'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -526,27 +535,32 @@ function fmtDur(days){days=Math.max(0,Math.round(days));let m=Math.floor(days/MO
    3. STATE, STORAGE & MIGRATION
    ===================================================================== */
 const KEY='dk2_state';
-const CATS={food:{fa:'خوراک و خواربار',en:'Food & groceries',i:'🛒',ess:true,c:'#0D9488'},housing:{fa:'اجاره و قبوض',en:'Rent & utilities',i:'🏠',ess:true,c:'#6366F1'},transport:{fa:'حمل‌ونقل',en:'Transport',i:'🚌',ess:true,c:'#0EA5E9'},fun:{fa:'تفریح و رستوران',en:'Dining & fun',i:'☕',ess:false,c:'#F59E0B'},clothing:{fa:'پوشاک',en:'Clothing',i:'👕',ess:false,c:'#EC4899'},health:{fa:'درمان و سلامت',en:'Health',i:'💊',ess:true,c:'#10B981'},misc:{fa:'متفرقه',en:'Misc',i:'📦',ess:false,c:'#94A3B8'}};
-const cat=k=>CATS[k]||CATS.misc;
+const CATS={food:{fa:'خوراک و خواربار',en:'Food & groceries',i:'🛒',ess:true,c:'#0D9488'},housing:{fa:'اجاره و قبوض',en:'Rent & utilities',i:'🏠',ess:true,c:'#6366F1'},transport:{fa:'حمل‌ونقل',en:'Transport',i:'🚌',ess:true,c:'#0EA5E9'},fuel:{fa:'بنزین و سوخت',en:'Fuel',i:'⛽',ess:true,c:'#EF4444'},fun:{fa:'تفریح و رستوران',en:'Dining & fun',i:'☕',ess:false,c:'#F59E0B'},clothing:{fa:'پوشاک',en:'Clothing',i:'👕',ess:false,c:'#EC4899'},health:{fa:'درمان و سلامت',en:'Health',i:'💊',ess:true,c:'#10B981'},misc:{fa:'متفرقه',en:'Misc',i:'📦',ess:false,c:'#94A3B8'}};
+const CPAL=['#8B5CF6','#14B8A6','#F43F5E','#84CC16','#06B6D4','#D946EF','#F97316','#64748B','#A16207','#0EA5E9'];
+const UCATS=()=>(typeof S!=='undefined'&&S.cats?S.cats:[]).filter(x=>!x.del);
+function ucat(k){const u=UCATS().find(x=>x.id===k);return u?{fa:u.name,en:u.name,i:u.icon||'🏷️',ess:!!u.ess,c:u.c||'#64748B'}:null;}
+const cat=k=>CATS[k]||ucat(k)||CATS.misc;
+const isCat=k=>!!(CATS[k]||ucat(k));
+const catKeys=()=>[...Object.keys(CATS).filter(k=>k!=='misc'),...UCATS().map(x=>x.id),'misc'];
 const cn=k=>cat(k)[UI.lang];
 const DEBT_KINDS=['loan','bnpl','personal','check'];
 const GOAL_TPLS={car:'🚗',immig:'✈️',lang:'🎓',emergency:'🛟',custom:'🎯'};
 const CURRENCIES=['EUR','USD','CAD','GBP','AUD','TRY'];
 const EXAMS=['IELTS','TOEFL','Goethe','TestDaF','Duolingo','Other'];
 
-function blank(){return{v:2,settings:{u:0,model:'503020',needs:50,wants:30,save:20,zbNeeds:0,zbSave:0,alertDays:3,opening:0},incomes:[],expenses:[],debts:[],goals:[],plans:[]};}
+function blank(){return{v:2,settings:{u:0,model:'503020',needs:50,wants:30,save:20,zbNeeds:0,zbSave:0,alertDays:3,opening:0},incomes:[],expenses:[],debts:[],goals:[],plans:[],cats:[],quick:[]};}
 function normalize(o,stampOld){const d=blank();if(!o||typeof o!=='object')return d;const arr=x=>Array.isArray(x)?x:[];const st=u=>stampOld&&!u?1:u||Date.now();
-  const r={v:2,settings:Object.assign(d.settings,o.settings||{}),incomes:arr(o.incomes),expenses:arr(o.expenses),plans:arr(o.plans),
+  const r={v:2,settings:Object.assign(d.settings,o.settings||{}),incomes:arr(o.incomes),expenses:arr(o.expenses),plans:arr(o.plans),cats:arr(o.cats),quick:arr(o.quick),
     debts:arr(o.debts).map(x=>Object.assign({prePaid:0,payments:[],kind:'loan'},x)),
     goals:arr(o.goals).filter(g=>g.type!=='debt').map(g=>Object.assign({tpl:g.tpl||(g.type==='emergency'?'emergency':'custom'),initial:0,monthly:0,contributions:[]},g))};
-  r.settings.u=st(r.settings.u);['incomes','expenses','debts','goals','plans'].forEach(k=>r[k].forEach(x=>{x.id=x.id||uid();x.u=st(x.u);}));
+  r.settings.u=st(r.settings.u);['incomes','expenses','debts','goals','plans','cats','quick'].forEach(k=>r[k].forEach(x=>{x.id=x.id||uid();x.u=st(x.u);}));
   delete r.settings.lastBackup;return r;}
 let storageOK=true;try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){storageOK=false;}
 function loadState(){if(!storageOK)return blank();try{const v2=localStorage.getItem(KEY);if(v2)return normalize(JSON.parse(v2));const v1=localStorage.getItem('dakhlokharj_v1');if(v1)return normalize(JSON.parse(v1));}catch(e){}return blank();}
 let S=loadState();
 let META=loadJSON('dk2_meta',{deviceId:uid(),lastBackup:0,lastSync:0,notified:{}});saveJSON('dk2_meta',META);
 const live=a=>a.filter(x=>!x.del);
-const INC=()=>live(S.incomes),EXP=()=>live(S.expenses),DEB=()=>live(S.debts),GOA=()=>live(S.goals),PLN=()=>live(S.plans||[]);
+const INC=()=>live(S.incomes),EXP=()=>live(S.expenses),DEB=()=>live(S.debts),GOA=()=>live(S.goals),PLN=()=>live(S.plans||[]),QK=()=>live(S.quick||[]);
 const touch=r=>{r.u=Date.now();return r;};
 function persist(){if(storageOK&&!saveJSON(KEY,S))toast(tr('storeFull'),'bad');scheduleSync();}
 function tombstone(coll,id){const r=S[coll].find(x=>x.id===id);if(!r)return;Object.keys(r).forEach(k=>{if(k!=='id')delete r[k];});r.del=true;touch(r);}
@@ -617,11 +631,11 @@ const RULES=[
  {k:'taxi',i:'🚕',re:/اسنپ|تپسی|تاکسی|آژانس|ماکسیم|taxi|snapp|uber|cab/i,fa:['تاکسی اینترنتی','برای مسیرهای تکراری از مترو، اتوبوس یا سفر اشتراکی استفاده کنید؛ مسیرهای کوتاه را پیاده بروید.'],en:['Ride-hailing','Use metro, bus or shared rides for regular routes; walk short trips.'],rate:.5},
  {k:'subs',i:'📺',re:/اشتراک|فیلیمو|نماوا|اسپاتیفای|spotify|netflix|subscription/i,fa:['اشتراک‌ها','اشتراک‌های کم‌استفاده را لغو کنید یا با یک نفر شریک شوید.'],en:['Subscriptions','Cancel rarely used subscriptions or share one.'],rate:.5},
  {k:'online',i:'🛍️',re:/دیجی|آنلاین|ترب|باسلام|دیوار|حراج|تخفیف|online|amazon|shop/i,fa:['خریدهای آنی و آنلاین','قانون ۴۸ ساعت: کالا را در سبد بگذارید و دو روز بعد تصمیم بگیرید.'],en:['Impulse & online buys','48-hour rule: leave it in the cart and decide two days later.'],rate:.5}];
-const CAT_ALT={food:{fa:'تنقلات و خریدهای اضافه را با لیست خرید هفتگی و خرید عمده از میدان تره‌بار کم کنید.',en:'Cut snacks and extras with a weekly list and bulk buying at the market.',r:.35},housing:{fa:'مصرف برق، گاز و اینترنت را بهینه کنید و بسته‌ها را مقایسه کنید.',en:'Reduce power/gas use and compare internet plans.',r:.15},transport:{fa:'مسیرها را با هم ترکیب کنید و از حمل‌ونقل عمومی استفاده کنید.',en:'Combine trips and use public transport.',r:.4},fun:{fa:'تفریح کم‌هزینه (پارک، کوه، فیلم در خانه) و یک بودجه ثابت هفتگی برای تفریح.',en:'Low-cost fun (park, hiking, movie night) with a fixed weekly fun budget.',r:.5},clothing:{fa:'قانون ۳۰ روز انتظار برای لباس غیرضروری؛ خرید در حراج پایان فصل.',en:'30-day wait rule for non-essential clothes; buy at end-of-season sales.',r:.5},health:{fa:'برای لوازم آرایشی و بهداشتی غیرضروری، معادل ایرانی باکیفیت یا حراج‌ها.',en:'Choose quality local alternatives or sales for non-essential care products.',r:.3},misc:{fa:'یک سقف ماهانه ثابت برای متفرقه و قانون ۴۸ ساعت برای خرید آنی.',en:'A fixed monthly cap for misc and the 48-hour rule.',r:.5}};
+const CAT_ALT={food:{fa:'تنقلات و خریدهای اضافه را با لیست خرید هفتگی و خرید عمده از میدان تره‌بار کم کنید.',en:'Cut snacks and extras with a weekly list and bulk buying at the market.',r:.35},housing:{fa:'مصرف برق، گاز و اینترنت را بهینه کنید و بسته‌ها را مقایسه کنید.',en:'Reduce power/gas use and compare internet plans.',r:.15},transport:{fa:'مسیرها را با هم ترکیب کنید و از حمل‌ونقل عمومی استفاده کنید.',en:'Combine trips and use public transport.',r:.4},fuel:{fa:'مسیرها را با هم ترکیب کنید، مسیرهای کوتاه را پیاده بروید و برای مسیرهای ثابت از حمل‌ونقل عمومی یا هم‌سفری استفاده کنید.',en:'Combine trips, walk short distances and use public transport or carpooling for regular routes.',r:.25},fun:{fa:'تفریح کم‌هزینه (پارک، کوه، فیلم در خانه) و یک بودجه ثابت هفتگی برای تفریح.',en:'Low-cost fun (park, hiking, movie night) with a fixed weekly fun budget.',r:.5},clothing:{fa:'قانون ۳۰ روز انتظار برای لباس غیرضروری؛ خرید در حراج پایان فصل.',en:'30-day wait rule for non-essential clothes; buy at end-of-season sales.',r:.5},health:{fa:'برای لوازم آرایشی و بهداشتی غیرضروری، معادل ایرانی باکیفیت یا حراج‌ها.',en:'Choose quality local alternatives or sales for non-essential care products.',r:.3},misc:{fa:'یک سقف ماهانه ثابت برای متفرقه و قانون ۴۸ ساعت برای خرید آنی.',en:'A fixed monthly cap for misc and the 48-hour rule.',r:.5}};
 function potentialSavings(){const td=todayJ(),groups={};
   EXP().forEach(x=>{if(x.ess)return;const pj=parseJ(x.date);if(!pj)return;const dd=dayDiff(pj,td);if(dd<0||dd>29)return;
-    const r=RULES.find(r=>r.re.test(x.desc||''));const ck=CATS[x.cat]?x.cat:'misc';
-    const def=r?{k:r.k,i:r.i,title:r[UI.lang][0],alt:r[UI.lang][1],rate:r.rate}:{k:'c_'+ck,i:cat(ck).i,title:cn(ck),alt:CAT_ALT[ck][UI.lang],rate:CAT_ALT[ck].r};
+    const r=RULES.find(r=>r.re.test(x.desc||''));const ck=isCat(x.cat)?x.cat:'misc';const ca=CAT_ALT[ck]||CAT_ALT.misc;
+    const def=r?{k:r.k,i:r.i,title:r[UI.lang][0],alt:r[UI.lang][1],rate:r.rate}:{k:'c_'+ck,i:cat(ck).i,title:cn(ck),alt:ca[UI.lang],rate:ca.r};
     const g=groups[def.k]||(groups[def.k]=Object.assign(def,{total:0,count:0}));g.total+=x.amount;g.count++;});
   const list=Object.values(groups).map(g=>Object.assign(g,{save:Math.round(g.total*g.rate/1000)*1000})).filter(g=>g.save>0).sort((a,b)=>b.save-a.save);
   return{list,total:sum(list,'save')};}
@@ -672,7 +686,7 @@ function lineSVG(c,label){const W=600,H=250,pl=58,pr=14,pt=12,pb=30,iw=W-pl-pr,i
   if(proj&&cum.length)s+=`<line x1="${X(c.dayNow)}" y1="${Y(run)}" x2="${X(ml)}" y2="${Y(proj)}" stroke="var(--warn)" stroke-width="2" stroke-dasharray="2 5"/>`;
   if(cum.length){s+=`<polyline fill="none" stroke="var(--pri)" stroke-width="3" stroke-linejoin="round" points="${cum.map((v,i)=>X(i+1).toFixed(1)+','+Y(v).toFixed(1)).join(' ')}"/>`;s+=`<circle cx="${X(c.dayNow)}" cy="${Y(run)}" r="4.5" fill="var(--pri)"><title>${money(run)}</title></circle>`;}
   return s+'</svg>';}
-function donutFor(c){const rows=Object.keys(CATS).map(k=>({l:cn(k),c:CATS[k].c,v:sum(c.ex.filter(x=>x.cat===k),'amount')})).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);
+function donutFor(c){const rows=catKeys().map(k=>({l:cn(k),c:cat(k).c,v:sum(c.ex.filter(x=>x.cat===k),'amount')})).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);
   const inner=[{l:tr('ess'),c:'#0F766E',v:c.Ess},{l:tr('noness'),c:'#F59E0B',v:c.NonEss}];
   return{rows,svg:donutSVG(rows,inner,compact(c.E),tr('k_spent'),tr('ch_donut'))};}
 function legendHTML(rows,tot){return `<div class="legend col">${rows.map(r=>`<span><span><i style="background:${r.c}"></i>${esc(r.l)}</span><span class="num">${num(r.v)} (${pct(tot?r.v/tot:0)})</span></span>`).join('')}</div>`;}
@@ -717,21 +731,41 @@ V.dash=()=>{const c=calc();let h='';
 
 function expenseForm(x){x=x||{};const ck=x.cat||'food',es=x.id?x.ess:cat(ck).ess;return `<form data-form="expense" class="form" autocomplete="off"><input type="hidden" name="eid" value="${x.id||''}">
   <label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" placeholder="${dg(0)}" value="${amtVal(x.amount)}" required></label>
+  ${!x.id&&QK().length?`<div class="fld"><span>⚡ ${tr('qk_title')}</span><div class="chips">${QK().map(q=>`<button type="button" class="chip-b" data-act="fillQuick" data-id="${q.id}">${esc(q.icon||cat(q.cat).i)} ${esc(q.title)}${q.amount?' · '+compact(q.amount):''}</button>`).join('')}</div></div>`:''}
   ${PLN().length?`<label class="fld"><span>${tr('pl_link')}</span><select name="plan"><option value="">${tr('pl_none')}</option>${PLN().map(pl=>`<option value="${pl.id}" ${x.plan===pl.id?'selected':''}>📌 ${esc(pl.title)}</option>`).join('')}</select></label>`:''}
-  <div class="fld"><span>${tr('category')}</span><div class="chips">${Object.keys(CATS).map(k=>`<label class="chip"><input type="radio" name="cat" value="${k}" ${k===ck?'checked':''}><span>${CATS[k].i} ${cn(k)}</span></label>`).join('')}</div></div>
+  <div class="fld"><span>${tr('category')}</span><div class="chips">${catKeys().map(k=>`<label class="chip"><input type="radio" name="cat" value="${k}" ${k===ck?'checked':''}><span>${cat(k).i} ${cn(k)}</span></label>`).join('')}</div></div>
   <div class="fld"><span>${tr('kind')}</span><div class="seg"><label><input type="radio" name="ess" value="1" ${es?'checked':''}><span>${tr('ess')}</span></label><label><input type="radio" name="ess" value="0" ${es?'':'checked'}><span>${tr('noness')}</span></label></div></div>
   ${dateField(x.date)}<label class="fld"><span>${tr('descHint')}</span><input name="desc" maxlength="80" placeholder="${tr('descPh')}" value="${esc(x.desc||'')}"></label>
   <button class="btn pri wide">${x.id?tr('saveChanges'):tr('addExp')}</button></form>`;}
 V.expenses=()=>{const list=EXP().filter(x=>x.date.startsWith(viewPer)).sort(byDesc),days={};list.forEach(x=>(days[x.date]=days[x.date]||[]).push(x));
-  return plansHTML()+`<section class="card"><h2>${tr('addExp')}</h2>${expenseForm()}</section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b> · ${tr('nonEssTotal')}: <b class="warnc">${money(sum(list.filter(x=>!x.ess),'amount'))}</b></p>
+  return plansHTML()+quickCatsHTML()+`<section class="card"><h2>${tr('addExp')}</h2>${expenseForm()}</section><section class="card">${perNav()}<p>${tr('total')}: <b>${money(sum(list,'amount'))}</b> · ${tr('nonEssTotal')}: <b class="warnc">${money(sum(list.filter(x=>!x.ess),'amount'))}</b></p>
   ${list.length?Object.keys(days).map(d=>`<div class="day-h"><span>${dateLabel(d)}</span><span class="num">${num(sum(days[d],'amount'))}</span></div><ul class="list">${days[d].map(x=>expItem(x,true)).join('')}</ul>`).join(''):empty(tr('noExpMonth'))}${list.length?`<div class="sumfoot"><span>${tr('sf_exp')}</span><span>${money(sum(list,'amount'))}</span><span class="muted sm">${tr('rf_essSplit',{a:num(sum(list.filter(x=>x.ess),'amount')),b:num(sum(list.filter(x=>!x.ess),'amount'))})}</span></div>`:''}</section>`;};
 function plansHTML(){const c=calc(viewPer);return `<section class="card"><div class="card-h"><h2>📌 ${tr('pl_title')} · ${perName(c.p)}</h2><button class="btn sm pri" data-act="newPlan">${tr('pl_add')}</button></div><p class="hint">${tr('pl_hint')}</p>
   ${c.plans.length?`<ul class="list">${c.plans.map(r=>{const p=r.pl.amount?Math.min(100,r.spent/r.pl.amount*100):0;return `<li><span class="ic">${cat(r.pl.cat).i}</span><div class="grow"><div>${esc(r.pl.title)} <span class="tag ${r.pl.ess?'e':'n'}">${tr(r.pl.ess?'ess':'noness')}</span>${r.pl.autoCat?` <span class="tag sec">⚡ ${cn(r.pl.cat)}</span>`:''}</div><div class="track ${r.spent>r.pl.amount?'over':''}" style="margin:5px 0"><span style="width:${p}%"></span></div><div class="muted sm">${tr('pl_line',{a:num(r.spent),b:num(r.pl.amount),c:num(r.rem)})}</div></div>${c.isCur&&r.rem>0?`<button class="btn sm" data-act="payPlan" data-id="${r.pl.id}">${tr('pl_pay')}</button>`:''}<button class="del" data-act="editPlan" data-id="${r.pl.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delPlan" data-id="${r.pl.id}" aria-label="${tr('del')}">🗑</button></li>`;}).join('')}</ul>
   <p>${tr('pl_sum',{a:`<b>${money(c.planned)}</b>`,b:money(c.planSpent),c:`<b>${money(c.reserveAll)}</b>`})}</p>`:empty(tr('pl_empty'))}</section>`;}
+const EMOJIS=['⛽','🚗','🅿️','🚕','🚌','🚇','✈️','🏠','💡','💧','🔥','📱','🌐','🛒','🍞','🥛','🍎','🍕','🍔','☕','🍰','🧃','🎬','🎮','🎁','👕','👟','👜','💄','💅','💇','💊','🦷','🏋️','🧘','📚','🎓','✏️','👶','🐶','🐱','🧴','🧹','🧺','🧾','💳','🎉','🌸','🙏','🚬','🍷','🎵','💻','🔧','🏥','🚿'];
+function iconPicker(cur){return `<div class="fld"><span>${tr('qk_icon')}</span><div class="row"><input name="icon" class="icon-in" maxlength="8" value="${esc(cur||'')}" placeholder="⛽"></div><div class="emo">${EMOJIS.map(e=>`<button type="button" data-act="pickIcon" data-id="${e}" class="${e===cur?'on':''}">${e}</button>`).join('')}</div></div>`;}
+function quickCatsHTML(){const qs=QK(),cs=UCATS();
+  return `<section class="card"><div class="card-h"><h2>⚡ ${tr('qk_title')}</h2><button class="btn sm pri" data-act="newQuick">${tr('qk_add')}</button></div><p class="hint">${tr('qk_hint')}</p>
+  ${qs.length?`<div class="chips">${qs.map(q=>`<span class="qk"><button type="button" class="chip-b" data-act="useQuick" data-id="${q.id}">${esc(q.icon||cat(q.cat).i)} ${esc(q.title)}${q.amount?' · '+compact(q.amount):''}</button><button class="del" data-act="editQuick" data-id="${q.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delQuick" data-id="${q.id}" aria-label="${tr('del')}">🗑</button></span>`).join('')}</div>`:empty(tr('qk_empty'))}
+  <div class="card-h" style="margin-top:14px"><h3>🏷️ ${tr('uc_title')}</h3><button class="btn sm" data-act="newCat">${tr('uc_add')}</button></div>
+  ${cs.length?`<div class="chips">${cs.map(c=>`<span class="qk"><span class="tag" style="border-color:${c.c};font-size:13px">${esc(c.icon)} ${esc(c.name)}</span><button class="del" data-act="editCat" data-id="${c.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delCat" data-id="${c.id}" aria-label="${tr('del')}">🗑</button></span>`).join('')}</div>`:`<p class="hint">${tr('uc_empty')}</p>`}</section>`;}
+function ucatForm(c){c=c||{};return `<form data-form="ucat" class="form" autocomplete="off"><input type="hidden" name="cid" value="${c.id||''}">
+  <label class="fld"><span>${tr('uc_name')}</span><input name="name" required maxlength="30" value="${esc(c.name||'')}" placeholder="${tr('uc_namePh')}"></label>
+  ${iconPicker(c.icon||'')}
+  <div class="fld"><span>${tr('kind')}</span><div class="seg"><label><input type="radio" name="ess" value="1" ${c.id&&!c.ess?'':'checked'}><span>${tr('ess')}</span></label><label><input type="radio" name="ess" value="0" ${c.id&&!c.ess?'checked':''}><span>${tr('noness')}</span></label></div></div>
+  <button class="btn pri wide">${c.id?tr('saveChanges'):tr('uc_add')}</button></form>`;}
+function quickForm(q){q=q||{};const ck=q.cat||'fuel',es=q.id?q.ess:cat(ck).ess;return `<form data-form="quick" class="form" autocomplete="off"><input type="hidden" name="qid" value="${q.id||''}">
+  <label class="fld"><span>${tr('qk_name')}</span><input name="title" required maxlength="30" value="${esc(q.title||'')}" placeholder="${tr('qk_namePh')}"></label>
+  <label class="fld"><span>${tr('qk_amount')}</span><input name="amount" class="amt" inputmode="numeric" value="${amtVal(q.amount)}"></label>
+  <div class="fld"><span>${tr('category')}</span><div class="chips">${catKeys().map(k=>`<label class="chip"><input type="radio" name="cat" value="${k}" ${k===ck?'checked':''}><span>${cat(k).i} ${esc(cn(k))}</span></label>`).join('')}</div></div>
+  <div class="fld"><span>${tr('kind')}</span><div class="seg"><label><input type="radio" name="ess" value="1" ${es?'checked':''}><span>${tr('ess')}</span></label><label><input type="radio" name="ess" value="0" ${es?'':'checked'}><span>${tr('noness')}</span></label></div></div>
+  ${iconPicker(q.icon||'')}<p class="hint">${tr('qk_iconHint')}</p>
+  <button class="btn pri wide">${q.id?tr('saveChanges'):tr('qk_add')}</button></form>`;}
 function planForm(pl){pl=pl||{};const ck=pl.cat||'transport',es=pl.id?pl.ess:cat(ck).ess;return `<form data-form="plan" class="form" autocomplete="off"><input type="hidden" name="pid" value="${pl.id||''}">
   <label class="fld"><span>${tr('pl_name')}</span><input name="title" required maxlength="40" placeholder="${tr('pl_namePh')}" value="${esc(pl.title||'')}"></label>
   <label class="fld big"><span>${tr('pl_amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(pl.amount)}"></label>
-  <div class="fld"><span>${tr('category')}</span><div class="chips">${Object.keys(CATS).map(k=>`<label class="chip"><input type="radio" name="cat" value="${k}" ${k===ck?'checked':''}><span>${CATS[k].i} ${cn(k)}</span></label>`).join('')}</div></div>
+  <div class="fld"><span>${tr('category')}</span><div class="chips">${catKeys().map(k=>`<label class="chip"><input type="radio" name="cat" value="${k}" ${k===ck?'checked':''}><span>${cat(k).i} ${cn(k)}</span></label>`).join('')}</div></div>
   <div class="fld"><span>${tr('kind')}</span><div class="seg"><label><input type="radio" name="ess" value="1" ${es?'checked':''}><span>${tr('ess')}</span></label><label><input type="radio" name="ess" value="0" ${es?'':'checked'}><span>${tr('noness')}</span></label></div></div>
   <label class="row" style="align-items:flex-start;gap:8px;margin-bottom:6px"><input type="checkbox" name="autoCat" ${pl.id?(pl.autoCat?'checked':''):'checked'} style="margin-top:4px"><span><b>${tr('pl_auto')}</b><br><span class="hint">${tr('pl_autoHint')}</span></span></label>
   <button class="btn pri wide">${pl.id?tr('saveChanges'):tr('pl_add')}</button></form>`;}
@@ -824,7 +858,7 @@ function rfHTML(){const y=RF.year||todayJ()[0];let nav='';
   else nav=`<div class="row2">${rfDateBox('from',tr('rf_from'))}${rfDateBox('to',tr('rf_to'))}</div>`;
   return `<div class="seg">${[['month',tr('rf_month')],['year',tr('rf_year')],['range',tr('rf_range')]].map(([v,l])=>`<label><input type="radio" name="rfmode" data-rf="mode" value="${v}" ${RF.mode===v?'checked':''}><span>${l}</span></label>`).join('')}</div>${nav}
   <div class="fld"><span>${tr('rf_types')}</span><div class="chips">${RT.map(k=>`<label class="chip"><input type="checkbox" data-rf="type" value="${k}" ${RF.types.includes(k)?'checked':''}><span>${tr('rt_'+k)}</span></label>`).join('')}</div></div>
-  <div class="row2">${RF.types.includes('exp')?`<label class="fld"><span>${tr('rf_cat')}</span><select data-rf="cat"><option value="">${tr('rf_all')}</option>${Object.keys(CATS).map(k=>`<option value="${k}" ${RF.cat===k?'selected':''}>${CATS[k].i} ${cn(k)}</option>`).join('')}</select></label><label class="fld"><span>${tr('kind')}</span><select data-rf="ess"><option value="">${tr('rf_all')}</option><option value="1" ${RF.ess==='1'?'selected':''}>${tr('ess')}</option><option value="0" ${RF.ess==='0'?'selected':''}>${tr('noness')}</option></select></label>`:''}
+  <div class="row2">${RF.types.includes('exp')?`<label class="fld"><span>${tr('rf_cat')}</span><select data-rf="cat"><option value="">${tr('rf_all')}</option>${catKeys().map(k=>`<option value="${k}" ${RF.cat===k?'selected':''}>${cat(k).i} ${cn(k)}</option>`).join('')}</select></label><label class="fld"><span>${tr('kind')}</span><select data-rf="ess"><option value="">${tr('rf_all')}</option><option value="1" ${RF.ess==='1'?'selected':''}>${tr('ess')}</option><option value="0" ${RF.ess==='0'?'selected':''}>${tr('noness')}</option></select></label>`:''}
   ${RF.types.includes('inst')?`<label class="fld"><span>${tr('rf_debt')}</span><select data-rf="debt"><option value="">${tr('rf_all')}</option>${DEB().map(d=>`<option value="${d.id}" ${RF.debt===d.id?'selected':''}>${esc(d.title)}</option>`).join('')}</select></label>`:''}</div>
   <label class="fld"><span>${tr('rf_q')}</span><input data-rf="q" value="${esc(RF.q)}" placeholder="${tr('rf_qPh')}"></label>`;}
 function rfRow(t){const neg=t.k!=='inc';return `<tr><td class="num">${dg(t.d)}</td><td>${t.lbl}${t.k==='exp'?` <span class="tag ${t.ess?'e':'n'}">${tr(t.ess?'ess':'noness')}</span>`:''}</td><td>${esc(t.s)}</td><td class="num ${neg?'neg':'pos'}" dir="ltr" style="text-align:end">${neg?'−':'+'}${num(t.a)}</td></tr>`;}
@@ -869,8 +903,8 @@ function evalRows(c){const rows=[],add=(l,act,tgt,lvl)=>rows.push({l,act,tgt,lvl
   return rows;}
 function evalHTML(rows){if(!rows.length)return empty(tr('noData'));const ok=rows.filter(r=>r.lvl==='ok').length;
   return `<p><b>${tr('ev_score',{a:dg(ok),b:dg(rows.length)})}</b></p><div class="tbl"><table class="ev"><thead><tr><th>${tr('ev_metric')}</th><th>${tr('ev_actual')}</th><th>${tr('ev_target')}</th><th>${tr('p_status')}</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.l}</td><td class="num">${r.act}</td><td class="num muted">${r.tgt}</td><td style="white-space:nowrap"><span class="dot ${r.lvl}"></span> ${tr('ev_'+r.lvl)}</td></tr>`).join('')}</tbody></table></div>`;}
-function catBarsHTML(c){const rows=Object.keys(CATS).map(k=>{const a=c.ex.filter(x=>x.cat===k);return{k,v:sum(a,'amount'),ne:sum(a.filter(x=>!x.ess),'amount')};}).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);if(!rows.length)return empty(tr('noData'));const mx=rows[0].v;
-  return `<div class="tbl"><table class="cb"><tbody>${rows.map(r=>`<tr><td style="width:34%">${CATS[r.k].i} ${cn(r.k)}</td><td><div class="hb"><span style="width:${((r.v-r.ne)/mx*100).toFixed(1)}%;background:#0F766E"></span><span style="width:${(r.ne/mx*100).toFixed(1)}%;background:#F59E0B"></span></div></td><td class="num" style="width:30%;text-align:end">${num(r.v)} (${pct(r.v/c.E)})</td></tr>`).join('')}</tbody></table></div><div class="legend"><span><i style="background:#0F766E"></i>${tr('ess')} ${pct(c.E?c.Ess/c.E:0)}</span><span><i style="background:#F59E0B"></i>${tr('noness')} ${pct(c.E?c.NonEss/c.E:0)}</span></div>`;}
+function catBarsHTML(c){const rows=catKeys().map(k=>{const a=c.ex.filter(x=>x.cat===k);return{k,v:sum(a,'amount'),ne:sum(a.filter(x=>!x.ess),'amount')};}).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);if(!rows.length)return empty(tr('noData'));const mx=rows[0].v;
+  return `<div class="tbl"><table class="cb"><tbody>${rows.map(r=>`<tr><td style="width:34%">${cat(r.k).i} ${cn(r.k)}</td><td><div class="hb"><span style="width:${((r.v-r.ne)/mx*100).toFixed(1)}%;background:#0F766E"></span><span style="width:${(r.ne/mx*100).toFixed(1)}%;background:#F59E0B"></span></div></td><td class="num" style="width:30%;text-align:end">${num(r.v)} (${pct(r.v/c.E)})</td></tr>`).join('')}</tbody></table></div><div class="legend"><span><i style="background:#0F766E"></i>${tr('ess')} ${pct(c.E?c.Ess/c.E:0)}</span><span><i style="background:#F59E0B"></i>${tr('noness')} ${pct(c.E?c.NonEss/c.E:0)}</span></div>`;}
 
 /* ---- advisor ---- */
 V.advisor=()=>{const c=calc(),pot=potentialSavings(),st=S.settings;
@@ -1037,10 +1071,10 @@ async function ghPut(o){const body={files:{[GH_FILE]:{content:JSON.stringify(o)}
 async function remoteGet(){if(SC.provider==='gist')return ghGet();const r=await fetchT(await remoteURL(),{headers:restHdr(),cache:'no-store'});if(r.status===404)return null;if(!r.ok)throw new Error('HTTP '+r.status);const x=await r.text();return x&&x!=='null'?JSON.parse(x):null;}
 async function remotePut(o){if(SC.provider==='gist')return ghPut(o);const r=await fetchT(await remoteURL(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},restHdr()),body:JSON.stringify(o)});if(!r.ok)throw new Error('HTTP '+r.status);}
 /* Merge: newest `u` wins per record; deletions are tombstones */
-const COLLS=['incomes','expenses','debts','goals','plans'];
+const COLLS=['incomes','expenses','debts','goals','plans','cats','quick'];
 function mergeColl(a,b){const m=new Map();[...(a||[]),...(b||[])].forEach(r=>{if(!r||!r.id)return;const x=m.get(r.id);if(!x||(r.u||0)>(x.u||0))m.set(r.id,r);});const cut=Date.now()-180*864e5;return [...m.values()].filter(r=>!(r.del&&r.u<cut)).sort((x,y)=>x.id<y.id?-1:1);}
 function mergeState(l,r){const o={v:2,settings:((r.settings||{}).u||0)>((l.settings||{}).u||0)?r.settings:l.settings};COLLS.forEach(k=>o[k]=mergeColl(l[k],r[k]));return o;}
-const canon=s=>JSON.stringify({settings:s.settings,incomes:mergeColl(s.incomes,[]),expenses:mergeColl(s.expenses,[]),debts:mergeColl(s.debts,[]),goals:mergeColl(s.goals,[]),plans:mergeColl(s.plans||[],[])});
+const canon=s=>JSON.stringify({settings:s.settings,incomes:mergeColl(s.incomes,[]),expenses:mergeColl(s.expenses,[]),debts:mergeColl(s.debts,[]),goals:mergeColl(s.goals,[]),plans:mergeColl(s.plans||[],[]),cats:mergeColl(s.cats||[],[]),quick:mergeColl(s.quick||[],[])});
 let syncing=false,syncStart=0,again=false,syncTimer=null,retryTimer=null,retryN=0;const RETRY=[5,15,30,60];
 function scheduleRetry(){clearTimeout(retryTimer);const s=RETRY[Math.min(retryN,RETRY.length-1)];retryN++;retryTimer=setTimeout(()=>syncNow(),s*1000);}
 function scheduleSync(){if(!SC.enabled)return;clearTimeout(syncTimer);syncTimer=setTimeout(syncNow,1500);}
@@ -1091,7 +1125,7 @@ function importCSV(file){readFile(file,txt=>{const rows=parseCSV(txt);if(!rows.l
   const seen=new Set([...INC().map(x=>key('income-'+x.type,x.date,x.amount,x.desc)),...EXP().map(x=>key('expense',x.date,x.amount,x.desc))]);let n=0;
   rows.slice(1).forEach(r=>{const ty=r[0],dj=parseJ(r[1]||''),amount=parseAmount(r[2]),desc=r[5]||'';if(!dj||!(amount>0))return;const ds=jS(dj),k=key(ty,ds,amount,desc);if(seen.has(k))return;
     if(/^income-(salary|extra|advance)$/.test(ty))S.incomes.push(touch({id:uid(),ts:Date.now()+n,type:ty.slice(7),amount,date:ds,desc}));
-    else if(ty==='expense')S.expenses.push(touch({id:uid(),ts:Date.now()+n,amount,cat:CATS[r[3]]?r[3]:'misc',ess:r[4]==='1',date:ds,desc}));else return;seen.add(k);n++;});
+    else if(ty==='expense')S.expenses.push(touch({id:uid(),ts:Date.now()+n,amount,cat:isCat(r[3])?r[3]:'misc',ess:r[4]==='1',date:ds,desc}));else return;seen.add(k);n++;});
   persist();toast(tr('bk_rows',{a:dg(n)}));render();});}
 function printReport(){const c=calc(viewPer),dn=donutFor(c),cp=curPer(),td=todayJ();
   const kp=(l,v)=>`<div><small>${l}</small><b>${v}</b></div>`;
@@ -1141,6 +1175,15 @@ const ACT={
  editDebt:id=>{const d=findD(id);if(d)openModal(`<h2>✏️ ${esc(d.title)}</h2>`+debtForm(d));},
  pill:()=>{if(!SC.enabled){ACT.tab('settings');return;}retryN=0;syncing=false;toast(tr('s_ing'));syncNow().then(()=>toast(syncState.status==='synced'?tr('s_ok')+' ✓':tr('s_err')+': '+syncState.err,syncState.status==='synced'?'':'bad'));},
  reconcile:()=>openModal(`<h2>🏦 ${tr('rc_title')}</h2><p class="hint">${tr('rc_hint',{a:money(cashBalance())})}</p><form data-form="reconcile" class="form" autocomplete="off"><label class="fld big"><span>${tr('rc_lbl')}</span><input name="amount" class="amt" inputmode="numeric" required></label><label class="row" style="align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" name="neg"> ${tr('rc_neg')}</label><button class="btn pri wide">${tr('rc_save')}</button></form>`),
+ newQuick:()=>openModal(`<h2>⚡ ${tr('qk_add')}</h2>`+quickForm()),
+ editQuick:id=>{const q=QK().find(x=>x.id===id);if(q)openModal(`<h2>✏️ ${esc(q.title)}</h2>`+quickForm(q));},
+ delQuick:id=>{if(confirm(tr('confirmDel'))){tombstone('quick',id);persist();render();}},
+ useQuick:id=>{const q=QK().find(x=>x.id===id);if(!q)return;openModal(`<h2>${esc(q.icon||cat(q.cat).i)} ${esc(q.title)}</h2>`+expenseForm({amount:q.amount,cat:isCat(q.cat)?q.cat:'misc',ess:!!q.ess,desc:q.title}));},
+ fillQuick:(id,b)=>{const q=QK().find(x=>x.id===id),f=b.closest('form');if(!q||!f)return;if(q.amount)f.elements.amount.value=amtVal(q.amount);const c1=f.querySelector(`[name=cat][value="${isCat(q.cat)?q.cat:'misc'}"]`),e1=f.querySelector(`[name=ess][value="${q.ess?'1':'0'}"]`);if(c1)c1.checked=true;if(e1)e1.checked=true;f.elements.desc.value=q.title;if(!q.amount)f.elements.amount.focus();},
+ newCat:()=>openModal(`<h2>🏷️ ${tr('uc_add')}</h2>`+ucatForm()),
+ editCat:id=>{const c=UCATS().find(x=>x.id===id);if(c)openModal(`<h2>✏️ ${esc(c.name)}</h2>`+ucatForm(c));},
+ delCat:id=>{if(confirm(tr('uc_delQ'))){tombstone('cats',id);persist();render();}},
+ pickIcon:(e,b)=>{const f=b.closest('form');f.elements.icon.value=e;f.querySelectorAll('.emo button').forEach(x=>x.classList.toggle('on',x===b));},
  newPlan:()=>openModal(`<h2>📌 ${tr('pl_add')}</h2>`+planForm()),
  editPlan:id=>{const pl=PLN().find(x=>x.id===id);if(pl)openModal(`<h2>✏️ ${esc(pl.title)}</h2>`+planForm(pl));},
  delPlan:id=>{if(confirm(tr('confirmDel'))){tombstone('plans',id);persist();render();}},
@@ -1211,6 +1254,11 @@ const FORMS={
  pay:f=>{const E=f.elements,d=findD(E.did.value),amount=parseAmount(E.amount.value);if(!d||remCount(d)<=0)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;
    d.payments.push({period:nextUnpaid(d),on:date,amount});touch(d);persist();closeModal();const rc=remCount(d);toast(rc?tr('payOk',{t:d.title,n:dg(rc)}):tr('payDone',{t:d.title}));render();},
  payEdit:f=>{const E=f.elements,[id,i]=E.ref.value.split('|'),d=findD(id),q=d&&d.payments[+i],amount=parseAmount(E.amount.value);if(!q)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;q.on=date;q.amount=amount;touch(d);persist();closeModal();toast(tr('saved'));render();},
+ ucat:f=>{const E=f.elements,name=E.name.value.trim();if(!name)return toast(tr('v_title'),'bad');const data={name,icon:E.icon.value.trim()||'🏷️',ess:(f.querySelector('[name=ess]:checked')||{}).value==='1'};
+   const ex=E.cid.value&&UCATS().find(x=>x.id===E.cid.value);S.cats=S.cats||[];if(ex){Object.assign(ex,data);touch(ex);}else S.cats.push(touch(Object.assign({id:'u'+uid(),c:CPAL[UCATS().length%CPAL.length]},data)));persist();closeModal();toast(tr('saved'));render();},
+ quick:f=>{const E=f.elements,title=E.title.value.trim();if(!title)return toast(tr('v_title'),'bad');const ck=(f.querySelector('[name=cat]:checked')||{}).value||'misc';
+   const data={title,amount:parseAmount(E.amount.value)||0,cat:ck,ess:(f.querySelector('[name=ess]:checked')||{}).value==='1',icon:E.icon.value.trim()};
+   const ex=E.qid.value&&QK().find(x=>x.id===E.qid.value);S.quick=S.quick||[];if(ex){Object.assign(ex,data);touch(ex);}else S.quick.push(touch(Object.assign({id:uid()},data)));persist();closeModal();toast(tr('saved'));render();},
  plan:f=>{const E=f.elements,title=E.title.value.trim(),amount=parseAmount(E.amount.value);if(!title)return toast(tr('v_title'),'bad');if(!(amount>0))return toast(tr('badAmount'),'bad');const ck=(f.querySelector('[name=cat]:checked')||{}).value||'misc',es=(f.querySelector('[name=ess]:checked')||{}).value==='1';
    const data={title,amount,cat:ck,ess:es,autoCat:E.autoCat.checked};const ex=E.pid.value&&PLN().find(x=>x.id===E.pid.value);if(ex){Object.assign(ex,data);touch(ex);}else{S.plans=S.plans||[];S.plans.push(touch(Object.assign({id:uid()},data)));}persist();closeModal();toast(tr('saved'));render();},
  contrib:f=>{const E=f.elements,g=findG(E.gid.value),amount=parseAmount(E.amount.value);if(!g)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;g.contributions.push({id:uid(),date,amount});touch(g);persist();closeModal();toast(tr('g_depOk'));render();},
