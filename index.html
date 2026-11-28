@@ -251,6 +251,19 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 .emo button{border:1px solid transparent;background:var(--sunk);border-radius:10px;font-size:20px;height:38px;cursor:pointer}
 .emo button.on{border-color:var(--pri);background:var(--pri-soft)}
 .icon-in{font-size:20px;text-align:center;max-width:90px}
+.hello{background:linear-gradient(135deg,var(--pri-soft),var(--sec-soft));border-radius:18px;padding:14px 16px;margin-bottom:10px}
+.hello .hi{font-weight:800;font-size:17px}.hello p{margin:4px 0 0;font-size:14px}
+.poem{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:14px 16px;margin-bottom:12px;text-align:center}
+.poem .pv{font-size:16px;line-height:2.1;font-weight:500}.poem .pf{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12.5px;color:var(--muted)}
+.bkb{background:var(--warn-soft);border:1px solid var(--warn);border-radius:16px;padding:12px 14px;margin-bottom:12px}.bkb p{margin:4px 0;font-size:13.5px}
+.loanbox{display:none;border:1px dashed var(--line);border-radius:12px;padding:10px;margin-bottom:12px}
+.form:has(input[name=type][value=loan]:checked) .loanbox{display:block}
+.chip-b.on{background:var(--pri-strong);color:var(--on-pri);border-color:transparent}
+.cele{text-align:center}.cele .big{font-size:56px;line-height:1.2}.cele .cmsg{font-size:16px;font-weight:600;margin:8px 0 12px}
+.gate{position:fixed;inset:0;z-index:95;background:linear-gradient(160deg,var(--hero1),var(--hero2));display:flex;align-items:center;justify-content:center;padding:20px}
+.gate[hidden]{display:none}
+.gbox{background:var(--card);border-radius:22px;padding:22px;width:min(380px,100%);box-shadow:var(--shadow)}
+.gbox h2{text-align:center;margin:4px 0}.gav{font-size:46px;text-align:center}.gaff{text-align:center;color:var(--muted);font-size:14px;margin:6px 0 14px}
 /* fab, modal, picker, toast */
 .fab{position:fixed;inset-inline-start:auto;inset-inline-end:18px;bottom:calc(80px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:18px;border:0;background:linear-gradient(135deg,var(--pri-strong),var(--sec-strong));color:#fff;font-size:32px;line-height:1;box-shadow:0 8px 22px rgba(79,70,229,.3);cursor:pointer;z-index:25}
 :root[dir=rtl] .fab{inset-inline-end:auto;inset-inline-start:auto;left:18px;right:auto}
@@ -312,6 +325,7 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
         <button class="pill" id="syncPill" data-act="pill"><span class="dot"></span><span id="syncTxt"></span></button>
         <div class="lang" role="group" aria-label="Language"><button data-act="lang" data-id="fa">FA</button><button data-act="lang" data-id="en">EN</button></div>
         <button class="icon-btn" id="themeBtn" data-act="theme"></button>
+        <button class="icon-btn" id="profBtn" data-act="profMenu" aria-label="profile">🌸</button>
         <button class="icon-btn gear" data-act="tab" data-id="settings" id="gearBtn">⚙️</button>
       </div>
     </header>
@@ -323,10 +337,11 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 <div class="dp" id="dp" role="dialog" aria-modal="true"><div class="dp-box" id="dpBody"></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="print"></div>
+<div id="gate" class="gate" hidden></div>
 
 <script>
 'use strict';
-const APP_VERSION='3.7';let lastDiag='';
+const APP_VERSION='3.8';let lastDiag='';
 /* =====================================================================
    1. UTILITIES, I18N & FORMATTING
    ===================================================================== */
@@ -487,6 +502,14 @@ const D={
  set_cal:['تقویم','Calendar'],cal_j:['فقط شمسی','Solar only'],cal_jg:['شمسی + میلادی','Solar + Gregorian'],cal_gj:['میلادی + شمسی','Gregorian + Solar'],set_hol:['یادداشت تعطیلات این کشورها','Holiday notes for these countries'],hol_hint:['تعطیلات فقط به صورت یادداشت زیر تقویم و بالای برنامه نشان داده می‌شوند. بودجه ماهانه همچنان بر اساس ماه شمسی است.','Holidays appear as notes under the calendar and in the header. Monthly budgets still follow the solar month.'],hol_none2:['این ماه تعطیلی برای کشورهای انتخاب‌شده ندارد','No holidays this month for the selected countries'],hol_partial:['— برای همه تعطیل نیست','— not a day off for everyone'],
  qk_title:['هزینه‌های پرتکرار','Frequent expenses'],qk_add:['+ پرتکرار','+ Frequent'],qk_hint:['هزینه‌هایی که زیاد تکرار می‌شوند (بنزین، قهوه، نان…). با یک لمس فرم ثبت هزینه پر می‌شود.','Expenses you repeat often (fuel, coffee…). One tap fills the expense form.'],qk_empty:['هنوز چیزی اضافه نکرده‌اید. مثلاً «⛽ بنزین».','Nothing yet. E.g. “⛽ Fuel”.'],qk_name:['عنوان','Title'],qk_namePh:['مثلاً بنزین، قهوه، نان','e.g. fuel, coffee, bread'],qk_amount:['مبلغ معمول (اختیاری)','Usual amount (optional)'],qk_icon:['آیکون','Icon'],qk_iconHint:['اگر آیکون انتخاب نکنید، آیکون دسته استفاده می‌شود.','Leave empty to use the category icon.'],
  uc_title:['دسته‌های من','My categories'],uc_add:['+ دسته جدید','+ New category'],uc_empty:['می‌توانید دسته دلخواه با آیکون خودتان بسازید؛ مثلاً 💅 ناخن یا 🏋️ باشگاه.','Create your own categories with an icon, e.g. 💅 Nails or 🏋️ Gym.'],uc_name:['اسم دسته','Category name'],uc_namePh:['مثلاً ناخن، باشگاه، گربه','e.g. nails, gym, pet'],uc_delQ:['این دسته حذف شود؟ هزینه‌های قبلی این دسته در «متفرقه» نشان داده می‌شوند.','Delete this category? Its past expenses will show under “Misc”.'],
+ hello:['سلام {a}','Hi {a}'],poemNext:['شعر دیگر','Another verse'],
+ bk_weekly:['وقت پشتیبان هفتگی است','Time for your weekly backup'],bk_weeklyX:['یک فایل پشتیبان بگیرید و برای خودتان (تلگرام، ایمیل یا Drive) بفرستید تا اگر گوشی عوض شد، اطلاعاتتان نپرد.','Save a backup file and send it to yourself so nothing is lost if your phone changes.'],bk_later:['بعداً','Later'],
+ loan:['وام','Loan'],loanSub:['+ وام دریافتی {a} (جدا از درآمد)','+ loan received {a} (not counted as income)'],ln_hint:['وام جزو درآمد ماهانه حساب نمی‌شود تا بودجه و سقف خرج روزانه الکی بالا نرود؛ فقط به موجودی نقد اضافه می‌شود.','Loans are not counted as monthly income, so your budget is not inflated; they only add to cash.'],ln_mk:['برای این وام قسط بساز','Create installments for this loan'],ln_fill:['مبلغ قسط، تعداد و روز سررسید وام را وارد کنید','Enter installment amount, count and due day'],ln_ok:['وام ثبت شد و قسط «{t}» ساخته شد','Loan saved and “{t}” installments created'],ln_linked:['قسط: {t}','installments: {t}'],ln_nolink:['بدون قسط','no installments'],ln_link:['مربوط به وام دریافتی','Linked loan received'],ln_recv:['وام دریافتی {a} در {d}','Loan received {a} on {d}'],ln_cost:['هزینه وام (سود و کارمزد): {a} ({b})','Cost of loan: {a} ({b})'],
+ ce_title:['«{t}» تمام شد!','“{t}” is paid off!'],ce_paid:['مجموع پرداخت‌شده در برنامه','Total paid in the app'],ce_free:['آزاد شد در هر ماه','Freed every month'],ce_tip:['پیشنهاد: همین مبلغ را هر ماه به یکی از هدف‌هایت واریز کن یا به قسط بعدی اضافه کن (روش گلوله‌برفی).','Tip: send this amount to a goal each month or add it to your next debt (snowball).'],ce_ok:['ممنون!','Thanks!'],
+ pf_title:['پروفایل من','My profile'],pf_name:['اسم','Name'],pf_namePh:['مثلاً غزال','e.g. Sara'],pf_me:['من','Me'],pf_list:['پروفایل‌های این دستگاه','Profiles on this device'],pf_new:['پروفایل جدید','New profile'],pf_hint:['هر پروفایل اطلاعات، همگام‌سازی و رمز جداگانه دارد. مناسب وقتی چند نفر از یک گوشی یا کامپیوتر استفاده می‌کنند.','Each profile has separate data, sync and password — great when several people share a device.'],pf_switchTo:['رفتن به پروفایل {a}','Switch to {a}'],pf_lock:['قفل کن','Lock now'],pf_settings:['تنظیمات پروفایل','Profile settings'],pf_delQ:['پروفایل «{a}» و همه اطلاعاتش از این دستگاه حذف شود؟','Delete profile “{a}” and all its data from this device?'],pf_newHint:['رمز اختیاری است. اگر بگذارید، اطلاعات این پروفایل رمزنگاری می‌شود.','Password is optional; if set, this profile’s data is encrypted.'],pf_create:['ساخت پروفایل','Create profile'],pf_other:['پروفایل دیگر:','Other profile:'],optional:['اختیاری','optional'],
+ pw_title:['رمز ورود','Password'],pw_on:['رمز فعال است: اطلاعات این پروفایل روی دستگاه رمزنگاری شده و هر بار باز کردن برنامه رمز می‌خواهد.','Password on: this profile’s data is encrypted and the app asks for it on each open.'],pw_off:['بدون رمز. با گذاشتن رمز، اطلاعات این پروفایل رمزنگاری می‌شود.','No password. Setting one encrypts this profile’s data.'],pw_new:['رمز جدید','New password'],pw_again:['تکرار رمز','Repeat password'],pw_set:['گذاشتن رمز','Set password'],pw_change:['تغییر رمز','Change password'],pw_remove:['برداشتن رمز','Remove password'],pw_removeQ:['رمز برداشته شود؟ اطلاعات بدون رمزنگاری ذخیره می‌شود.','Remove password? Data will be stored unencrypted.'],pw_removed:['رمز برداشته شد','Password removed'],pw_saved:['رمز ذخیره شد 🔒','Password saved 🔒'],pw_short:['رمز باید حداقل ۴ کاراکتر باشد','At least 4 characters'],pw_mismatch:['دو رمز یکی نیستند','Passwords do not match'],pw_warn:['اگر رمز را فراموش کنید، اطلاعات این پروفایل باز نمی‌شود؛ فقط از همگام‌سازی یا فایل پشتیبان برمی‌گردد. رمز را جایی یادداشت کنید.','If you forget it, this profile cannot be opened; only sync or a backup file can restore it. Write it down.'],pw_enter:['رمز را وارد کنید','Enter your password'],pw_login:['ورود','Unlock'],pw_wrong:['رمز اشتباه است','Wrong password'],
+ dl_title:['پیام روزانه','Daily message'],dl_on:['نمایش شعر و جمله روز','Show verse & message'],dl_off:['نمایش نده','Hide'],dl_hint:['هر روز یک بیت از حافظ یا مولانا و یک جمله مهربان بالای داشبورد نمایش داده می‌شود.','A verse by Hafez or Rumi and a kind message appear on the dashboard each day.'],
+ sn_title:['نسخه‌های خودکار','Automatic snapshots'],sn_hint:['برنامه هر هفته (و قبل از بازیابی‌ها) خودکار یک نسخه از اطلاعات را روی همین دستگاه نگه می‌دارد؛ ۴ نسخه آخر. برای وقتی که اشتباهی چیزی پاک شود — جای فایل پشتیبان بیرون از گوشی را نمی‌گیرد.','Weekly (and before restores) the app keeps a copy on this device — last 4. Helps after accidental deletes; it does not replace an off-device backup.'],sn_none:['هنوز نسخه‌ای ساخته نشده','No snapshots yet'],sn_restore:['بازیابی (ادغام)','Restore (merge)'],sn_q:['این نسخه با اطلاعات فعلی ادغام شود؟','Merge this snapshot into current data?'],sn_err:['بازیابی انجام نشد','Restore failed'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -502,6 +525,49 @@ const amtVal=n=>n?dg(Math.round(n).toLocaleString('en-US')):'';
 const pct=r=>dg(Math.round(r*100))+(FA_LANG()?'٪':'%');
 function compact(n){const a=Math.abs(n);if(a>=1e9)return dg(+(n/1e9).toFixed(1))+(FA_LANG()?' میلیارد':'B');if(a>=1e6)return dg(+(n/1e6).toFixed(1))+(FA_LANG()?'م':'M');if(a>=1e3)return dg(Math.round(n/1e3))+(FA_LANG()?' هزار':'K');return dg(Math.round(n));}
 const empty=x=>`<div class="empty">${x}</div>`;
+
+/* ---- daily poetry (verified classical verses) ---- */
+const POEMS=[
+ ['یوسف گم گشته باز آید به کنعان غم مخور','کلبه احزان شود روزی گلستان غم مخور','حافظ'],
+ ['رسید مژده که ایام غم نخواهد ماند','چنان نماند و چنین نیز هم نخواهد ماند','حافظ'],
+ ['ای دل صبور باش و مخور غم که عاقبت','این شام صبح گردد و این شب سحر شود','حافظ'],
+ ['بیا تا گل برافشانیم و می در ساغر اندازیم','فلک را سقف بشکافیم و طرحی نو دراندازیم','حافظ'],
+ ['هرگز نمیرد آن که دلش زنده شد به عشق','ثبت است بر جریده عالم دوام ما','حافظ'],
+ ['نفس باد صبا مشک‌فشان خواهد شد','عالم پیر دگرباره جوان خواهد شد','حافظ'],
+ ['دوش وقت سحر از غصه نجاتم دادند','واندر آن ظلمت شب آب حیاتم دادند','حافظ'],
+ ['سحر با باد می‌گفتم حدیث آرزومندی','خطاب آمد که واثق شو به الطاف خداوندی','حافظ'],
+ ['مرده بدم زنده شدم گریه بدم خنده شدم','دولت عشق آمد و من دولت پاینده شدم','مولانا · دیوان شمس'],
+ ['بی همگان به سر شود بی تو به سر نمی‌شود','داغ تو دارد این دلم جای دگر نمی‌شود','مولانا · دیوان شمس'],
+ ['بنمای رخ که باغ و گلستانم آرزوست','بگشای لب که قند فراوانم آرزوست','مولانا · دیوان شمس'],
+ ['من غلام قمرم غیر قمر هیچ مگو','پیش من جز سخن شمع و شکر هیچ مگو','مولانا · دیوان شمس'],
+ ['ای قوم به حج رفته کجایید کجایید','معشوق همین جاست بیایید بیایید','مولانا · دیوان شمس'],
+ ['این جهان کوه است و فعل ما ندا','سوی ما آید نداها را صدا','مولانا · مثنوی'],
+ ['آب کم جو تشنگی آور به دست','تا بجوشد آبت از بالا و پست','مولانا · مثنوی'],
+ ['تو برای وصل کردن آمدی','نی برای فصل کردن آمدی','مولانا · مثنوی'],
+ ['هر کسی کو دور ماند از اصل خویش','باز جوید روزگار وصل خویش','مولانا · مثنوی']];
+const AFFIRM=[
+ ['تو همین حالا هم کافی هستی؛ هر قدم کوچکی که برمی‌داری ارزشمند است.','You are already enough; every small step you take matters.'],
+ ['مراقبت از پولت یعنی مراقبت از خودت. امروز به خودت افتخار کن.','Taking care of your money is taking care of yourself. Be proud today.'],
+ ['اشتباه‌های دیروز درس‌های امروزند؛ با خودت مهربان باش.','Yesterday’s mistakes are today’s lessons; be kind to yourself.'],
+ ['تو لایق آرامش، امنیت و یک زندگی خوب هستی.','You deserve peace, safety and a good life.'],
+ ['همین که حواست به آینده‌ات هست، یعنی خودت را دوست داری.','Caring about your future is a way of loving yourself.'],
+ ['لازم نیست همه چیز را یک‌شبه درست کنی؛ پیوستگی، قدرت توست.','You don’t have to fix everything overnight; consistency is your strength.'],
+ ['تو قوی‌تر از چیزی هستی که فکر می‌کنی.','You are stronger than you think.'],
+ ['با خودت همان‌قدر مهربان باش که با کسانی که دوستشان داری.','Be as kind to yourself as you are to the people you love.'],
+ ['ارزش تو به عدد حساب بانکی‌ات نیست؛ تو به خودی خود ارزشمندی.','Your worth is not your bank balance; you are valuable as you are.'],
+ ['رشد آرام هم رشد است؛ به مسیرت اعتماد کن.','Slow growth is still growth; trust your path.'],
+ ['امروز یک کار کوچک برای خودت انجام بده؛ تو لایقش هستی.','Do one small thing for yourself today; you deserve it.'],
+ ['تو داری آینده‌ای می‌سازی که خودِ فردایت از تو ممنون خواهد بود.','You are building a future your future self will thank you for.'],
+ ['حق داری برای خودت وقت بگذاری و از خودت مراقبت کنی.','You have every right to take time for yourself.'],
+ ['هر روز که تلاش می‌کنی، یک قدم به رؤیاهایت نزدیک‌تر می‌شوی.','Every day you try, you get one step closer to your dreams.']];
+const CHEERS=[
+ ['تبریک! یک بار سنگین از روی دوشت برداشته شد. به خودت افتخار کن! 🎉','Congratulations! A heavy weight is off your shoulders. Be proud! 🎉'],
+ ['ماه‌ها صبر و پیوستگی، نتیجه داد. تو ثابت کردی که می‌توانی. 💪','Months of patience paid off. You proved you can. 💪'],
+ ['یک قسط کمتر یعنی یک نفس راحت‌تر. آفرین به تو! 🌸','One less installment means one deeper breath. Well done! 🌸'],
+ ['این پیروزی کوچک نیست؛ قدم بزرگی به سمت آزادی مالی برداشتی. ✨','This is no small win; you took a big step toward financial freedom. ✨'],
+ ['تو از پسش برآمدی! حالا آن پول را برای رؤیاهایت کنار بگذار. 🚀','You did it! Now put that money toward your dreams. 🚀']];
+const dayIdx=n=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5)%n;
+let poemShift=0;
 
 /* =====================================================================
    2. JALALI CALENDAR (zero dependency)
@@ -534,7 +600,11 @@ function fmtDur(days){days=Math.max(0,Math.round(days));let m=Math.floor(days/MO
 /* =====================================================================
    3. STATE, STORAGE & MIGRATION
    ===================================================================== */
-const KEY='dk2_state';
+let PROFS=loadJSON('dk2_profiles',{list:[],last:'main'});if(!PROFS.list.length)PROFS.list=[{id:'main',name:'',emoji:'🌸',pw:null}];
+let PROF=PROFS.list.find(x=>x.id===PROFS.last)||PROFS.list[0];
+const pkey=b=>PROF.id==='main'?b:b+'_'+PROF.id;
+let KEY=pkey('dk2_state'),MKEY=pkey('dk2_meta'),SKEY=pkey('dk2_sync'),SNAPKEY=pkey('dk2_snap'),PKEY=null,NEEDS_UNLOCK=false;
+const saveProfs=()=>saveJSON('dk2_profiles',PROFS);
 const CATS={food:{fa:'خوراک و خواربار',en:'Food & groceries',i:'🛒',ess:true,c:'#0D9488'},housing:{fa:'اجاره و قبوض',en:'Rent & utilities',i:'🏠',ess:true,c:'#6366F1'},transport:{fa:'حمل‌ونقل',en:'Transport',i:'🚌',ess:true,c:'#0EA5E9'},fuel:{fa:'بنزین و سوخت',en:'Fuel',i:'⛽',ess:true,c:'#EF4444'},fun:{fa:'تفریح و رستوران',en:'Dining & fun',i:'☕',ess:false,c:'#F59E0B'},clothing:{fa:'پوشاک',en:'Clothing',i:'👕',ess:false,c:'#EC4899'},health:{fa:'درمان و سلامت',en:'Health',i:'💊',ess:true,c:'#10B981'},misc:{fa:'متفرقه',en:'Misc',i:'📦',ess:false,c:'#94A3B8'}};
 const CPAL=['#8B5CF6','#14B8A6','#F43F5E','#84CC16','#06B6D4','#D946EF','#F97316','#64748B','#A16207','#0EA5E9'];
 const UCATS=()=>(typeof S!=='undefined'&&S.cats?S.cats:[]).filter(x=>!x.del);
@@ -556,13 +626,17 @@ function normalize(o,stampOld){const d=blank();if(!o||typeof o!=='object')return
   r.settings.u=st(r.settings.u);['incomes','expenses','debts','goals','plans','cats','quick'].forEach(k=>r[k].forEach(x=>{x.id=x.id||uid();x.u=st(x.u);}));
   delete r.settings.lastBackup;return r;}
 let storageOK=true;try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){storageOK=false;}
-function loadState(){if(!storageOK)return blank();try{const v2=localStorage.getItem(KEY);if(v2)return normalize(JSON.parse(v2));const v1=localStorage.getItem('dakhlokharj_v1');if(v1)return normalize(JSON.parse(v1));}catch(e){}return blank();}
+function loadState(){if(!storageOK)return blank();try{const v2=localStorage.getItem(KEY);if(v2){const o=JSON.parse(v2);if(o&&o.enc){NEEDS_UNLOCK=true;return blank();}return normalize(o);}if(PROF.id!=='main')return blank();const v1=localStorage.getItem('dakhlokharj_v1');if(v1)return normalize(JSON.parse(v1));}catch(e){}return blank();}
 let S=loadState();
-let META=loadJSON('dk2_meta',{deviceId:uid(),lastBackup:0,lastSync:0,notified:{}});saveJSON('dk2_meta',META);
+let META=loadJSON(MKEY,{deviceId:uid(),lastBackup:0,lastSync:0,notified:{}});saveJSON(MKEY,META);
 const live=a=>a.filter(x=>!x.del);
 const INC=()=>live(S.incomes),EXP=()=>live(S.expenses),DEB=()=>live(S.debts),GOA=()=>live(S.goals),PLN=()=>live(S.plans||[]),QK=()=>live(S.quick||[]);
 const touch=r=>{r.u=Date.now();return r;};
-function persist(){if(storageOK&&!saveJSON(KEY,S))toast(tr('storeFull'),'bad');scheduleSync();}
+let saveQ=Promise.resolve();
+function saveState(){if(!storageOK||NEEDS_UNLOCK)return;const txt=JSON.stringify(S);
+  if(!PKEY){try{localStorage.setItem(KEY,txt);}catch(e){toast(tr('storeFull'),'bad');}return;}
+  const k=PKEY;saveQ=saveQ.then(()=>encWith(k,txt)).then(env=>{try{localStorage.setItem(KEY,JSON.stringify(Object.assign({enc:2},env)));}catch(e){toast(tr('storeFull'),'bad');}}).catch(()=>{});}
+function persist(){saveState();scheduleSync();}
 function tombstone(coll,id){const r=S[coll].find(x=>x.id===id);if(!r)return;Object.keys(r).forEach(k=>{if(k!=='id')delete r[k];});r.del=true;touch(r);}
 
 /* =====================================================================
@@ -593,7 +667,7 @@ function snowball(extra){
 /* Priority-first monthly engine */
 function calc(p){
   p=p||curPer();const st=S.settings,td=todayJ(),isCur=p===curPer();const[y,m]=p.split('/').map(Number);const ml=mLen(y,m);
-  const I=sum(INC().filter(x=>x.date.startsWith(p)),'amount');
+  const I=sum(INC().filter(x=>x.date.startsWith(p)&&x.type!=='loan'),'amount'),loanIn=sum(INC().filter(x=>x.date.startsWith(p)&&x.type==='loan'),'amount');
   let paid=0,unpaid=0;DEB().forEach(d=>{d.payments.forEach(x=>{if(x.on.startsWith(p))paid+=x.amount;});if(isCur)unpaid+=unpaidDueCount(d,p)*d.monthly;});
   const L=paid+unpaid,N=Math.max(0,I-L),shortfall=Math.max(0,L-I);
   let needs,wants,save;
@@ -609,7 +683,7 @@ function calc(p){
   const safeDaily=remDays>0?Math.max(0,R-reserve+todayFree)/remDays:0;
   const contrib=GOA().reduce((a,g)=>a+sum(g.contributions.filter(c=>c.date.startsWith(p)),'amount'),0);
   const dayNow=isCur?td[2]:ml,burn=dayNow>0?E/dayNow:0,runOut=burn>0&&spendable>0?Math.ceil(spendable/burn):null;
-  return{p,y,m,ml,I,paid,unpaid,L,N,shortfall,needs,wants,save,E,Ess,NonEss,spendable,R,remDays,todaySpent,todayFree,plans,planned,planSpent,reserve,reserveAll,need:L+planned,safeDaily,contrib,dayNow,burn,runOut,isCur,ex};}
+  return{p,y,m,ml,I,loanIn,paid,unpaid,L,N,shortfall,needs,wants,save,E,Ess,NonEss,spendable,R,remDays,todaySpent,todayFree,plans,planned,planSpent,reserve,reserveAll,need:L+planned,safeDaily,contrib,dayNow,burn,runOut,isCur,ex};}
 function planResolver(){const pls=PLN(),ids=new Set(pls.map(p=>p.id)),auto={};pls.forEach(pl=>{if(pl.autoCat&&!auto[pl.cat])auto[pl.cat]=pl.id;});return x=>x.plan&&ids.has(x.plan)?x.plan:(auto[x.cat]||'');}
 function cashBalance(){let c=S.settings.opening||0;c+=sum(INC(),'amount')-sum(EXP(),'amount');DEB().forEach(d=>c-=sum(d.payments,'amount'));GOA().forEach(g=>c-=sum(g.contributions,'amount'));return c;}
 
@@ -703,12 +777,17 @@ function bar(label,used,budget,cls){const p=budget>0?Math.min(100,used/budget*10
 const led=(l,v,s,cls)=>`<div class="it ${cls||''}"><div class="lbl">${l}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
 function alertsHTML(al){if(!al.length)return'';const np=('Notification' in window)&&Notification.permission==='default';return `<section>${al.map(a=>`<div class="alert ${a.lvl}"><span>${a.lvl==='bad'?'⛔':'⏰'} ${a.txt}</span><button class="btn sm" data-act="pay" data-id="${a.d.id}">${tr('paidIt')}</button></div>`).join('')}${np?`<p class="hint"><button class="link" data-act="notif">${tr('notifEnable')}</button></p>`:''}</section>`;}
 function expItem(x,act){const c=cat(x.cat);return `<li><span class="ic">${c.i}</span><div class="grow"><div>${esc(x.desc)||cn(x.cat)} <span class="tag ${x.ess?'e':'n'}">${tr(x.ess?'ess':'noness')}</span></div><div class="muted sm">${dateLabel(x.date)} · ${cn(x.cat)}</div></div><b class="num neg" dir="ltr">−${num(x.amount)}</b>${act?`<button class="del" data-act="editExp" data-id="${x.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delExp" data-id="${x.id}" aria-label="${tr('del')}">🗑</button>`:''}</li>`;}
-function incItem(x,act){const s=x.type==='salary',ad=x.type==='advance';return `<li><span class="ic">${s?'💼':ad?'🤝':'✨'}</span><div class="grow"><div>${esc(x.desc)||typeLbl(x.type)} ${ad?`<span class="tag ${x.settledBy?'ok':'warn'}">${x.settledBy?tr('adv_done'):tr('adv_open')}</span>`:''}</div><div class="muted sm">${dateLabel(x.date)} · ${typeLbl(x.type)}</div></div><b class="num pos" dir="ltr">+${num(x.amount)}</b>${act?`<button class="del" data-act="editInc" data-id="${x.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delInc" data-id="${x.id}" aria-label="${tr('del')}">🗑</button>`:''}</li>`;}
+function incItem(x,act){const s=x.type==='salary',ad=x.type==='advance';return `<li><span class="ic">${s?'💼':ad?'🤝':x.type==='loan'?'🏦':'✨'}</span><div class="grow"><div>${esc(x.desc)||typeLbl(x.type)} ${ad?`<span class="tag ${x.settledBy?'ok':'warn'}">${x.settledBy?tr('adv_done'):tr('adv_open')}</span>`:''}${x.type==='loan'?`<span class="tag sec">🏦 ${(()=>{const d=x.loanDebt&&DEB().find(z=>z.id===x.loanDebt);return d?tr('ln_linked',{t:esc(d.title)}):tr('ln_nolink');})()}</span>`:''}</div><div class="muted sm">${dateLabel(x.date)} · ${typeLbl(x.type)}</div></div><b class="num pos" dir="ltr">+${num(x.amount)}</b>${act?`<button class="del" data-act="editInc" data-id="${x.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delInc" data-id="${x.id}" aria-label="${tr('del')}">🗑</button>`:''}</li>`;}
 function perNav(){return `<div class="pernav"><button class="btn sm" data-act="perPrev">${tr('prevM')}</button><b>${perName(viewPer)}</b><button class="btn sm" data-act="perNext" ${viewPer>=curPer()?'disabled':''}>${tr('nextM')}</button></div>`;}
-const typeLbl=t=>tr(t==='salary'?'salary':t==='advance'?'advance':'extra');
+const typeLbl=t=>tr(t==='salary'?'salary':t==='advance'?'advance':t==='loan'?'loan':'extra');
 const byDesc=(a,b)=>a.date<b.date?1:a.date>b.date?-1:(b.ts||0)-(a.ts||0);
 
-V.dash=()=>{const c=calc();let h='';
+function dailyHTML(){if(UI.daily===false)return '';const a=AFFIRM[dayIdx(AFFIRM.length)],po=POEMS[(dayIdx(POEMS.length)+poemShift)%POEMS.length],nm=PROF.name?esc(PROF.name)+' ':'';
+  return `<section class="hello"><div class="hi">${tr('hello',{a:nm})} ${esc(PROF.emoji||'🌸')}</div><p>${a[FA_LANG()?0:1]}</p></section>
+  <section class="poem"><div class="pv">${esc(po[0])}<br>${esc(po[1])}</div><div class="pf"><span>— ${esc(po[2])}</span><button class="link" data-act="nextPoem">${tr('poemNext')}</button></div></section>`;}
+function backupBannerHTML(){if(SC.enabled||!(INC().length||EXP().length))return '';const due=!META.lastBackup||Date.now()-META.lastBackup>7*864e5;if(!due||(META.bkSnooze&&Date.now()<META.bkSnooze))return '';
+  return `<section class="bkb"><b>💾 ${tr('bk_weekly')}</b><p>${tr('bk_weeklyX')}</p><div class="btns"><button class="btn sm pri" data-act="shareJson">${tr('bk_share')}</button><button class="btn sm" data-act="expJson">${tr('bk_json')}</button><button class="link" data-act="bkLater">${tr('bk_later')}</button></div></section>`;}
+V.dash=()=>{const c=calc();let h=dailyHTML()+backupBannerHTML();
   if(!storageOK)h+=`<div class="notice">${tr('noStorage')}</div>`;
   h+=alertsHTML(debtAlerts());
   if(!INC().length&&!EXP().length&&!DEB().length)h+=`<section class="card"><h2>${tr('start3')}</h2><ol class="steps"><li>${tr('st1')}</li><li>${tr('st2')}</li><li>${tr('st3')}</li></ol><div class="btns"><button class="btn pri" data-act="tab" data-id="income">${tr('addInc')}</button><button class="btn" data-act="tab" data-id="debts">${tr('addDebtBtn')}</button></div></section>`;
@@ -718,7 +797,7 @@ V.dash=()=>{const c=calc();let h='';
     ${c.I===0?`<button class="btn sm" data-act="tab" data-id="income">${tr('addSalary')}</button>`:''}</div>
     <div class="ring" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-opacity=".22" stroke-width="9"/><circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-used)}"/></svg><div class="t"><div><b>${dg(c.remDays)}</b>${tr('daysLeft')}</div></div></div></section>`;
   const cash=cashBalance();
-  h+=`<section class="card"><h2>${perName(c.p)}</h2><div class="ledger">${led(tr('k_inc'),money(c.I))}${led(tr('k_lock'),money(c.L),tr('s_paidRem',{a:num(c.paid),b:num(c.unpaid)}))}${led(tr('k_spent'),money(c.E),tr('s_nonEss',{a:num(c.NonEss)}))}${led(tr('k_left'),money(c.R),'',c.R<0?'bad':'')}${led(tr('k_save'),money(c.save),tr('s_contrib',{a:num(c.contrib)}))}${led(tr('k_cash'),money(cash),`<button class="link" data-act="reconcile">${tr('rc_btn')}</button>`,cash<0?'bad':'')}</div></section>`;
+  h+=`<section class="card"><h2>${perName(c.p)}</h2><div class="ledger">${led(tr('k_inc'),money(c.I),c.loanIn?tr('loanSub',{a:num(c.loanIn)}):'')}${led(tr('k_lock'),money(c.L),tr('s_paidRem',{a:num(c.paid),b:num(c.unpaid)}))}${led(tr('k_spent'),money(c.E),tr('s_nonEss',{a:num(c.NonEss)}))}${led(tr('k_left'),money(c.R),'',c.R<0?'bad':'')}${led(tr('k_save'),money(c.save),tr('s_contrib',{a:num(c.contrib)}))}${led(tr('k_cash'),money(cash),`<button class="link" data-act="reconcile">${tr('rc_btn')}</button>`,cash<0?'bad':'')}</div></section>`;
   {const diff=c.I-c.need;h+=`<section class="card"><h3>🧾 ${tr('nd_title')}</h3><ol class="alloc"><li><b>${tr('nd_inst')}</b><span>${money(c.L)}</span></li><li><b>${tr('nd_plans')}</b><span>${money(c.planned)}</span></li><li><b>${tr('nd_total')}</b><span>${money(c.need)}</span></li><li><b>${tr('k_inc')}</b><span>${money(c.I)}</span></li></ol>
     <p class="${diff<0?'neg':'okc'}"><b>${diff>=0?tr('nd_ok',{a:money(diff)}):tr('nd_short',{a:money(-diff)})}</b></p>
     ${c.planned?`<p class="hint">${tr('nd_planLeft',{a:money(c.reserveAll)})} <button class="link" data-act="tab" data-id="expenses">${tr('nd_see')}</button></p>`:`<p class="hint">${tr('nd_noPlans')} <button class="link" data-act="newPlan">${tr('pl_add')}</button></p>`}</section>`;}
@@ -762,6 +841,12 @@ function quickForm(q){q=q||{};const ck=q.cat||'fuel',es=q.id?q.ess:cat(ck).ess;r
   <div class="fld"><span>${tr('kind')}</span><div class="seg"><label><input type="radio" name="ess" value="1" ${es?'checked':''}><span>${tr('ess')}</span></label><label><input type="radio" name="ess" value="0" ${es?'':'checked'}><span>${tr('noness')}</span></label></div></div>
   ${iconPicker(q.icon||'')}<p class="hint">${tr('qk_iconHint')}</p>
   <button class="btn pri wide">${q.id?tr('saveChanges'):tr('qk_add')}</button></form>`;}
+function newProfForm(){return `<form data-form="newprof" class="form" autocomplete="off"><div class="row2"><label class="fld"><span>${tr('pf_name')}</span><input name="pname" required maxlength="20" placeholder="${tr('pf_namePh')}"></label><label class="fld"><span>${tr('qk_icon')}</span><input name="pemoji" class="icon-in" maxlength="8" value="🙂"></label></div>
+  <div class="row2"><label class="fld"><span>${tr('pw_new')} (${tr('optional')})</span><input name="p1" type="password" autocomplete="new-password"></label><label class="fld"><span>${tr('pw_again')}</span><input name="p2" type="password" autocomplete="new-password"></label></div>
+  <p class="hint">${tr('pf_newHint')}</p><button class="btn pri wide">${tr('pf_create')}</button></form>`;}
+function gateHTML(){const a=AFFIRM[dayIdx(AFFIRM.length)];return `<div class="gbox"><div class="gav">${esc(PROF.emoji||'🌸')}</div><h2>${tr('hello',{a:PROF.name?esc(PROF.name)+' ':''})}</h2><p class="gaff">${a[FA_LANG()?0:1]}</p>
+  <form data-form="unlock" class="form" autocomplete="off"><label class="fld"><span>🔒 ${tr('pw_enter')}</span><input name="p" type="password" autocomplete="current-password" required></label><p id="gateErr" class="neg sm"></p><button class="btn pri wide">${tr('pw_login')}</button></form>
+  ${PROFS.list.length>1?`<p class="hint" style="text-align:center">${tr('pf_other')}</p><div class="chips" style="justify-content:center">${PROFS.list.filter(x=>x.id!==PROF.id).map(x=>`<button type="button" class="chip-b" data-act="switchProf" data-id="${x.id}">${esc(x.emoji||'🙂')} ${esc(x.name||tr('pf_me'))}</button>`).join('')}</div>`:''}</div>`;}
 function planForm(pl){pl=pl||{};const ck=pl.cat||'transport',es=pl.id?pl.ess:cat(ck).ess;return `<form data-form="plan" class="form" autocomplete="off"><input type="hidden" name="pid" value="${pl.id||''}">
   <label class="fld"><span>${tr('pl_name')}</span><input name="title" required maxlength="40" placeholder="${tr('pl_namePh')}" value="${esc(pl.title||'')}"></label>
   <label class="fld big"><span>${tr('pl_amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(pl.amount)}"></label>
@@ -770,7 +855,10 @@ function planForm(pl){pl=pl||{};const ck=pl.cat||'transport',es=pl.id?pl.ess:cat
   <label class="row" style="align-items:flex-start;gap:8px;margin-bottom:6px"><input type="checkbox" name="autoCat" ${pl.id?(pl.autoCat?'checked':''):'checked'} style="margin-top:4px"><span><b>${tr('pl_auto')}</b><br><span class="hint">${tr('pl_autoHint')}</span></span></label>
   <button class="btn pri wide">${pl.id?tr('saveChanges'):tr('pl_add')}</button></form>`;}
 function incomeForm(x){x=x||{};const last=INC().filter(i=>i.type==='salary').sort(byDesc)[0],ty=x.type||'salary';return `<form data-form="income" class="form" autocomplete="off"><input type="hidden" name="eid" value="${x.id||''}">
-  <div class="seg"><label><input type="radio" name="type" value="salary" ${ty==='salary'?'checked':''}><span>💼 ${tr('salary')}</span></label><label><input type="radio" name="type" value="extra" ${ty==='extra'?'checked':''}><span>✨ ${tr('extra')}</span></label><label><input type="radio" name="type" value="advance" ${ty==='advance'?'checked':''}><span>🤝 ${tr('advance')}</span></label></div><p class="hint">${tr('adv_hint')}</p>
+  <div class="seg"><label><input type="radio" name="type" value="salary" ${ty==='salary'?'checked':''}><span>💼 ${tr('salary')}</span></label><label><input type="radio" name="type" value="extra" ${ty==='extra'?'checked':''}><span>✨ ${tr('extra')}</span></label><label><input type="radio" name="type" value="advance" ${ty==='advance'?'checked':''}><span>🤝 ${tr('advance')}</span></label><label><input type="radio" name="type" value="loan" ${ty==='loan'?'checked':''}><span>🏦 ${tr('loan')}</span></label></div><p class="hint">${tr('adv_hint')}</p>
+  ${x.id?'':`<div class="loanbox"><p class="hint">${tr('ln_hint')}</p><label class="row" style="align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" name="mkDebt" checked> <b>${tr('ln_mk')}</b></label>
+   <div class="row2"><label class="fld"><span>${tr('d_monthly')}</span><input name="lmonthly" class="amt" inputmode="numeric"></label><label class="fld"><span>${tr('d_total')}</span><input name="ltotal" inputmode="numeric" placeholder="${dg(12)}"></label></div>
+   <div class="row2"><label class="fld"><span>${tr('d_due')}</span><input name="ldue" inputmode="numeric" placeholder="${dg(5)}"></label><label class="fld"><span>${tr('d_start')}</span><select name="lstart"><option value="${curPer()}">${perName(curPer())}</option><option value="${perAdd(curPer(),1)}" selected>${perName(perAdd(curPer(),1))}</option></select></label></div></div>`}
   <label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required value="${amtVal(x.amount)}" placeholder="${last?amtVal(last.amount):dg(0)}"></label>
   ${dateField(x.date)}<label class="fld"><span>${tr('desc')}</span><input name="desc" maxlength="80" placeholder="${tr('incPh')}" value="${esc(x.desc||'')}"></label>
   <button class="btn pri wide">${x.id?tr('saveChanges'):tr('addInc')}</button></form>`;}
@@ -783,17 +871,19 @@ function debtForm(d){d=d||{};const cp=curPer(),st=d.start||cp;const opts=[...new
   <label class="fld"><span>${tr('d_monthly')}</span><input name="monthly" class="amt" inputmode="numeric" required value="${amtVal(d.monthly)}"></label>
   <div class="row2"><label class="fld"><span>${tr('d_total')}</span><input name="total" inputmode="numeric" required placeholder="${dg(12)}" value="${d.total?dg(d.total):''}"></label><label class="fld"><span>${tr('d_pre')}</span><input name="pre" inputmode="numeric" value="${dg(d.prePaid||0)}"></label></div>
   <div class="row2"><label class="fld"><span>${tr('d_due')}</span><input name="due" inputmode="numeric" required placeholder="${dg(5)}" value="${d.dueDay?dg(d.dueDay):''}"></label><label class="fld"><span>${tr('d_start')}</span><select name="start">${opts.map(o=>`<option value="${o}" ${o===st?'selected':''}>${perName(o)}${o<cp?' '+tr('d_late'):''}</option>`).join('')}</select></label></div>
-  ${d.id&&d.payments.length?`<p class="hint">${tr('d_editPaid',{a:dg(d.payments.length)})}</p>`:`<p class="hint">${tr('d_checkHint')}</p>`}<button class="btn pri wide">${d.id?tr('saveChanges'):tr('addDebtBtn')}</button></form>`;}
+  ${d.id&&d.payments.length?`<p class="hint">${tr('d_editPaid',{a:dg(d.payments.length)})}</p>`:`<p class="hint">${tr('d_checkHint')}</p>`}${(()=>{const ls=INC().filter(z=>z.type==='loan'&&(!z.loanDebt||z.loanDebt===d.id||!DEB().some(q=>q.id===z.loanDebt)));return ls.length?`<label class="fld"><span>🏦 ${tr('ln_link')}</span><select name="loanInc"><option value="">${tr('pl_none')}</option>${ls.map(z=>`<option value="${z.id}" ${d.loanIncome===z.id?'selected':''}>${esc(z.desc||tr('loan'))} · ${num(z.amount)} · ${dateLabel(z.date,true)}</option>`).join('')}</select></label>`:'';})()}<button class="btn pri wide">${d.id?tr('saveChanges'):tr('addDebtBtn')}</button></form>`;}
 function debtCard(d){const cp=curPer(),td=todayJ(),rc=remCount(d),done=d.total-rc,p=d.total?done/d.total*100:0,np=nextUnpaid(d);let s;
   if(rc===0)s=`<span class="tag ok">${tr('d_done')}</span>`;else if(np<cp)s=`<span class="tag bad">${tr('d_overdue')}</span>`;
   else if(np===cp){const days=Math.min(d.dueDay,mLen(td[0],td[1]))-td[2];s=days<0?`<span class="tag bad">${tr('d_daysPast',{a:dg(-days)})}</span>`:days===0?`<span class="tag bad">${tr('d_dueToday')}</span>`:`<span class="tag ${days<=S.settings.alertDays?'warn':''}">${tr('d_daysTo',{a:dg(days)})}</span>`;}
   else if(paidIn(d,cp))s=`<span class="tag ok">${tr('d_paidThis')}</span>`+(np>perAdd(cp,1)?` <span class="tag sec">${tr('d_prepaidTo',{a:perName(perAdd(np,-1))})}</span>`:'');else s=`<span class="tag">${tr('d_first',{a:perName(np)})}</span>`;
   return `<section class="card"><div class="card-h"><h3>${esc(d.title)} <span class="tag sec">${tr('dk_'+(d.kind||'loan'))}</span></h3><span><button class="del" data-act="editDebt" data-id="${d.id}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delDebt" data-id="${d.id}" aria-label="${tr('del')}">🗑</button></span></div>
-  <p class="muted sm">${tr('d_line',{a:money(d.monthly),b:dg(d.dueDay)})}</p>
+  <p class="muted sm">${tr('d_line',{a:money(d.monthly),b:dg(d.dueDay)})}</p>${(()=>{const li=d.loanIncome&&INC().find(z=>z.id===d.loanIncome);if(!li)return '';const rep=d.monthly*d.total,cost=rep-li.amount;return `<p class="sm">🏦 ${tr('ln_recv',{a:money(li.amount),d:dateLabel(li.date)})}${cost>0?' · '+tr('ln_cost',{a:money(cost),b:pct(cost/li.amount)}):''}</p>`;})()}
   <div class="bar-h" style="margin-top:8px"><span>${tr('d_prog',{a:dg(done),b:dg(d.total)})}</span><span class="num">${tr('d_rem',{a:money(d.monthly*rc)})}</span></div><div class="track"><span style="width:${p}%"></span></div>
   <div class="btns">${s}${rc>0?`<button class="btn sm pri" data-act="pay" data-id="${d.id}">${tr(np<=cp?'d_pay':'d_prepay',{a:perName(np)})}</button>`:''}</div>${d.payments.length?`<details><summary class="sm">${tr('py_hist',{a:dg(d.payments.length)})}</summary><ul class="list">${d.payments.map((q,i)=>`<li><div class="grow"><div>${tr('py_row',{a:perName(q.period)})}</div><div class="muted sm">${tr('py_paidOn',{a:dateLabel(q.on)})}</div></div><b class="num">${num(q.amount)}</b><button class="del" data-act="editPay" data-id="${d.id}|${i}" aria-label="${tr('edit')}">✏️</button><button class="del" data-act="delPay" data-id="${d.id}|${i}" aria-label="${tr('del')}">🗑</button></li>`).join('')}</ul><div class="sumfoot"><span>${tr('sf_paid')}</span><span>${money(sum(d.payments,'amount'))}</span></div></details>`:''}</section>`;}
 V.debts=()=>{const act=DEB().filter(d=>remCount(d)>0);return alertsHTML(debtAlerts())+`<section class="card"><div class="ledger">${led(tr('d_monthlySum'),money(sum(act,'monthly')))}${led(tr('d_remSum'),money(act.reduce((s,d)=>s+d.monthly*remCount(d),0)))}${led(tr('d_active'),dg(act.length))}</div>${notifControl()}</section>
   ${nextMonthHTML()}${DEB().map(debtCard).join('')}${DEB().length?`<section class="card"><div class="sumfoot" style="border:0;margin:0;padding:0"><span>${tr('sf_debtsMonth',{a:perName(curPer())})}</span><span>${money(DEB().reduce((s,d)=>s+sum(d.payments.filter(q=>q.on.startsWith(curPer())),'amount'),0))}</span></div><div class="sumfoot"><span>${tr('d_monthlySum')}</span><span>${money(sum(act,'monthly'))}</span></div><div class="sumfoot"><span>${tr('d_remSum')}</span><span>${money(act.reduce((s,d)=>s+d.monthly*remCount(d),0))}</span></div></section>`:''}<section class="card"><h2>${tr('d_add')}</h2>${debtForm()}</section>`;};
+function celebrate(d){const c=CHEERS[Math.floor(Math.random()*CHEERS.length)];
+  openModal(`<div class="cele"><div class="big">🎉</div><h2>${tr('ce_title',{t:esc(d.title)})}</h2><p class="cmsg">${c[FA_LANG()?0:1]}</p><ol class="alloc"><li><b>${tr('ce_paid')}</b><span>${money(sum(d.payments,'amount'))}</span></li><li><b>${tr('ce_free')}</b><span class="okc">${money(d.monthly)}</span></li></ol><p class="hint">${tr('ce_tip')}</p><button class="btn pri wide" data-act="close">👏 ${tr('ce_ok')}</button></div>`);}
 function nextMonthDue(){const cp=curPer(),nx=perAdd(cp,1);return DEB().filter(d=>remCount(d)>0&&d.start<=nx&&!paidIn(d,nx)&&remCount(d)>unpaidDueCount(d,cp));}
 function nextMonthHTML(){const nx=perAdd(curPer(),1),list=nextMonthDue();if(!DEB().length)return '';const tot=sum(list,'monthly');
   return `<section class="card"><h3>📆 ${tr('nx_title',{a:perName(nx)})}</h3>${list.length?`<ol class="alloc">${list.map(d=>`<li><b>${esc(d.title)} <span class="muted sm">${tr('nx_due',{a:dg(Math.min(d.dueDay,30))})}${(()=>{const nx=perAdd(curPer(),1).split('/').map(Number),dd=[nx[0],nx[1],Math.min(d.dueDay,mLen(nx[0],nx[1]))],ho=irHolidayOn(dd);return ho||isFriday(dd)?` <span class="tag bad">${tr('nx_off')}</span>`:'';})()}</span></b><span>${money(d.monthly)}</span></li>`).join('')}<li><b>${tr('total')}</b><span><b>${money(tot)}</b></span></li></ol>`:empty(tr('nx_none'))}<p class="hint">${tr('nx_hint')}</p></section>`;}
@@ -937,12 +1027,23 @@ function syncSection(){if(SC.enabled){const last=META.lastSync?new Date(META.las
   <div class="fld only-key"><span>${tr('sy_key')}</span><div class="row"><input name="syncKey" class="keybox" dir="ltr"><button type="button" class="btn sm" data-act="genKey">${tr('sy_gen')}</button></div></div>
   <button class="btn pri wide">${tr('sy_connect')}</button></form>
   <details><summary>${tr('sy_rules')}</summary><pre>${esc(FB_RULES)}</pre></details><p class="hint">${tr('sy_note')}</p>`;}
+function snapListHTML(){let arr=[];try{arr=JSON.parse(localStorage.getItem(SNAPKEY)||'[]');}catch(e){}
+  return `<h3 style="margin-top:12px">🗂️ ${tr('sn_title')}</h3><p class="hint">${tr('sn_hint')}</p>${arr.length?`<ol class="alloc">${arr.map((s,i)=>{const d=new Date(s.at);return `<li><b>${dateLabel(dToJ(d))} ${dg(pad(d.getHours())+':'+pad(d.getMinutes()))}</b><span><button class="btn sm" data-act="restoreSnap" data-id="${i}">${tr('sn_restore')}</button></span></li>`;}).join('')}</ol>`:`<p class="hint">${tr('sn_none')}</p>`}`;}
 function installHTML(){if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)return `<p>${tr('in_done')}</p>`;
   return `${deferredPrompt?`<div class="btns"><button class="btn pri" data-act="install">${tr('in_btn')}</button></div>`:''}<ul class="steps"><li>${tr('in_android')}</li><li>${tr('in_ios')}</li><li>${tr('in_win')}</li></ul>${location.protocol==='file:'?`<p class="hint">${tr('in_file')}</p>`:''}`;}
 V.settings=()=>{const st=S.settings;const seg=(name,opts,cur)=>`<div class="seg">${opts.map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}" ${v===cur?'checked':''} data-act="${name}Pick" data-id="${v}"><span>${l}</span></label>`).join('')}</div>`;
   return `<section class="card"><h2>${tr('set_ui')}</h2><div class="row2"><div class="fld"><span>${tr('set_lang')}</span>${seg('uilang',[['fa','فارسی'],['en','English']],UI.lang)}</div><div class="fld"><span>${tr('set_theme')}</span>${seg('uitheme',[['system',tr('th_sys')],['light',tr('th_l')],['dark',tr('th_d')]],UI.theme)}</div></div>
   <div class="fld"><span>${tr('set_cal')}</span>${seg('uical',[['jg',tr('cal_jg')],['gj',tr('cal_gj')],['j',tr('cal_j')]],UI.cal)}</div>
   <div class="fld"><span>${tr('set_hol')}</span><div class="chips">${Object.keys(CC).map(c=>`<label class="chip"><input type="checkbox" data-hc="${c}" ${UI.hc.includes(c)?'checked':''}><span>${CC[c].f} ${CC[c][UI.lang]}</span></label>`).join('')}</div><p class="hint">${tr('hol_hint')}</p></div></section>
+  <section class="card"><h2>${esc(PROF.emoji||'🌸')} ${tr('pf_title')}</h2><form data-form="profile" class="form" autocomplete="off">
+   <div class="row2"><label class="fld"><span>${tr('pf_name')}</span><input name="pname" maxlength="20" value="${esc(PROF.name||'')}" placeholder="${tr('pf_namePh')}"></label><label class="fld"><span>${tr('qk_icon')}</span><input name="pemoji" class="icon-in" maxlength="8" value="${esc(PROF.emoji||'🌸')}"></label></div>
+   <button class="btn wide">${tr('save')}</button></form>
+   <h3 style="margin-top:14px">🔒 ${tr('pw_title')}</h3><p class="hint">${PROF.pw?tr('pw_on'):tr('pw_off')}</p>
+   <form data-form="pw" class="form" autocomplete="off"><div class="row2"><label class="fld"><span>${tr('pw_new')}</span><input name="p1" type="password" autocomplete="new-password"></label><label class="fld"><span>${tr('pw_again')}</span><input name="p2" type="password" autocomplete="new-password"></label></div>
+   <p class="hint warnc">⚠️ ${tr('pw_warn')}</p><div class="btns"><button class="btn pri">${PROF.pw?tr('pw_change'):tr('pw_set')}</button>${PROF.pw?`<button type="button" class="btn" data-act="pwRemove">${tr('pw_remove')}</button>`:''}</div></form>
+   <h3 style="margin-top:14px">👥 ${tr('pf_list')}</h3><div class="chips">${PROFS.list.map(x=>`<span class="qk"><button type="button" class="chip-b ${x.id===PROF.id?'on':''}" data-act="switchProf" data-id="${x.id}">${esc(x.emoji||'🙂')} ${esc(x.name||tr('pf_me'))}${x.pw?' 🔒':''}</button>${x.id!==PROF.id&&x.id!=='main'?`<button class="del" data-act="delProf" data-id="${x.id}" aria-label="${tr('del')}">🗑</button>`:''}</span>`).join('')}<button class="chip-b" data-act="newProf">+ ${tr('pf_new')}</button></div>
+   <p class="hint">${tr('pf_hint')}</p></section>
+  <section class="card"><h2>🌞 ${tr('dl_title')}</h2><div class="seg"><label><input type="radio" name="uidaily" value="on" data-act="uidailyPick" data-id="on" ${UI.daily!==false?'checked':''}><span>${tr('dl_on')}</span></label><label><input type="radio" name="uidaily" value="off" data-act="uidailyPick" data-id="off" ${UI.daily===false?'checked':''}><span>${tr('dl_off')}</span></label></div><p class="hint">${tr('dl_hint')}</p></section>
   <section class="card" id="syncCard"><h2>☁️ ${tr('set_sync')}</h2>${syncSection()}</section>
   <section class="card"><h2>${tr('set_budget')}</h2><form data-form="settings" class="form" autocomplete="off">
    <div class="seg"><label><input type="radio" name="model" value="503020" ${st.model!=='zero'?'checked':''}><span>${tr('m_pctL')}</span></label><label><input type="radio" name="model" value="zero" ${st.model==='zero'?'checked':''}><span>${tr('m_zeroL')}</span></label></div>
@@ -952,7 +1053,7 @@ V.settings=()=>{const st=S.settings;const seg=(name,opts,cur)=>`<div class="seg"
    <button class="btn pri wide">${tr('m_saveBtn')}</button></form></section>
   <section class="card"><h2>🔔 ${tr('set_notif')}</h2>${notifControl()}</section>
   <section class="card"><h2>${tr('set_backup')}</h2><div class="btns"><button class="btn" data-act="expJson">${tr('bk_json')}</button><button class="btn" data-act="shareJson">${tr('bk_share')}</button><label class="btn">${tr('bk_imp')}<input type="file" id="impJson" accept=".json,application/json" hidden></label></div>
-   <div class="btns"><button class="btn" data-act="expCsv">${tr('bk_csv')}</button><label class="btn">${tr('bk_impCsv')}<input type="file" id="impCsv" accept=".csv,text/csv" hidden></label><button class="btn secb" data-act="print">${tr('printBtn')}</button></div><p class="hint">${tr('bk_hint')}</p></section>
+   <div class="btns"><button class="btn" data-act="expCsv">${tr('bk_csv')}</button><label class="btn">${tr('bk_impCsv')}<input type="file" id="impCsv" accept=".csv,text/csv" hidden></label><button class="btn secb" data-act="print">${tr('printBtn')}</button></div><p class="hint">${tr('bk_hint')}</p>${snapListHTML()}</section>
   <section class="card"><h2>${tr('set_install')}</h2>${installHTML()}</section>
   <p class="hint" style="text-align:center">${tr('app')} · v${APP_VERSION}</p>
   <section class="card"><h2>${tr('set_reset')}</h2><p class="hint">${tr('rs_hint')}</p><button class="btn bad" data-act="reset">${tr('rs_btn')}</button></section>`;};
@@ -965,7 +1066,7 @@ function applyChrome(){const r=document.documentElement;r.lang=UI.lang;r.dir=FA_
   $('#nav').innerHTML=`<div class="brand"><span class="logo">◎</span>${tr('app')}</div>`+TABS.map(k=>`<button data-act="tab" data-id="${k}" class="${k===tab?'on':''} ${k==='settings'?'wide':''}"><span class="i">${ICONS[k]}</span>${tr('tab_'+k)}</button>`).join('');
   document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.id===UI.lang));
   const th={system:['🖥️','th_system'],light:['☀️','th_light'],dark:['🌙','th_dark']}[UI.theme];$('#themeBtn').textContent=th[0];$('#themeBtn').setAttribute('aria-label',tr(th[1]));$('#themeBtn').title=tr(th[1]);
-  $('#fab').setAttribute('aria-label',tr('quickExp'));$('#gearBtn').setAttribute('aria-label',tr('tab_settings'));paintSync();}
+  $('#fab').setAttribute('aria-label',tr('quickExp'));$('#profBtn').textContent=PROF.emoji||'🌸';$('#profBtn').title=PROF.name||'';$('#gearBtn').setAttribute('aria-label',tr('tab_settings'));paintSync();}
 function render(){applyChrome();const td=todayJ();$('#hdrTitle').textContent=D['ttl_'+tab]?tr('ttl_'+tab):tr('tab_'+tab);{const ns=dayNotes(td),gg=j2g(td[0],td[1],td[2]),jl=dateLabel(td,true);$('#hdrDate').textContent=(UI.cal==='gj'?gLabel(gg,true)+' · '+jl:UI.cal==='jg'?jl+' · '+gLabel(gg,true):jl)+(ns.length?' · '+notesText(ns):'');}$('#view').innerHTML=V[tab]();$('#fab').hidden=tab==='settings';}
 let pendingRender=false;
 function safeRender(){const a=document.activeElement;if(a&&a.closest&&a.closest('#view form, #modal')&&a.matches('input,select,textarea')){pendingRender=true;return;}render();}
@@ -1036,14 +1137,19 @@ function drawDP(){const greg=UI.cal==='gj';let cells='',title='',sub='',wk,list=
 /* =====================================================================
    8. CLOUD SYNC ENGINE (encrypted, last-write-wins per record)
    ===================================================================== */
-let SC=loadJSON('dk2_sync',{enabled:false});
-const saveSC=()=>saveJSON('dk2_sync',SC);
+let SC=loadJSON(SKEY,{enabled:false});
+const saveSC=()=>saveJSON(SKEY,SC);
 const syncState={status:'local',err:''};
 function paintSync(){const st=!SC.enabled?'local':syncState.status;const map={local:['','s_local'],offline:['off','s_off'],syncing:['ing','s_ing'],synced:['ok','s_ok'],error:['err','s_err']}[st];const p=$('#syncPill');p.className='pill '+map[0];$('#syncTxt').textContent=tr(map[1]);p.title=syncState.err||(META.lastSync?tr('sy_last',{a:new Date(META.lastSync).toLocaleTimeString()}):'');}
 function setSync(s,err){syncState.status=s;syncState.err=err||'';paintSync();}
 function b64e(buf){const a=new Uint8Array(buf);let s='';for(let i=0;i<a.length;i+=0x8000)s+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000));return btoa(s);}
 const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 const enc8=s=>new TextEncoder().encode(s);
+async function profKey(pass,salt){const b=await deriveKey(pass,'dk2-prof|'+salt);return crypto.subtle.importKey('raw',b64d(b),'AES-GCM',false,['encrypt','decrypt']);}
+async function encWith(key,txt){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,enc8(txt));return{iv:b64e(iv),ct:b64e(ct)};}
+async function decWith(key,env){const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(env.iv)},key,b64d(env.ct));return new TextDecoder().decode(pt);}
+async function snapshot(reason){if(!storageOK||NEEDS_UNLOCK)return;try{let arr=JSON.parse(localStorage.getItem(SNAPKEY)||'[]');const txt=JSON.stringify(S);const data=PKEY?Object.assign({enc:2},await encWith(PKEY,txt)):txt;arr.unshift({at:Date.now(),why:reason||'week',data});arr=arr.slice(0,4);localStorage.setItem(SNAPKEY,JSON.stringify(arr));META.lastSnap=Date.now();saveJSON(MKEY,META);}catch(e){}}
+async function readSnap(i){const arr=JSON.parse(localStorage.getItem(SNAPKEY)||'[]'),s=arr[i];if(!s)return null;return JSON.parse(typeof s.data==='string'?s.data:await decWith(PKEY,s.data));}
 async function sha(s){const h=await crypto.subtle.digest('SHA-256',enc8(s));return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,40);}
 async function deriveKey(pass,salt){const base=await crypto.subtle.importKey('raw',enc8(pass),'PBKDF2',false,['deriveBits']);return b64e(await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc8(salt),iterations:150000,hash:'SHA-256'},base,256));}
 const aesKey=()=>crypto.subtle.importKey('raw',b64d(SC.keyB64),'AES-GCM',false,['encrypt','decrypt']);
@@ -1078,12 +1184,12 @@ const canon=s=>JSON.stringify({settings:s.settings,incomes:mergeColl(s.incomes,[
 let syncing=false,syncStart=0,again=false,syncTimer=null,retryTimer=null,retryN=0;const RETRY=[5,15,30,60];
 function scheduleRetry(){clearTimeout(retryTimer);const s=RETRY[Math.min(retryN,RETRY.length-1)];retryN++;retryTimer=setTimeout(()=>syncNow(),s*1000);}
 function scheduleSync(){if(!SC.enabled)return;clearTimeout(syncTimer);syncTimer=setTimeout(syncNow,1500);}
-async function syncNow(){if(!SC.enabled){setSync('local');return;}if(syncing&&Date.now()-syncStart>40000)syncing=false;if(syncing){again=true;return;}if(!navigator.onLine){setSync('offline');scheduleRetry();return;}clearTimeout(retryTimer);syncStart=Date.now();
+async function syncNow(){if(typeof started!=='undefined'&&!started)return;if(!SC.enabled){setSync('local');return;}if(syncing&&Date.now()-syncStart>40000)syncing=false;if(syncing){again=true;return;}if(!navigator.onLine){setSync('offline');scheduleRetry();return;}clearTimeout(retryTimer);syncStart=Date.now();
   syncing=true;setSync('syncing');
   try{const remote=await open_(await remoteGet());const merged=remote?mergeState(S,normalize(remote,true)):S;const mc=canon(merged);
-    if(mc!==canon(S)){S=merged;saveJSON(KEY,S);safeRender();}
+    if(mc!==canon(S)){S=merged;saveState();safeRender();}
     if(!remote||mc!==canon(remote))await remotePut(await seal(JSON.parse(mc)));
-    META.lastSync=Date.now();saveJSON('dk2_meta',META);retryN=0;setSync('synced');if(tab==='settings')safeRender();}
+    META.lastSync=Date.now();saveJSON(MKEY,META);retryN=0;setSync('synced');if(tab==='settings')safeRender();}
   catch(e){const m=e.message||String(e);setSync(!navigator.onLine||m===tr('sy_timeout')||m===tr('sy_net')?'offline':'error',m);scheduleRetry();}
   finally{syncing=false;if(again){again=false;syncNow();}}}
 async function connectSync(f){const E=f.elements,v=n=>(E[n]&&E[n].value||'').trim();
@@ -1104,7 +1210,7 @@ function genKey(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomV
 async function notifyDue(){if(!('Notification' in window)||Notification.permission!=='granted')return;const td=jS(todayJ());const al=debtAlerts();let changed=false;
   for(const a of al){const k=a.d.id+'|'+td;if(META.notified[k])continue;META.notified[k]=1;changed=true;const body=a.txt.replace(/&[^;]+;/g,'');
     try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg)await reg.showNotification(tr('nTitle'),{body,tag:k,icon:ICON192,badge:ICON192,lang:UI.lang,dir:FA_LANG()?'rtl':'ltr'});else new Notification(tr('nTitle'),{body,tag:k,icon:ICON192});}catch(e){}}
-  if(changed){Object.keys(META.notified).forEach(k=>{if(!k.endsWith(td))delete META.notified[k];});saveJSON('dk2_meta',META);}}
+  if(changed){Object.keys(META.notified).forEach(k=>{if(!k.endsWith(td))delete META.notified[k];});saveJSON(MKEY,META);}}
 
 /* =====================================================================
    10. FILES: CSV / JSON / PRINT
@@ -1155,7 +1261,7 @@ const ACT={
  tab:id=>{tab=id;viewPer=curPer();closeModal();render();window.scrollTo(0,0);},
  lang:id=>{UI.lang=id;saveJSON('dk2_ui',UI);setupManifest();render();},
  theme:()=>{UI.theme={system:'light',light:'dark',dark:'system'}[UI.theme];saveJSON('dk2_ui',UI);applyChrome();},
- uilangPick:id=>ACT.lang(id),uicalPick:id=>{UI.cal=id;UI.calChosen=true;saveJSON('dk2_ui',UI);render();},uithemePick:id=>{UI.theme=id;saveJSON('dk2_ui',UI);applyChrome();},
+ uilangPick:id=>ACT.lang(id),uidailyPick:id=>{UI.daily=id==='on';saveJSON('dk2_ui',UI);render();},uicalPick:id=>{UI.cal=id;UI.calChosen=true;saveJSON('dk2_ui',UI);render();},uithemePick:id=>{UI.theme=id;saveJSON('dk2_ui',UI);applyChrome();},
  fab:()=>openModal(`<h2>${tr('quickExp')}</h2>`+expenseForm()),close:closeModal,
  setDate:(n,b)=>{const i=b.closest('form').elements.date;i.value=dg(jS(daysAgoJ(+n)));updHint(i);},
  dp:(n,b)=>openDP(b.parentElement.querySelector('input')),
@@ -1175,6 +1281,15 @@ const ACT={
  editDebt:id=>{const d=findD(id);if(d)openModal(`<h2>✏️ ${esc(d.title)}</h2>`+debtForm(d));},
  pill:()=>{if(!SC.enabled){ACT.tab('settings');return;}retryN=0;syncing=false;toast(tr('s_ing'));syncNow().then(()=>toast(syncState.status==='synced'?tr('s_ok')+' ✓':tr('s_err')+': '+syncState.err,syncState.status==='synced'?'':'bad'));},
  reconcile:()=>openModal(`<h2>🏦 ${tr('rc_title')}</h2><p class="hint">${tr('rc_hint',{a:money(cashBalance())})}</p><form data-form="reconcile" class="form" autocomplete="off"><label class="fld big"><span>${tr('rc_lbl')}</span><input name="amount" class="amt" inputmode="numeric" required></label><label class="row" style="align-items:center;gap:8px;margin-bottom:10px"><input type="checkbox" name="neg"> ${tr('rc_neg')}</label><button class="btn pri wide">${tr('rc_save')}</button></form>`),
+ profMenu:()=>openModal(`<h2>${esc(PROF.emoji||'🌸')} ${esc(PROF.name||tr('pf_me'))}</h2><div class="btns" style="flex-direction:column;align-items:stretch">${PROFS.list.filter(x=>x.id!==PROF.id).map(x=>`<button class="btn" data-act="switchProf" data-id="${x.id}">${esc(x.emoji||'🙂')} ${tr('pf_switchTo',{a:esc(x.name||tr('pf_me'))})}${x.pw?' 🔒':''}</button>`).join('')}<button class="btn" data-act="newProf">+ ${tr('pf_new')}</button>${PROF.pw?`<button class="btn" data-act="lockNow">🔒 ${tr('pf_lock')}</button>`:''}<button class="btn" data-act="tab" data-id="settings">⚙️ ${tr('pf_settings')}</button></div>`),
+ switchProf:id=>{if(id===PROF.id){closeModal();return;}PROFS.last=id;saveProfs();location.reload();},
+ lockNow:()=>{location.reload();},
+ newProf:()=>openModal(`<h2>👤 ${tr('pf_new')}</h2>`+newProfForm()),
+ delProf:id=>{const x=PROFS.list.find(z=>z.id===id);if(!x||!confirm(tr('pf_delQ',{a:x.name||''})))return;['dk2_state','dk2_meta','dk2_sync','dk2_snap'].forEach(b=>localStorage.removeItem(b+'_'+id));PROFS.list=PROFS.list.filter(z=>z.id!==id);saveProfs();render();},
+ pwRemove:async()=>{if(!confirm(tr('pw_removeQ')))return;PKEY=null;PROF.pw=null;saveProfs();saveState();localStorage.removeItem(SNAPKEY);await snapshot('pw');toast(tr('pw_removed'));render();},
+ restoreSnap:async i=>{if(!confirm(tr('sn_q')))return;try{const o=await readSnap(+i);if(!o)return;await snapshot('before-restore');S=mergeState(S,normalize(o,true));persist();toast(tr('bk_merged'));render();}catch(e){toast(tr('sn_err'),'bad');}},
+ nextPoem:()=>{poemShift++;render();},
+ bkLater:()=>{META.bkSnooze=Date.now()+864e5;saveJSON(MKEY,META);render();},
  newQuick:()=>openModal(`<h2>⚡ ${tr('qk_add')}</h2>`+quickForm()),
  editQuick:id=>{const q=QK().find(x=>x.id===id);if(q)openModal(`<h2>✏️ ${esc(q.title)}</h2>`+quickForm(q));},
  delQuick:id=>{if(confirm(tr('confirmDel'))){tombstone('quick',id);persist();render();}},
@@ -1201,9 +1316,9 @@ const ACT={
  contrib:id=>{const g=findG(id);if(g)openModal(`<h2>${tr('g_depTitle',{t:esc(g.title)})}</h2><form data-form="contrib" class="form" autocomplete="off"><input type="hidden" name="gid" value="${g.id}"><label class="fld big"><span>${tr('amount')}</span><input name="amount" class="amt" inputmode="numeric" required></label>${dateField()}<button class="btn pri wide">${tr('g_depSave')}</button></form>`);},
  wiPot:()=>{whatIf=potentialSavings().total;render();},applyPot:()=>{whatIf=potentialSavings().total;tab='goals';render();window.scrollTo(0,0);},
  print:()=>printReport(),
- expJson:()=>{download(`dakhlokharj-${stamp()}.json`,JSON.stringify(S),'application/json');META.lastBackup=Date.now();saveJSON('dk2_meta',META);toast(tr('bk_ok'));},
+ expJson:()=>{download(`dakhlokharj-${stamp()}.json`,JSON.stringify(S),'application/json');META.lastBackup=Date.now();saveJSON(MKEY,META);toast(tr('bk_ok'));},
  expCsv:()=>{download(`dakhlokharj-${stamp()}.csv`,toCSV(),'text/csv;charset=utf-8');toast(tr('bk_csvOk'));},
- shareJson:async()=>{let file;try{file=new File([JSON.stringify(S)],`dakhlokharj-${stamp()}.json`,{type:'application/json'});}catch(e){}if(file&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:tr('app')});META.lastBackup=Date.now();saveJSON('dk2_meta',META);}catch(e){}}else toast(tr('bk_shareNA'),'warn');},
+ shareJson:async()=>{let file;try{file=new File([JSON.stringify(S)],`dakhlokharj-${stamp()}.json`,{type:'application/json'});}catch(e){}if(file&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:tr('app')});META.lastBackup=Date.now();saveJSON(MKEY,META);}catch(e){}}else toast(tr('bk_shareNA'),'warn');},
  notif:async()=>{if(!('Notification' in window))return toast(tr('notifNA'),'warn');try{await Notification.requestPermission();}catch(e){}render();notifyDue();},
  genKey:(n,b)=>{b.closest('form').elements.syncKey.value=genKey();},
  syncNow:()=>syncNow(),
@@ -1220,7 +1335,7 @@ const ACT={
      if(env){try{await open_(env);row(tr('dg_key'),tr('dg_keyOk'),true);}catch(e){row(tr('dg_key'),esc(e.message),false);}}else row(tr('dg_key'),tr('dg_empty'));}
    catch(e){row(tr('dg_test'),esc(e.message||String(e))+' ('+dg(Math.round(performance.now()-t0))+'ms)',false);}
    draw();retryN=0;syncNow();},syncOff:()=>{if(confirm(tr('sy_discQ'))){SC={enabled:false};saveSC();setSync('local');render();}},
- reset:()=>{if(confirm(tr('rs_q1'))&&confirm(tr('rs_q2'))){S=blank();saveJSON(KEY,S);tab='dash';render();toast(tr('rs_ok'));}},
+ reset:()=>{if(confirm(tr('rs_q1'))&&confirm(tr('rs_q2'))){S=blank();saveState();tab='dash';render();toast(tr('rs_ok'));}},
  install:async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(e){}deferredPrompt=null;render();}
 };
 const FORMS={
@@ -1229,10 +1344,13 @@ const FORMS={
    persist();closeModal();render();const c=calc(),left=c.safeDaily-c.todayFree;if(!x&&date===jS(todayJ()))toast(left>=0?tr('expSavedLeft',{a:money(left)}):tr('expSavedOver',{a:money(-left)}),left>=0?'':'warn');else toast(tr('saved'));},
  income:f=>{const E=f.elements,amount=parseAmount(E.amount.value);if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;const before=calc();
    const data={type:E.type.value,amount,date,desc:E.desc.value.trim()};const x=E.eid.value&&INC().find(e=>e.id===E.eid.value);let settled=[];
+   let loanDebt=null;if(!x&&data.type==='loan'&&E.mkDebt&&E.mkDebt.checked){const lm=parseAmount(E.lmonthly.value),lt=parseInt(toEn(E.ltotal.value),10),ld=parseInt(toEn(E.ldue.value),10);if(!(lm>0)||!(lt>=1)||!(ld>=1&&ld<=31))return toast(tr('ln_fill'),'bad');loanDebt={id:uid(),title:data.desc||tr('loan'),kind:'loan',monthly:lm,total:lt,prePaid:0,dueDay:ld,start:E.lstart.value,payments:[]};}
    if(x)Object.assign(x,data,{u:Date.now()});else{const rec=touch(Object.assign({id:uid(),ts:Date.now()},data));S.incomes.push(rec);
+     if(loanDebt){rec.loanDebt=loanDebt.id;loanDebt.loanIncome=rec.id;S.debts.push(touch(loanDebt));}
      if(data.type==='salary')INC().filter(a=>a.type==='advance'&&!a.settledBy&&a.date<=date).forEach(a=>{a.settledBy=rec.id;a.settledOn=date;touch(a);settled.push(a);});}
    persist();render();if(x){closeModal();return toast(tr('saved'));}
    const advBox=settled.length?insHTML({lvl:'ok',i:'🤝',t:tr('adv_settled',{a:money(sum(settled,'amount'))}),x:tr('adv_settledX')}):data.type==='advance'?insHTML({lvl:'info',i:'🤝',t:tr('advance'),x:tr('adv_note')}):'';
+   if(data.type==='loan'){closeModal();toast(loanDebt?tr('ln_ok',{t:loanDebt.title}):tr('saved'));return;}
    if(date.startsWith(curPer())){const a=calc(),lock=Math.min(amount,Math.max(0,before.L-before.I));
      openModal(`<h2>${tr('incSaved')}</h2><p class="muted">${tr('allocOf',{a:money(amount)})}</p><ol class="alloc"><li><b>${tr('al_lock')}</b><span>${money(lock)}</span></li><li><b>${tr('al_needs')}</b><span>${money(a.needs-before.needs)}</span></li><li><b>${tr('al_save')}</b><span>${money(a.save-before.save)}</span></li><li><b>${tr('al_wants')}</b><span>${money(a.wants-before.wants)}</span></li></ol>
      ${advBox}${a.shortfall>0?insHTML({lvl:'bad',i:'⛔',t:tr('al_short'),x:tr('al_shortX',{a:money(a.shortfall)})}):''}<div class="mini"><span>${tr('safeFrom')}</span><b>${money(a.safeDaily)}</b></div><button class="btn pri wide" data-act="close">${tr('gotIt')}</button>`);}
@@ -1241,7 +1359,9 @@ const FORMS={
    if(!title)return toast(tr('v_title'),'bad');if(!(monthly>0))return toast(tr('badAmount'),'bad');if(!(total>=1))return toast(tr('v_total'),'bad');if(pre<0||pre>=total)return toast(tr('v_pre'),'bad');if(!(due>=1&&due<=31))return toast(tr('v_due'),'bad');
    const ex=E.did.value&&findD(E.did.value);if(ex&&pre+ex.payments.length>total)return toast(tr('v_totalPaid',{a:dg(pre+ex.payments.length)}),'bad');
    const data={title,kind:E.kind.value,monthly,total,prePaid:pre,dueDay:due,start:E.start.value};
-   if(ex){Object.assign(ex,data);touch(ex);closeModal();}else S.debts.push(touch(Object.assign({id:uid(),payments:[]},data)));persist();toast(tr('saved'));render();},
+   let tgt=ex;if(ex){Object.assign(ex,data);touch(ex);closeModal();}else{tgt=touch(Object.assign({id:uid(),payments:[]},data));S.debts.push(tgt);}
+   if(E.loanInc){const nv=E.loanInc.value;INC().forEach(z=>{if(z.loanDebt===tgt.id&&z.id!==nv){delete z.loanDebt;touch(z);}});if(nv){const li=INC().find(z=>z.id===nv);if(li){li.loanDebt=tgt.id;touch(li);}tgt.loanIncome=nv;}else delete tgt.loanIncome;touch(tgt);}
+   persist();toast(tr('saved'));render();},
  goal:f=>{const E=f.elements,tpl=E.tpl.value,A=n=>E[n]?parseAmount(E[n].value)||0:0,title=E.title.value.trim();if(!title)return toast(tr('v_title'),'bad');
    const g={tpl,title,initial:A('initial'),monthly:A('monthly')};
    if(tpl==='car'||tpl==='immig'){g.infl=parseFloat(toEn(E.infl.value))||0;const dl=readDate(f,'deadline');if(dl===null)return;g.deadline=dl;}
@@ -1252,13 +1372,20 @@ const FORMS={
    persist();closeModal();toast(tr(ex?'saved':'g_created'));render();},
  reconcile:f=>{const E=f.elements;let v=parseAmount(E.amount.value);if(isNaN(v))return toast(tr('badAmount'),'bad');if(E.neg.checked)v=-v;const flows=cashBalance()-(S.settings.opening||0);S.settings.opening=v-flows;S.settings.u=Date.now();persist();closeModal();toast(tr('rc_ok',{a:money(v)}));render();},
  pay:f=>{const E=f.elements,d=findD(E.did.value),amount=parseAmount(E.amount.value);if(!d||remCount(d)<=0)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;
-   d.payments.push({period:nextUnpaid(d),on:date,amount});touch(d);persist();closeModal();const rc=remCount(d);toast(rc?tr('payOk',{t:d.title,n:dg(rc)}):tr('payDone',{t:d.title}));render();},
+   d.payments.push({period:nextUnpaid(d),on:date,amount});touch(d);persist();closeModal();const rc=remCount(d);render();if(rc)toast(tr('payOk',{t:d.title,n:dg(rc)}));else celebrate(d);},
  payEdit:f=>{const E=f.elements,[id,i]=E.ref.value.split('|'),d=findD(id),q=d&&d.payments[+i],amount=parseAmount(E.amount.value);if(!q)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;q.on=date;q.amount=amount;touch(d);persist();closeModal();toast(tr('saved'));render();},
  ucat:f=>{const E=f.elements,name=E.name.value.trim();if(!name)return toast(tr('v_title'),'bad');const data={name,icon:E.icon.value.trim()||'🏷️',ess:(f.querySelector('[name=ess]:checked')||{}).value==='1'};
    const ex=E.cid.value&&UCATS().find(x=>x.id===E.cid.value);S.cats=S.cats||[];if(ex){Object.assign(ex,data);touch(ex);}else S.cats.push(touch(Object.assign({id:'u'+uid(),c:CPAL[UCATS().length%CPAL.length]},data)));persist();closeModal();toast(tr('saved'));render();},
  quick:f=>{const E=f.elements,title=E.title.value.trim();if(!title)return toast(tr('v_title'),'bad');const ck=(f.querySelector('[name=cat]:checked')||{}).value||'misc';
    const data={title,amount:parseAmount(E.amount.value)||0,cat:ck,ess:(f.querySelector('[name=ess]:checked')||{}).value==='1',icon:E.icon.value.trim()};
    const ex=E.qid.value&&QK().find(x=>x.id===E.qid.value);S.quick=S.quick||[];if(ex){Object.assign(ex,data);touch(ex);}else S.quick.push(touch(Object.assign({id:uid()},data)));persist();closeModal();toast(tr('saved'));render();},
+ profile:f=>{const E=f.elements;PROF.name=E.pname.value.trim();PROF.emoji=E.pemoji.value.trim()||'🌸';saveProfs();toast(tr('saved'));render();},
+ pw:async f=>{const E=f.elements,a=E.p1.value,b=E.p2.value;if(a.length<4)return toast(tr('pw_short'),'bad');if(a!==b)return toast(tr('pw_mismatch'),'bad');if(!(window.crypto&&crypto.subtle))return toast(tr('sy_needHttps'),'bad');
+   const salt=b64e(crypto.getRandomValues(new Uint8Array(16))),k=await profKey(a,salt);PROF.pw={salt,check:await encWith(k,'nana-ok')};PKEY=k;saveProfs();saveState();localStorage.removeItem(SNAPKEY);await snapshot('pw');toast(tr('pw_saved'));render();},
+ newprof:async f=>{const E=f.elements,name=E.pname.value.trim(),a=E.p1.value,b=E.p2.value;if(!name)return toast(tr('v_title'),'bad');if(a&&a.length<4)return toast(tr('pw_short'),'bad');if(a!==b)return toast(tr('pw_mismatch'),'bad');
+   const np={id:'p'+uid(),name,emoji:E.pemoji.value.trim()||'🙂',pw:null};if(a){if(!(window.crypto&&crypto.subtle))return toast(tr('sy_needHttps'),'bad');const salt=b64e(crypto.getRandomValues(new Uint8Array(16))),k=await profKey(a,salt);np.pw={salt,check:await encWith(k,'nana-ok')};localStorage.setItem('dk2_state_'+np.id,JSON.stringify(Object.assign({enc:2},await encWith(k,JSON.stringify(blank())))));}
+   PROFS.list.push(np);PROFS.last=np.id;saveProfs();location.reload();},
+ unlock:async f=>{const pw=f.elements.p.value,msg=$('#gateErr');try{const k=await profKey(pw,PROF.pw.salt);if(await decWith(k,PROF.pw.check)!=='nana-ok')throw 0;PKEY=k;const raw=JSON.parse(localStorage.getItem(KEY)||'null');S=raw&&raw.enc?normalize(JSON.parse(await decWith(k,raw))):loadState();NEEDS_UNLOCK=false;$('#gate').hidden=true;startApp();}catch(e){if(msg)msg.textContent=tr('pw_wrong');f.elements.p.value='';f.elements.p.focus();}},
  plan:f=>{const E=f.elements,title=E.title.value.trim(),amount=parseAmount(E.amount.value);if(!title)return toast(tr('v_title'),'bad');if(!(amount>0))return toast(tr('badAmount'),'bad');const ck=(f.querySelector('[name=cat]:checked')||{}).value||'misc',es=(f.querySelector('[name=ess]:checked')||{}).value==='1';
    const data={title,amount,cat:ck,ess:es,autoCat:E.autoCat.checked};const ex=E.pid.value&&PLN().find(x=>x.id===E.pid.value);if(ex){Object.assign(ex,data);touch(ex);}else{S.plans=S.plans||[];S.plans.push(touch(Object.assign({id:uid()},data)));}persist();closeModal();toast(tr('saved'));render();},
  contrib:f=>{const E=f.elements,g=findG(E.gid.value),amount=parseAmount(E.amount.value);if(!g)return;if(!(amount>0))return toast(tr('badAmount'),'bad');const date=readDate(f);if(!date)return;g.contributions.push({id:uid(),date,amount});touch(g);persist();closeModal();toast(tr('g_depOk'));render();},
@@ -1300,11 +1427,14 @@ const ICON192=makeIcon(192),ICON512=makeIcon(512);
 function setupManifest(){if(/^https?:$/.test(location.protocol))return;const base=location.href.split('#')[0].split('?')[0];const m={name:tr('app'),short_name:tr('app'),lang:UI.lang,dir:FA_LANG()?'rtl':'ltr',start_url:base,scope:base.replace(/[^/]*$/,''),display:'standalone',background_color:'#F8FAFC',theme_color:'#0D9488',icons:[{src:ICON192,sizes:'192x192',type:'image/png'},{src:ICON512,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
   $('#manifestLink').href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));$('#favLink').href=ICON192;$('#appleLink').href=ICON192;}
 setupManifest();
-render();
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
-notifyDue();setInterval(notifyDue,30*60*1000);
-syncNow();setInterval(()=>{if(!document.hidden)syncNow();},60000);
+let started=false;
+function startApp(){if(started)return;started=true;render();notifyDue();setInterval(notifyDue,30*60*1000);syncNow();setInterval(()=>{if(!document.hidden)syncNow();},60000);
+  if(!META.lastSnap||Date.now()-META.lastSnap>7*864e5)setTimeout(()=>snapshot('week'),3000);}
+if(PROF.pw&&!(window.crypto&&crypto.subtle)){applyChrome();$('#gate').innerHTML=`<div class="gbox"><p>${tr('sy_needHttps')}</p></div>`;$('#gate').hidden=false;}
+else if(PROF.pw){applyChrome();$('#gate').innerHTML=gateHTML();$('#gate').hidden=false;setTimeout(()=>{const i=$('#gate input[name=p]');if(i)i.focus();},100);}
+else startApp();
 </script>
 </body>
 </html>
