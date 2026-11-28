@@ -326,7 +326,7 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 
 <script>
 'use strict';
-const APP_VERSION='3.6';let lastDiag='';
+const APP_VERSION='3.7';let lastDiag='';
 /* =====================================================================
    1. UTILITIES, I18N & FORMATTING
    ===================================================================== */
@@ -389,10 +389,10 @@ const D={
  al_short:['اقساط هنوز کامل پوشش داده نشده','Installments not fully covered yet'],al_shortX:['{a} دیگر برای اقساط این ماه لازم است.','{a} more is needed for this month’s installments.'],safeFrom:['سقف خرج امن روزانه از امروز','Safe daily limit from today'],gotIt:['متوجه شدم','Got it'],
  expSavedLeft:['ثبت شد · امروز {a} دیگر جا دارید','Saved · {a} still safe today'],expSavedOver:['ثبت شد · {a} بیشتر از سقف امن امروز','Saved · {a} over today’s safe limit'],
  /* goals */
- tpl_car:['خرید پژو ۲۰۶','Buy a Peugeot 206'],tpl_immig:['هزینه‌های مهاجرت','Immigration fund'],tpl_lang:['مدرک زبان','Language certificate'],tpl_emergency:['صندوق اضطراری','Emergency fund'],tpl_custom:['هدف دلخواه','Custom goal'],
+ tpl_car:['خرید خودرو','Buy a car'],tpl_immig:['هزینه‌های مهاجرت','Immigration fund'],tpl_lang:['مدرک زبان','Language certificate'],tpl_emergency:['صندوق اضطراری','Emergency fund'],tpl_custom:['هدف دلخواه','Custom goal'],
  tpld_car:['قیمت + حاشیه تورم','Price + inflation buffer'],tpld_immig:['مرحله‌به‌مرحله با ارز','Staged, in foreign currency'],tpld_lang:['آیلتس، تافل، گوته','IELTS, TOEFL, Goethe'],tpld_emergency:['۳ تا ۶ ماه هزینه ضروری','3–6 months of needs'],tpld_custom:['هر هدف دیگری','Anything else'],
  newGoal:['هدف جدید از الگو','New goal from a template'],g_title:['عنوان هدف','Goal title'],g_saved:['موجودی فعلی (تومان)','Already saved (Toman)'],g_monthly:['واریز ماهانه (تومان)','Monthly deposit (Toman)'],g_target:['مبلغ هدف (تومان)','Target amount (Toman)'],
- g_price:['قیمت فعلی خودرو (تومان)','Current car price (Toman)'],g_infl:['حاشیه تورم سالانه ٪','Yearly inflation buffer %'],g_deadline:['تاریخ هدف (اختیاری)','Target date (optional)'],
+ g_price:['قیمت فعلی خودرو (تومان)','Current car price (Toman)'],g_titleCarPh:['اسم خودروی موردنظرتان را بنویسید','Type the car you want'],g_infl:['حاشیه تورم سالانه ٪','Yearly inflation buffer %'],g_deadline:['تاریخ هدف (اختیاری)','Target date (optional)'],
  g_cur:['ارز','Currency'],g_rate:['نرخ هر واحد ارز (تومان)','Toman per 1 unit'],g_curInfl:['حاشیه رشد نرخ ارز سالانه ٪','Yearly FX growth buffer %'],g_stages:['مراحل و هزینه هر مرحله (به ارز)','Stages and cost (in currency)'],g_addStage:['+ مرحله','+ Stage'],
  st_trans:['ترجمه مدارک','Document translation'],st_emb:['هزینه سفارت و ویزا','Embassy & visa fees'],st_pof:['تمکن مالی','Proof of funds'],st_fly:['بلیت و استقرار اولیه','Flight & initial settlement'],
  g_exam:['آزمون','Exam'],g_fee:['هزینه ثبت‌نام آزمون (تومان)','Exam registration fee (Toman)'],g_classes:['بودجه کلاس و منابع (تومان)','Classes & resources budget (Toman)'],g_examDate:['تاریخ آزمون','Exam date'],
@@ -801,7 +801,7 @@ function nextMonthHTML(){const nx=perAdd(curPer(),1),list=nextMonthDue();if(!DEB
 /* ---- goals ---- */
 function goalForm(tpl,g){g=g||{};const T=x=>esc(x==null?'':x),A=n=>amtVal(n);const ttl=g.title||tr('tpl_'+tpl);
   let f=`<form data-form="goal" class="form" autocomplete="off"><input type="hidden" name="gid" value="${g.id||''}"><input type="hidden" name="tpl" value="${tpl}">
-  <label class="fld"><span>${tr('g_title')}</span><input name="title" required maxlength="50" value="${T(ttl)}"></label>`;
+  <label class="fld"><span>${tr('g_title')}</span><input name="title" required maxlength="50" value="${T(ttl)}" ${tpl==='car'?`placeholder="${tr('g_titleCarPh')}"`:''}></label>`;
   if(tpl==='car')f+=`<div class="row2"><label class="fld"><span>${tr('g_price')}</span><input name="target" class="amt" inputmode="numeric" value="${A(g.target)}" required></label><label class="fld"><span>${tr('g_infl')}</span><input name="infl" inputmode="numeric" value="${dg(g.infl||0)}"></label></div>
     <div class="fld"><span>${tr('g_deadline')}</span><div class="row"><input name="deadline" class="jdate" value="${g.deadline?dg(g.deadline):''}" inputmode="numeric" placeholder="${dg('1406/06/01')}"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;
   else if(tpl==='immig'){const stages=g.stages||[{id:uid(),name:tr('st_trans')},{id:uid(),name:tr('st_emb')},{id:uid(),name:tr('st_pof')},{id:uid(),name:tr('st_fly')}];
