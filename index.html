@@ -263,7 +263,7 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 .dp-g button{border:0;background:none;height:38px;border-radius:10px;cursor:pointer;font-variant-numeric:tabular-nums}
 .dp-g button:hover{background:var(--sunk)}
 .dp-g button.today{outline:1.5px solid var(--sec)}
-.dp-g button{position:relative}.dp-g button.hol{color:var(--bad);font-weight:700}.dp-g button.hol i{position:absolute;bottom:4px;left:50%;width:4px;height:4px;border-radius:50%;background:var(--bad);transform:translateX(-50%)}.dp-g button.sel{color:var(--on-pri)}
+.dp-g button{position:relative;line-height:1.15}.dp-g button.gd{height:44px}.dp-g button small{display:block;font-size:9.5px;color:var(--muted);font-weight:500}.dp-g button.sel small{color:var(--on-pri)}.dp-g button.we{color:var(--muted)}.dp-g button i{position:absolute!important;top:5px!important;bottom:auto!important;left:auto!important;inset-inline-end:5px;transform:none!important;width:6px!important;height:6px!important;border-radius:50%}.dp-g button i{background:#EA580C}.dp-g button i.ir{background:var(--bad)}.dp-hol .nt{display:inline-block;margin-inline-end:6px}.dhint{display:block;font-size:12px;color:var(--muted);margin-top:3px;min-height:1em}.dp-gm{display:block;font-size:11px;font-weight:500;color:var(--muted);text-align:center}.dp-hol b{color:var(--ink);margin-inline-end:6px}.dp-g button.hol{color:var(--bad);font-weight:700}.dp-g button.hol i{position:absolute;bottom:4px;left:50%;width:4px;height:4px;border-radius:50%;background:var(--bad);transform:translateX(-50%)}.dp-g button.sel{color:var(--on-pri)}
 .dp-hol{list-style:none;margin:8px 0 0;padding:8px 0 0;border-top:1px solid var(--line);font-size:12.5px;max-height:120px;overflow:auto}.dp-hol li{padding:2px 0}.dp-hol b{color:var(--bad);margin-inline-end:6px}
 .dp-g button.sel{background:var(--pri-strong);color:var(--on-pri)}
 #toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;max-width:90vw;text-align:center;font-size:14px}
@@ -319,7 +319,7 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 
 <script>
 'use strict';
-const APP_VERSION='3.2';let lastDiag='';
+const APP_VERSION='3.5';let lastDiag='';
 /* =====================================================================
    1. UTILITIES, I18N & FORMATTING
    ===================================================================== */
@@ -331,6 +331,7 @@ function loadJSON(k,d){try{const v=localStorage.getItem(k);return v?Object.assig
 function saveJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
 
 let UI=loadJSON('dk2_ui',{lang:'fa',theme:'system'});
+(()=>{let tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){}const eu=/Europe\//.test(tz);if(!UI.cal||(UI.cal==='gj'&&!UI.calChosen))UI.cal=UI.greg===true||eu?'jg':'j';if(!Array.isArray(UI.hc))UI.hc=eu?['ir','nl','de','us']:['ir'];delete UI.greg;delete UI.hol;})();
 const FA_LANG=()=>UI.lang==='fa';
 const D={
  app:['دخل و خرج Nana 💕','Dakhl-o-Kharj Nana 💕'],
@@ -476,6 +477,7 @@ const D={
  gh4:['توکن (با ghp_ شروع می‌شود) را کپی کنید و اینجا بچسبانید. روی دستگاه دوم هم همین توکن و همان کلید همگام‌سازی را وارد کنید.','Copy the token (starts with ghp_) here. Use the same token and sync key on your other device.'],
  sy_ghBadTok:['توکن GitHub درست نیست یا منقضی شده','GitHub token is invalid or expired'],sy_ghScope:['توکن اجازه gist ندارد','Token lacks the gist permission'],
  hol_approx:['تاریخ تعطیلات مذهبی این سال تقریبی است و ممکن است با رؤیت هلال یک روز جابه‌جا شود.','Religious holidays for this year are approximate and may shift by a day.'],hol_none:['این ماه تعطیل رسمی ندارد (فقط جمعه‌ها)','No official holidays this month (Fridays only)'],friday:['جمعه','Friday'],nx_off:['تعطیل','holiday'],
+ set_cal:['تقویم','Calendar'],cal_j:['فقط شمسی','Solar only'],cal_jg:['شمسی + میلادی','Solar + Gregorian'],cal_gj:['میلادی + شمسی','Gregorian + Solar'],set_hol:['یادداشت تعطیلات این کشورها','Holiday notes for these countries'],hol_hint:['تعطیلات فقط به صورت یادداشت زیر تقویم و بالای برنامه نشان داده می‌شوند. بودجه ماهانه همچنان بر اساس ماه شمسی است.','Holidays appear as notes under the calendar and in the header. Monthly budgets still follow the solar month.'],hol_none2:['این ماه تعطیلی برای کشورهای انتخاب‌شده ندارد','No holidays this month for the selected countries'],hol_partial:['— برای همه تعطیل نیست','— not a day off for everyone'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -514,7 +516,9 @@ function perAdd(p,k){let[y,m]=p.split('/').map(Number);m+=k;while(m>12){m-=12;y+
 const MONTHS={fa:['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'],en:['Farvardin','Ordibehesht','Khordad','Tir','Mordad','Shahrivar','Mehr','Aban','Azar','Dey','Bahman','Esfand']};
 const mName=m=>MONTHS[UI.lang][m-1];
 function perName(p){const[y,m]=p.split('/').map(Number);return mName(m)+' '+dg(y);}
-function dateLabel(s){const a=typeof s==='string'?parseJ(s):s;return a?`${dg(a[2])} ${mName(a[1])} ${dg(a[0])}`:String(s);}
+const GMON={fa:['ژانویه','فوریه','مارس','آوریل','مه','ژوئن','ژوئیه','اوت','سپتامبر','اکتبر','نوامبر','دسامبر'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']};
+function gLabel(g,withYear){return `${dg(g[2])} ${GMON[UI.lang][g[1]-1]}${withYear?' '+dg(g[0]):''}`;}
+function dateLabel(s,noG){const a=typeof s==='string'?parseJ(s):s;if(!a)return String(s);const j=`${dg(a[2])} ${mName(a[1])} ${dg(a[0])}`;if(noG||UI.cal==='j')return j;const g=j2g(a[0],a[1],a[2]);return UI.cal==='gj'?`${gLabel(g,true)} (${dg(a[2])} ${mName(a[1])})`:`${j} (${gLabel(g)})`;}
 const MONTH_D=30.4375;
 function fmtDur(days){days=Math.max(0,Math.round(days));let m=Math.floor(days/MONTH_D),d=Math.round(days-m*MONTH_D);if(d>=30){m++;d=0;}const p=[];if(m)p.push(tr('dur_m',{a:dg(m)}));if(d||!m)p.push(tr('dur_d',{a:dg(d)}));return p.join(tr('dur_and'));}
 
@@ -679,7 +683,8 @@ function monthsSeries(n){const out=[];for(let i=n-1;i>=0;i--){const p=perAdd(cur
    ===================================================================== */
 const V={};
 let tab='dash',viewPer=curPer(),whatIf=null,deferredPrompt=null;
-function dateField(val){return `<div class="fld"><span>${tr('date')}</span><div class="row"><input name="date" value="${dg(val||jS(todayJ()))}" inputmode="numeric" required aria-label="${tr('date')}"><button type="button" class="btn sm" data-act="dp" aria-label="${tr('date')}">📅</button><button type="button" class="btn sm" data-act="setDate" data-id="0">${tr('today')}</button><button type="button" class="btn sm" data-act="setDate" data-id="1">${tr('yesterday')}</button></div></div>`;}
+function dateHint(v){const a=parseJ(v||'');if(!a||UI.cal==='j')return '';const g=j2g(a[0],a[1],a[2]),wdn=new Date(g[0],g[1]-1,g[2]).toLocaleDateString(UI.lang==='fa'?'fa-IR':'en-GB',{weekday:'long'});return `= ${wdn}، ${gLabel(g,true)}`;}
+function dateField(val){const v=val||jS(todayJ());return `<div class="fld"><span>${tr('date')}</span><div class="row"><input name="date" class="jdate" value="${dg(val||jS(todayJ()))}" inputmode="numeric" required aria-label="${tr('date')}"><button type="button" class="btn sm" data-act="dp" aria-label="${tr('date')}">📅</button><button type="button" class="btn sm" data-act="setDate" data-id="0">${tr('today')}</button><button type="button" class="btn sm" data-act="setDate" data-id="1">${tr('yesterday')}</button></div><small class="dhint">${dateHint(v)}</small></div>`;}
 function bar(label,used,budget,cls){const p=budget>0?Math.min(100,used/budget*100):(used>0?100:0);return `<div class="bar"><div class="bar-h"><span>${label}</span><span class="num">${num(used)} ${tr('of')} ${num(budget)}</span></div><div class="track ${cls||''} ${used>budget&&used>0?'over':''}"><span style="width:${p}%"></span></div></div>`;}
 const led=(l,v,s,cls)=>`<div class="it ${cls||''}"><div class="lbl">${l}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`;
 function alertsHTML(al){if(!al.length)return'';const np=('Notification' in window)&&Notification.permission==='default';return `<section>${al.map(a=>`<div class="alert ${a.lvl}"><span>${a.lvl==='bad'?'⛔':'⏰'} ${a.txt}</span><button class="btn sm" data-act="pay" data-id="${a.d.id}">${tr('paidIt')}</button></div>`).join('')}${np?`<p class="hint"><button class="link" data-act="notif">${tr('notifEnable')}</button></p>`:''}</section>`;}
@@ -757,22 +762,22 @@ V.debts=()=>{const act=DEB().filter(d=>remCount(d)>0);return alertsHTML(debtAler
   ${nextMonthHTML()}${DEB().map(debtCard).join('')}${DEB().length?`<section class="card"><div class="sumfoot" style="border:0;margin:0;padding:0"><span>${tr('sf_debtsMonth',{a:perName(curPer())})}</span><span>${money(DEB().reduce((s,d)=>s+sum(d.payments.filter(q=>q.on.startsWith(curPer())),'amount'),0))}</span></div><div class="sumfoot"><span>${tr('d_monthlySum')}</span><span>${money(sum(act,'monthly'))}</span></div><div class="sumfoot"><span>${tr('d_remSum')}</span><span>${money(act.reduce((s,d)=>s+d.monthly*remCount(d),0))}</span></div></section>`:''}<section class="card"><h2>${tr('d_add')}</h2>${debtForm()}</section>`;};
 function nextMonthDue(){const cp=curPer(),nx=perAdd(cp,1);return DEB().filter(d=>remCount(d)>0&&d.start<=nx&&!paidIn(d,nx)&&remCount(d)>unpaidDueCount(d,cp));}
 function nextMonthHTML(){const nx=perAdd(curPer(),1),list=nextMonthDue();if(!DEB().length)return '';const tot=sum(list,'monthly');
-  return `<section class="card"><h3>📆 ${tr('nx_title',{a:perName(nx)})}</h3>${list.length?`<ol class="alloc">${list.map(d=>`<li><b>${esc(d.title)} <span class="muted sm">${tr('nx_due',{a:dg(Math.min(d.dueDay,30))})}${(()=>{const nx=perAdd(curPer(),1).split('/').map(Number),dd=[nx[0],nx[1],Math.min(d.dueDay,mLen(nx[0],nx[1]))],ho=holidayOn(dd);return ho||isFriday(dd)?` <span class="tag bad">${tr('nx_off')}</span>`:'';})()}</span></b><span>${money(d.monthly)}</span></li>`).join('')}<li><b>${tr('total')}</b><span><b>${money(tot)}</b></span></li></ol>`:empty(tr('nx_none'))}<p class="hint">${tr('nx_hint')}</p></section>`;}
+  return `<section class="card"><h3>📆 ${tr('nx_title',{a:perName(nx)})}</h3>${list.length?`<ol class="alloc">${list.map(d=>`<li><b>${esc(d.title)} <span class="muted sm">${tr('nx_due',{a:dg(Math.min(d.dueDay,30))})}${(()=>{const nx=perAdd(curPer(),1).split('/').map(Number),dd=[nx[0],nx[1],Math.min(d.dueDay,mLen(nx[0],nx[1]))],ho=irHolidayOn(dd);return ho||isFriday(dd)?` <span class="tag bad">${tr('nx_off')}</span>`:'';})()}</span></b><span>${money(d.monthly)}</span></li>`).join('')}<li><b>${tr('total')}</b><span><b>${money(tot)}</b></span></li></ol>`:empty(tr('nx_none'))}<p class="hint">${tr('nx_hint')}</p></section>`;}
 
 /* ---- goals ---- */
 function goalForm(tpl,g){g=g||{};const T=x=>esc(x==null?'':x),A=n=>amtVal(n);const ttl=g.title||tr('tpl_'+tpl);
   let f=`<form data-form="goal" class="form" autocomplete="off"><input type="hidden" name="gid" value="${g.id||''}"><input type="hidden" name="tpl" value="${tpl}">
   <label class="fld"><span>${tr('g_title')}</span><input name="title" required maxlength="50" value="${T(ttl)}"></label>`;
   if(tpl==='car')f+=`<div class="row2"><label class="fld"><span>${tr('g_price')}</span><input name="target" class="amt" inputmode="numeric" value="${A(g.target)}" required></label><label class="fld"><span>${tr('g_infl')}</span><input name="infl" inputmode="numeric" value="${dg(g.infl||0)}"></label></div>
-    <div class="fld"><span>${tr('g_deadline')}</span><div class="row"><input name="deadline" value="${g.deadline?dg(g.deadline):''}" inputmode="numeric" placeholder="${dg('1406/06/01')}"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;
+    <div class="fld"><span>${tr('g_deadline')}</span><div class="row"><input name="deadline" class="jdate" value="${g.deadline?dg(g.deadline):''}" inputmode="numeric" placeholder="${dg('1406/06/01')}"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;
   else if(tpl==='immig'){const stages=g.stages||[{id:uid(),name:tr('st_trans')},{id:uid(),name:tr('st_emb')},{id:uid(),name:tr('st_pof')},{id:uid(),name:tr('st_fly')}];
     f+=`<div class="row3"><label class="fld"><span>${tr('g_cur')}</span><select name="cur">${CURRENCIES.map(c=>`<option ${c===(g.cur||'EUR')?'selected':''}>${c}</option>`).join('')}</select></label><label class="fld"><span>${tr('g_rate')}</span><input name="rate" class="amt" inputmode="numeric" value="${A(g.rate)}" required></label><label class="fld"><span>${tr('g_curInfl')}</span><input name="infl" inputmode="numeric" value="${dg(g.infl||0)}"></label></div>
     <div class="fld"><span>${tr('g_stages')}</span><div id="stageRows">${stages.map(stageRow).join('')}</div><button type="button" class="btn sm" data-act="addStage">${tr('g_addStage')}</button></div>
-    <div class="fld"><span>${tr('g_deadline')}</span><div class="row"><input name="deadline" value="${g.deadline?dg(g.deadline):''}" inputmode="numeric"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;}
+    <div class="fld"><span>${tr('g_deadline')}</span><div class="row"><input name="deadline" class="jdate" value="${g.deadline?dg(g.deadline):''}" inputmode="numeric"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;}
   else if(tpl==='lang')f+=`<label class="fld"><span>${tr('g_exam')}</span><select name="exam">${EXAMS.map(e=>`<option ${e===(g.exam||'IELTS')?'selected':''}>${e}</option>`).join('')}</select></label>
     <div class="row2"><label class="fld"><span>${tr('g_fee')}</span><input name="fee" class="amt" inputmode="numeric" value="${A(g.fee)}"></label><label class="fld"><span>${tr('g_classes')}</span><input name="classes" class="amt" inputmode="numeric" value="${A(g.classes)}"></label></div>
     <div class="row2"><label class="row" style="align-items:center;margin-bottom:10px"><input type="checkbox" name="feePaid" ${g.feePaid?'checked':''}> ${tr('g_feePaidL')}</label><label class="row" style="align-items:center;margin-bottom:10px"><input type="checkbox" name="classesPaid" ${g.classesPaid?'checked':''}> ${tr('g_classesPaidL')}</label></div>
-    <div class="fld"><span>${tr('g_examDate')}</span><div class="row"><input name="examDate" value="${g.examDate?dg(g.examDate):''}" inputmode="numeric"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;
+    <div class="fld"><span>${tr('g_examDate')}</span><div class="row"><input name="examDate" class="jdate" value="${g.examDate?dg(g.examDate):''}" inputmode="numeric"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;
   else f+=`<label class="fld"><span>${tr('g_target')}</span><input name="target" class="amt" inputmode="numeric" value="${A(g.target)}" required></label>`;
   f+=`<div class="row2"><label class="fld"><span>${tr('g_saved')}</span><input name="initial" class="amt" inputmode="numeric" value="${A(g.initial)}"></label><label class="fld"><span>${tr('g_monthly')}</span><input name="monthly" class="amt" inputmode="numeric" value="${A(g.monthly)}"></label></div>
   <button class="btn pri wide">${g.id?tr('g_update'):tr('g_create')}</button></form>`;return f;}
@@ -812,7 +817,7 @@ function filteredTx(){const {from,to}=rfRange(),q=(RF.q||'').trim().toLowerCase(
   return allTx().filter(t=>t.d>=from&&t.d<=to+'~'&&RF.types.includes(t.k)&&(t.k!=='exp'||((!RF.cat||t.cat===RF.cat)&&(!RF.ess||(RF.ess==='1')===t.ess)))&&(t.k!=='inst'||!RF.debt||t.debt===RF.debt)&&(!q||(t.s||'').toLowerCase().includes(q))).sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:0);}
 function rfTotals(tx){const s=k=>sum(tx.filter(t=>t.k===k),'a'),ex=tx.filter(t=>t.k==='exp');const T={inc:s('inc'),exp:s('exp'),ess:sum(ex.filter(t=>t.ess),'a'),non:sum(ex.filter(t=>!t.ess),'a'),inst:s('inst'),dep:s('dep'),n:tx.length};T.net=T.inc-T.exp-T.inst-T.dep;return T;}
 const RT=['inc','exp','inst','dep'];
-function rfDateBox(k,label){return `<div class="fld"><span>${label}</span><div class="row"><input data-rf="${k}" value="${RF[k]?dg(RF[k]):''}" inputmode="numeric" placeholder="${dg(k==='from'?curPer()+'/01':jS(todayJ()))}"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;}
+function rfDateBox(k,label){return `<div class="fld"><span>${label}</span><div class="row"><input data-rf="${k}" class="jdate" value="${RF[k]?dg(RF[k]):''}" inputmode="numeric" placeholder="${dg(k==='from'?curPer()+'/01':jS(todayJ()))}"><button type="button" class="btn sm" data-act="dp">📅</button></div></div>`;}
 function rfHTML(){const y=RF.year||todayJ()[0];let nav='';
   if(RF.mode==='month')nav=perNav();
   else if(RF.mode==='year')nav=`<div class="pernav"><button class="btn sm" data-act="yrPrev">${tr('rf_prevY')}</button><b>${tr('rf_yearN',{a:dg(y)})}</b><button class="btn sm" data-act="yrNext" ${y>=todayJ()[0]?'disabled':''}>${tr('rf_nextY')}</button></div>`;
@@ -901,7 +906,9 @@ function syncSection(){if(SC.enabled){const last=META.lastSync?new Date(META.las
 function installHTML(){if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)return `<p>${tr('in_done')}</p>`;
   return `${deferredPrompt?`<div class="btns"><button class="btn pri" data-act="install">${tr('in_btn')}</button></div>`:''}<ul class="steps"><li>${tr('in_android')}</li><li>${tr('in_ios')}</li><li>${tr('in_win')}</li></ul>${location.protocol==='file:'?`<p class="hint">${tr('in_file')}</p>`:''}`;}
 V.settings=()=>{const st=S.settings;const seg=(name,opts,cur)=>`<div class="seg">${opts.map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}" ${v===cur?'checked':''} data-act="${name}Pick" data-id="${v}"><span>${l}</span></label>`).join('')}</div>`;
-  return `<section class="card"><h2>${tr('set_ui')}</h2><div class="row2"><div class="fld"><span>${tr('set_lang')}</span>${seg('uilang',[['fa','فارسی'],['en','English']],UI.lang)}</div><div class="fld"><span>${tr('set_theme')}</span>${seg('uitheme',[['system',tr('th_sys')],['light',tr('th_l')],['dark',tr('th_d')]],UI.theme)}</div></div></section>
+  return `<section class="card"><h2>${tr('set_ui')}</h2><div class="row2"><div class="fld"><span>${tr('set_lang')}</span>${seg('uilang',[['fa','فارسی'],['en','English']],UI.lang)}</div><div class="fld"><span>${tr('set_theme')}</span>${seg('uitheme',[['system',tr('th_sys')],['light',tr('th_l')],['dark',tr('th_d')]],UI.theme)}</div></div>
+  <div class="fld"><span>${tr('set_cal')}</span>${seg('uical',[['jg',tr('cal_jg')],['gj',tr('cal_gj')],['j',tr('cal_j')]],UI.cal)}</div>
+  <div class="fld"><span>${tr('set_hol')}</span><div class="chips">${Object.keys(CC).map(c=>`<label class="chip"><input type="checkbox" data-hc="${c}" ${UI.hc.includes(c)?'checked':''}><span>${CC[c].f} ${CC[c][UI.lang]}</span></label>`).join('')}</div><p class="hint">${tr('hol_hint')}</p></div></section>
   <section class="card" id="syncCard"><h2>☁️ ${tr('set_sync')}</h2>${syncSection()}</section>
   <section class="card"><h2>${tr('set_budget')}</h2><form data-form="settings" class="form" autocomplete="off">
    <div class="seg"><label><input type="radio" name="model" value="503020" ${st.model!=='zero'?'checked':''}><span>${tr('m_pctL')}</span></label><label><input type="radio" name="model" value="zero" ${st.model==='zero'?'checked':''}><span>${tr('m_zeroL')}</span></label></div>
@@ -925,7 +932,7 @@ function applyChrome(){const r=document.documentElement;r.lang=UI.lang;r.dir=FA_
   document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.id===UI.lang));
   const th={system:['🖥️','th_system'],light:['☀️','th_light'],dark:['🌙','th_dark']}[UI.theme];$('#themeBtn').textContent=th[0];$('#themeBtn').setAttribute('aria-label',tr(th[1]));$('#themeBtn').title=tr(th[1]);
   $('#fab').setAttribute('aria-label',tr('quickExp'));$('#gearBtn').setAttribute('aria-label',tr('tab_settings'));paintSync();}
-function render(){applyChrome();const td=todayJ();$('#hdrTitle').textContent=D['ttl_'+tab]?tr('ttl_'+tab):tr('tab_'+tab);{const ho=holidayOn(td);$('#hdrDate').textContent=dateLabel(td)+(ho?' · 🔴 '+ho.name:isFriday(td)?' · '+tr('friday'):'');}$('#view').innerHTML=V[tab]();$('#fab').hidden=tab==='settings';}
+function render(){applyChrome();const td=todayJ();$('#hdrTitle').textContent=D['ttl_'+tab]?tr('ttl_'+tab):tr('tab_'+tab);{const ns=dayNotes(td),gg=j2g(td[0],td[1],td[2]),jl=dateLabel(td,true);$('#hdrDate').textContent=(UI.cal==='gj'?gLabel(gg,true)+' · '+jl:UI.cal==='jg'?jl+' · '+gLabel(gg,true):jl)+(ns.length?' · '+notesText(ns):'');}$('#view').innerHTML=V[tab]();$('#fab').hidden=tab==='settings';}
 let pendingRender=false;
 function safeRender(){const a=document.activeElement;if(a&&a.closest&&a.closest('#view form, #modal')&&a.matches('input,select,textarea')){pendingRender=true;return;}render();}
 document.addEventListener('focusout',()=>{if(pendingRender)setTimeout(()=>{if(pendingRender&&!(document.activeElement&&document.activeElement.matches('input,select,textarea'))){pendingRender=false;render();}},150);});
@@ -948,19 +955,49 @@ function holidaysOf(y){if(_holCache[y])return _holCache[y];const out={};const pu
     for(let m=1;m<=12;m++)for(let d=1;d<=mLen(y,m);d++){const g=j2g(y,m,d),dt=new Date(Date.UTC(g[0],g[1]-1,g[2]));const[hm,hd]=hij(dt);const[nm]=hij(new Date(dt.getTime()+864e5));
       HOL_LUNAR.forEach(([lm,ld,fa,en])=>{if(lm===hm&&(ld===hd||(ld===0&&nm!==hm)))put(pad(m)+'/'+pad(d),[fa,en],true);});}}
   return _holCache[y]=out;}
-function holidayOn(a){const h=holidaysOf(a[0])[pad(a[1])+'/'+pad(a[2])];return h?{name:h[UI.lang],approx:!!h.approx}:null;}
+function irHolidayOn(a){const h=holidaysOf(a[0])[pad(a[1])+'/'+pad(a[2])];return h?{name:h[UI.lang],approx:!!h.approx}:null;}
+function easter(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),hh=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-hh-k)%7,m=Math.floor((a+11*hh+22*l)/451),mo=Math.floor((hh+l-7*m+114)/31),da=((hh+l-7*m+114)%31)+1;return new Date(y,mo-1,da);}
+const CC={ir:{f:'🇮🇷',fa:'ایران',en:'Iran'},nl:{f:'🇳🇱',fa:'هلند',en:'Netherlands'},de:{f:'🇩🇪',fa:'آلمان',en:'Germany'},us:{f:'🇺🇸',fa:'آمریکا',en:'USA'},gb:{f:'🇬🇧',fa:'انگلیس',en:'UK'},be:{f:'🇧🇪',fa:'بلژیک',en:'Belgium'},fr:{f:'🇫🇷',fa:'فرانسه',en:'France'}};
+function nthWd(y,m,wd,n){const d=new Date(y,m-1,1);return new Date(y,m-1,1+((wd-d.getDay()+7)%7)+(n-1)*7);}
+function lastWd(y,m,wd){const d=new Date(y,m,0);return new Date(y,m-1,d.getDate()-((d.getDay()-wd+7)%7));}
+function ccHolidays(cc,y){const E=easter(y),o=n=>new Date(y,E.getMonth(),E.getDate()+n),D=(m,d)=>new Date(y,m-1,d);let kd=D(4,27);if(kd.getDay()===0)kd=D(4,26);
+  const NY=[D(1,1),'سال نو میلادی','New Year’s Day'],XM=[D(12,25),'کریسمس','Christmas Day'],BX=[D(12,26),'روز دوم کریسمس','2nd Christmas Day'],GF=[o(-2),'جمعه نیک','Good Friday'],EM=[o(1),'دوشنبه عید پاک','Easter Monday'],AS=[o(39),'عروج مسیح','Ascension Day'],WM=[o(50),'دوشنبه پنجاهه','Whit Monday'],LB=[D(5,1),'روز کارگر','Labour Day'],AU=[D(8,15),'عروج مریم','Assumption Day'],AL=[D(11,1),'روز همه قدیسان','All Saints’ Day'],AR=[D(11,11),'روز آتش‌بس','Armistice Day'];
+  return({nl:[NY,[o(-2),'جمعه نیک (برای همه تعطیل نیست)','Good Friday (not for everyone)'],EM,[kd,'روز پادشاه (Koningsdag)','King’s Day (Koningsdag)'],[D(5,5),'روز آزادی (برای همه تعطیل نیست)','Liberation Day (not for everyone)'],AS,WM,XM,BX],
+    de:[NY,GF,EM,LB,AS,WM,[D(10,3),'روز وحدت آلمان','German Unity Day'],XM,BX],
+    us:[NY,[nthWd(y,1,1,3),'روز مارتین لوتر کینگ','Martin Luther King Jr. Day'],[nthWd(y,2,1,3),'روز رئیس‌جمهور','Presidents’ Day'],[lastWd(y,5,1),'روز یادبود','Memorial Day'],[D(6,19),'جون‌تینث','Juneteenth'],[D(7,4),'روز استقلال آمریکا','Independence Day'],[nthWd(y,9,1,1),'روز کارگر آمریکا','Labor Day'],[nthWd(y,10,1,2),'روز کلمب','Columbus Day'],[D(11,11),'روز کهنه‌سربازان','Veterans Day'],[nthWd(y,11,4,4),'روز شکرگزاری','Thanksgiving'],XM],
+    gb:[NY,GF,EM,[nthWd(y,5,1,1),'تعطیلی اوایل مه','Early May bank holiday'],[lastWd(y,5,1),'تعطیلی بهاره','Spring bank holiday'],[lastWd(y,8,1),'تعطیلی تابستانه','Summer bank holiday'],XM,BX],
+    be:[NY,EM,LB,AS,WM,[D(7,21),'روز ملی بلژیک','Belgian National Day'],AU,AL,AR,XM],
+    fr:[NY,EM,LB,[D(5,8),'روز پیروزی','Victory in Europe Day'],AS,WM,[D(7,14),'روز ملی فرانسه','Bastille Day'],AU,AL,AR,XM]})[cc]||[];}
+const _gnCache={};
+function gNotes(gy){const key=gy+'|'+UI.hc.join(',');if(_gnCache[key])return _gnCache[key];const out={};
+  UI.hc.filter(c=>c!=='ir').forEach(cc=>ccHolidays(cc,gy).forEach(([dt,fa,en])=>{if(dt.getFullYear()!==gy)return;const k=pad(dt.getMonth()+1)+'-'+pad(dt.getDate());(out[k]=out[k]||[]).push({cc,fa,en});}));
+  return _gnCache[key]=out;}
+function dayNotes(a){const r=[];if(UI.hc.includes('ir')){const ir=irHolidayOn(a);if(ir)r.push({cc:'ir',f:CC.ir.f,name:ir.name,approx:ir.approx});}
+  const g=j2g(a[0],a[1],a[2]);(gNotes(g[0])[pad(g[1])+'-'+pad(g[2])]||[]).forEach(n=>r.push({cc:n.cc,f:CC[n.cc].f,name:n[UI.lang]}));return r;}
+function groupNotes(ns){const m=new Map();ns.forEach(n=>{const g=m.get(n.name);if(g)g.f+=n.f;else m.set(n.name,Object.assign({},n));});return [...m.values()];}
+const notesText=ns=>groupNotes(ns).map(n=>n.f+' '+n.name).join(' · ');
+function holidayOn(a){const ns=dayNotes(a);return ns.length?{name:notesText(ns),approx:ns.some(n=>n.approx)}:null;}
 function isFriday(a){const g=j2g(a[0],a[1],a[2]);return new Date(g[0],g[1]-1,g[2]).getDay()===5;}
 
 /* =====================================================================
    7. PERSIAN DATE PICKER
    ===================================================================== */
 let DP=null;
-function openDP(input){const a=parseJ(input.value)||todayJ();DP={input,y:a[0],m:a[1],sel:parseJ(input.value)};drawDP();$('#dp').classList.add('open');}
-function drawDP(){const{y,m}=DP,g=j2g(y,m,1),wd=(new Date(g[0],g[1]-1,g[2]).getDay()+1)%7,ml=mLen(y,m),td=todayJ();
-  const wk=FA_LANG()?['ش','ی','د','س','چ','پ','ج']:['Sa','Su','Mo','Tu','We','Th','Fr'];let cells='';for(let i=0;i<wd;i++)cells+='<span></span>';
-  const hols=[];for(let d=1;d<=ml;d++){const isT=y===td[0]&&m===td[1]&&d===td[2],isS=DP.sel&&y===DP.sel[0]&&m===DP.sel[1]&&d===DP.sel[2],ho=holidayOn([y,m,d]),fr=(wd+d-1)%7===6;if(ho)hols.push([d,ho]);cells+=`<button type="button" class="${isT?'today':''} ${isS?'sel':''} ${ho||fr?'hol':''}" data-act="dpPick" data-id="${d}" ${ho?`title="${esc(ho.name)}"`:''}>${dg(d)}${ho?'<i></i>':''}</button>`;}
+function openDP(input){const a=parseJ(input.value)||todayJ(),g=j2g(a[0],a[1],a[2]);DP={input,y:a[0],m:a[1],gy:g[0],gm:g[1],sel:parseJ(input.value)};drawDP();$('#dp').classList.add('open');}
+const GWD={fa:['د','س','چ','پ','ج','ش','ی'],en:['Mo','Tu','We','Th','Fr','Sa','Su']};
+function dpCell(j,big,small,isWe){const td=todayJ(),isT=j[0]===td[0]&&j[1]===td[1]&&j[2]===td[2],isS=DP.sel&&j[0]===DP.sel[0]&&j[1]===DP.sel[1]&&j[2]===DP.sel[2],ns=dayNotes(j);
+  return {ns,html:`<button type="button" class="${isT?'today':''} ${isS?'sel':''} ${isWe?'we':''} ${small?'gd':''}" data-act="dpPick" data-id="${jS(j)}" ${ns.length?`title="${esc(notesText(ns))}"`:''}><span>${big}</span>${small?`<small>${small}</small>`:''}${ns.length?`<i class="${ns.some(n=>n.cc==='ir')?'ir':''}"></i>`:''}</button>`};}
+function drawDP(){const greg=UI.cal==='gj';let cells='',title='',sub='',wk,list=[];
+  if(greg){const{gy,gm}=DP,first=new Date(gy,gm-1,1),off=(first.getDay()+6)%7,days=new Date(gy,gm,0).getDate();wk=GWD[UI.lang];for(let i=0;i<off;i++)cells+='<span></span>';
+    for(let d=1;d<=days;d++){const j=dToJ(new Date(gy,gm-1,d)),col=(off+d-1)%7,c=dpCell(j,dg(d),j[2]===1?mName(j[1]):dg(j[2]),col>=5);cells+=c.html;if(c.ns.length)list.push([`${dg(d)} ${GMON[UI.lang][gm-1]}`,c.ns]);}
+    const j1=dToJ(first),j2=dToJ(new Date(gy,gm-1,days));title=`${GMON[UI.lang][gm-1]} ${dg(gy)}`;sub=`${mName(j1[1])}${j1[1]!==j2[1]?' – '+mName(j2[1]):''} ${dg(j2[0])}`;}
+  else{const{y,m}=DP,g=j2g(y,m,1),wd=(new Date(g[0],g[1]-1,g[2]).getDay()+1)%7,ml=mLen(y,m),two=UI.cal==='jg';wk=FA_LANG()?['ش','ی','د','س','چ','پ','ج']:['Sa','Su','Mo','Tu','We','Th','Fr'];for(let i=0;i<wd;i++)cells+='<span></span>';
+    for(let d=1;d<=ml;d++){const gg=j2g(y,m,d),col=(wd+d-1)%7,c=dpCell([y,m,d],dg(d),two?(gg[2]===1?GMON[UI.lang][gg[1]-1]:dg(gg[2])):'',col===6);cells+=c.html;if(c.ns.length)list.push([`${dg(d)} ${mName(m)}`,c.ns]);}
+    title=`${mName(m)} ${dg(y)}`;if(two){const a=j2g(y,m,1),b=j2g(y,m,ml);sub=`${GMON[UI.lang][a[1]-1]} – ${GMON[UI.lang][b[1]-1]} ${dg(b[0])}`;}}
   const prev=FA_LANG()?'›':'‹',next=FA_LANG()?'‹':'›';
-  $('#dpBody').innerHTML=`<div class="dp-h"><button type="button" data-act="dpNav" data-id="-1" aria-label="${tr('prevM')}">${prev}</button><b>${mName(m)} ${dg(y)}</b><button type="button" data-act="dpNav" data-id="1" aria-label="${tr('nextM')}">${next}</button></div><div class="dp-w">${wk.map(x=>`<span>${x}</span>`).join('')}</div><div class="dp-g">${cells}</div>${hols.length?`<ul class="dp-hol">${hols.map(([d,ho])=>`<li><b>${dg(d)} ${mName(m)}</b> ${esc(ho.name)}</li>`).join('')}</ul>${hols.some(x=>x[1].approx)?`<p class="hint">${tr('hol_approx')}</p>`:''}`:`<p class="hint" style="text-align:center">${tr('hol_none')}</p>`}<div class="btns"><button type="button" class="btn sm" data-act="dpToday">${tr('today')}</button><button type="button" class="btn sm" data-act="dpClose">${tr('cancel')}</button></div>`;}
+  $('#dpBody').innerHTML=`<div class="dp-h"><button type="button" data-act="dpNav" data-id="-1" aria-label="${tr('prevM')}">${prev}</button><b>${title}${sub?`<small class="dp-gm">${sub}</small>`:''}</b><button type="button" data-act="dpNav" data-id="1" aria-label="${tr('nextM')}">${next}</button></div><div class="dp-w">${wk.map(x=>`<span>${x}</span>`).join('')}</div><div class="dp-g">${cells}</div>
+  ${list.length?`<ul class="dp-hol">${list.map(([d,ns])=>`<li><b>${d}</b> ${groupNotes(ns).map(n=>`<span class="nt">${n.f} ${esc(n.name)}</span>`).join(' ')}</li>`).join('')}</ul>${list.some(x=>x[1].some(n=>n.approx))?`<p class="hint">${tr('hol_approx')}</p>`:''}`:`<p class="hint" style="text-align:center">${tr('hol_none2')}</p>`}
+  <div class="btns"><button type="button" class="btn sm" data-act="dpToday">${tr('today')}</button><button type="button" class="btn sm" data-act="dpClose">${tr('cancel')}</button></div>`;}
 
 /* =====================================================================
    8. CLOUD SYNC ENGINE (encrypted, last-write-wins per record)
@@ -1084,13 +1121,13 @@ const ACT={
  tab:id=>{tab=id;viewPer=curPer();closeModal();render();window.scrollTo(0,0);},
  lang:id=>{UI.lang=id;saveJSON('dk2_ui',UI);setupManifest();render();},
  theme:()=>{UI.theme={system:'light',light:'dark',dark:'system'}[UI.theme];saveJSON('dk2_ui',UI);applyChrome();},
- uilangPick:id=>ACT.lang(id),uithemePick:id=>{UI.theme=id;saveJSON('dk2_ui',UI);applyChrome();},
+ uilangPick:id=>ACT.lang(id),uicalPick:id=>{UI.cal=id;UI.calChosen=true;saveJSON('dk2_ui',UI);render();},uithemePick:id=>{UI.theme=id;saveJSON('dk2_ui',UI);applyChrome();},
  fab:()=>openModal(`<h2>${tr('quickExp')}</h2>`+expenseForm()),close:closeModal,
- setDate:(n,b)=>{b.closest('form').elements.date.value=dg(jS(daysAgoJ(+n)));},
+ setDate:(n,b)=>{const i=b.closest('form').elements.date;i.value=dg(jS(daysAgoJ(+n)));updHint(i);},
  dp:(n,b)=>openDP(b.parentElement.querySelector('input')),
- dpNav:n=>{DP.m+=+n;if(DP.m>12){DP.m=1;DP.y++;}if(DP.m<1){DP.m=12;DP.y--;}drawDP();},
- dpPick:d=>{DP.input.value=dg(jS([DP.y,DP.m,+d]));$('#dp').classList.remove('open');DP.input.dispatchEvent(new Event('change',{bubbles:true}));},
- dpToday:()=>{DP.input.value=dg(jS(todayJ()));$('#dp').classList.remove('open');},
+ dpNav:n=>{if(UI.cal==='gj'){DP.gm+=+n;if(DP.gm>12){DP.gm=1;DP.gy++;}if(DP.gm<1){DP.gm=12;DP.gy--;}}else{DP.m+=+n;if(DP.m>12){DP.m=1;DP.y++;}if(DP.m<1){DP.m=12;DP.y--;}}drawDP();},
+ dpPick:d=>{DP.input.value=dg(d);$('#dp').classList.remove('open');DP.input.dispatchEvent(new Event('change',{bubbles:true}));},
+ dpToday:()=>{DP.input.value=dg(jS(todayJ()));$('#dp').classList.remove('open');DP.input.dispatchEvent(new Event('change',{bubbles:true}));},
  dpClose:()=>$('#dp').classList.remove('open'),
  yrPrev:()=>{RF.year=(RF.year||todayJ()[0])-1;render();},yrNext:()=>{RF.year=Math.min(todayJ()[0],(RF.year||todayJ()[0])+1);render();},
  printRF:()=>printRF(),csvRF:()=>{download(`nana-report-${stamp()}.csv`,rfCSV(),'text/csv;charset=utf-8');toast(tr('bk_csvOk'));},
@@ -1185,11 +1222,14 @@ const FORMS={
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const fn=ACT[b.dataset.act];if(!fn)return;if(!(b.type==='checkbox'||b.type==='radio'))e.preventDefault();fn(b.dataset.id,b);});
 document.addEventListener('submit',e=>{const f=e.target;if(f.dataset&&FORMS[f.dataset.form]){e.preventDefault();FORMS[f.dataset.form](f);}});
-document.addEventListener('input',e=>{const el=e.target;
+function updHint(el){if(!el.classList||!el.classList.contains('jdate'))return;const f=el.closest('.fld');if(!f)return;let s=f.querySelector('.dhint');if(!s){s=document.createElement('small');s.className='dhint';f.appendChild(s);}s.textContent=dateHint(el.value);}
+document.addEventListener('focusin',e=>updHint(e.target));
+document.addEventListener('input',e=>{const el=e.target;updHint(el);
   if(el.dataset&&el.dataset.rf==='q'){RF.q=el.value;const r=$('#repRes');if(r)r.innerHTML=reportResultsHTML();return;}
   if(el.classList.contains('amt')){const n=parseAmount(el.value);el.value=isNaN(n)?'':dg(n.toLocaleString('en-US'));}
   if(el.name==='whatif'){whatIf=+el.value;$('#wiVal').textContent=money(whatIf);$('#goalsList').innerHTML=goalsListHTML();}});
-document.addEventListener('change',e=>{const el=e.target;
+document.addEventListener('change',e=>{const el=e.target;updHint(el);
+  if(el.dataset&&el.dataset.hc){UI.hc=[...document.querySelectorAll('[data-hc]:checked')].map(x=>x.dataset.hc);saveJSON('dk2_ui',UI);render();return;}
   if(el.dataset&&el.dataset.rf&&el.dataset.rf!=='q'){const k=el.dataset.rf;if(k==='mode')RF.mode=el.value;else if(k==='type')RF.types=[...document.querySelectorAll('[data-rf=type]:checked')].map(x=>x.value);else if(k==='from'||k==='to'){const j=parseJ(el.value);RF[k]=j?jS(j):'';}else RF[k]=el.value;render();return;}
   if(el.name==='plan'&&el.form&&el.value){const pl=PLN().find(x=>x.id===el.value);if(pl){const c1=el.form.querySelector(`[name=cat][value="${pl.cat}"]`),e1=el.form.querySelector(`[name=ess][value="${pl.ess?'1':'0'}"]`);if(c1)c1.checked=true;if(e1)e1.checked=true;if(!el.form.elements.desc.value)el.form.elements.desc.value=pl.title;}}
   if(el.name==='cat'&&el.form&&!((el.form.elements.eid||el.form.elements.pid||{}).value)){const r=el.form.querySelector(`[name=ess][value="${cat(el.value).ess?'1':'0'}"]`);if(r)r.checked=true;}
