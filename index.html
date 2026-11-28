@@ -263,6 +263,8 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 .dp-g button{border:0;background:none;height:38px;border-radius:10px;cursor:pointer;font-variant-numeric:tabular-nums}
 .dp-g button:hover{background:var(--sunk)}
 .dp-g button.today{outline:1.5px solid var(--sec)}
+.dp-g button{position:relative}.dp-g button.hol{color:var(--bad);font-weight:700}.dp-g button.hol i{position:absolute;bottom:4px;left:50%;width:4px;height:4px;border-radius:50%;background:var(--bad);transform:translateX(-50%)}.dp-g button.sel{color:var(--on-pri)}
+.dp-hol{list-style:none;margin:8px 0 0;padding:8px 0 0;border-top:1px solid var(--line);font-size:12.5px;max-height:120px;overflow:auto}.dp-hol li{padding:2px 0}.dp-hol b{color:var(--bad);margin-inline-end:6px}
 .dp-g button.sel{background:var(--pri-strong);color:var(--on-pri)}
 #toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;max-width:90vw;text-align:center;font-size:14px}
 #toast.show{opacity:1;transform:translate(-50%,0)}
@@ -317,7 +319,7 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 
 <script>
 'use strict';
-const APP_VERSION='3.0';let lastDiag='';
+const APP_VERSION='3.1';let lastDiag='';
 /* =====================================================================
    1. UTILITIES, I18N & FORMATTING
    ===================================================================== */
@@ -473,6 +475,7 @@ const D={
  gh3:['فقط تیک <b>gist</b> را بزنید (هیچ تیک دیگری لازم نیست) و Generate token را بزنید.','Tick only <b>gist</b> and click Generate token.'],
  gh4:['توکن (با ghp_ شروع می‌شود) را کپی کنید و اینجا بچسبانید. روی دستگاه دوم هم همین توکن و همان کلید همگام‌سازی را وارد کنید.','Copy the token (starts with ghp_) here. Use the same token and sync key on your other device.'],
  sy_ghBadTok:['توکن GitHub درست نیست یا منقضی شده','GitHub token is invalid or expired'],sy_ghScope:['توکن اجازه gist ندارد','Token lacks the gist permission'],
+ hol_approx:['تاریخ تعطیلات مذهبی این سال تقریبی است و ممکن است با رؤیت هلال یک روز جابه‌جا شود.','Religious holidays for this year are approximate and may shift by a day.'],hol_none:['این ماه تعطیل رسمی ندارد (فقط جمعه‌ها)','No official holidays this month (Fridays only)'],friday:['جمعه','Friday'],nx_off:['تعطیل','holiday'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -754,7 +757,7 @@ V.debts=()=>{const act=DEB().filter(d=>remCount(d)>0);return alertsHTML(debtAler
   ${nextMonthHTML()}${DEB().map(debtCard).join('')}${DEB().length?`<section class="card"><div class="sumfoot" style="border:0;margin:0;padding:0"><span>${tr('sf_debtsMonth',{a:perName(curPer())})}</span><span>${money(DEB().reduce((s,d)=>s+sum(d.payments.filter(q=>q.on.startsWith(curPer())),'amount'),0))}</span></div><div class="sumfoot"><span>${tr('d_monthlySum')}</span><span>${money(sum(act,'monthly'))}</span></div><div class="sumfoot"><span>${tr('d_remSum')}</span><span>${money(act.reduce((s,d)=>s+d.monthly*remCount(d),0))}</span></div></section>`:''}<section class="card"><h2>${tr('d_add')}</h2>${debtForm()}</section>`;};
 function nextMonthDue(){const cp=curPer(),nx=perAdd(cp,1);return DEB().filter(d=>remCount(d)>0&&d.start<=nx&&!paidIn(d,nx)&&remCount(d)>unpaidDueCount(d,cp));}
 function nextMonthHTML(){const nx=perAdd(curPer(),1),list=nextMonthDue();if(!DEB().length)return '';const tot=sum(list,'monthly');
-  return `<section class="card"><h3>📆 ${tr('nx_title',{a:perName(nx)})}</h3>${list.length?`<ol class="alloc">${list.map(d=>`<li><b>${esc(d.title)} <span class="muted sm">${tr('nx_due',{a:dg(Math.min(d.dueDay,30))})}</span></b><span>${money(d.monthly)}</span></li>`).join('')}<li><b>${tr('total')}</b><span><b>${money(tot)}</b></span></li></ol>`:empty(tr('nx_none'))}<p class="hint">${tr('nx_hint')}</p></section>`;}
+  return `<section class="card"><h3>📆 ${tr('nx_title',{a:perName(nx)})}</h3>${list.length?`<ol class="alloc">${list.map(d=>`<li><b>${esc(d.title)} <span class="muted sm">${tr('nx_due',{a:dg(Math.min(d.dueDay,30))})}${(()=>{const nx=perAdd(curPer(),1).split('/').map(Number),dd=[nx[0],nx[1],Math.min(d.dueDay,mLen(nx[0],nx[1]))],ho=holidayOn(dd);return ho||isFriday(dd)?` <span class="tag bad">${tr('nx_off')}</span>`:'';})()}</span></b><span>${money(d.monthly)}</span></li>`).join('')}<li><b>${tr('total')}</b><span><b>${money(tot)}</b></span></li></ol>`:empty(tr('nx_none'))}<p class="hint">${tr('nx_hint')}</p></section>`;}
 
 /* ---- goals ---- */
 function goalForm(tpl,g){g=g||{};const T=x=>esc(x==null?'':x),A=n=>amtVal(n);const ttl=g.title||tr('tpl_'+tpl);
@@ -922,13 +925,30 @@ function applyChrome(){const r=document.documentElement;r.lang=UI.lang;r.dir=FA_
   document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.id===UI.lang));
   const th={system:['🖥️','th_system'],light:['☀️','th_light'],dark:['🌙','th_dark']}[UI.theme];$('#themeBtn').textContent=th[0];$('#themeBtn').setAttribute('aria-label',tr(th[1]));$('#themeBtn').title=tr(th[1]);
   $('#fab').setAttribute('aria-label',tr('quickExp'));$('#gearBtn').setAttribute('aria-label',tr('tab_settings'));paintSync();}
-function render(){applyChrome();const td=todayJ();$('#hdrTitle').textContent=D['ttl_'+tab]?tr('ttl_'+tab):tr('tab_'+tab);$('#hdrDate').textContent=dateLabel(td);$('#view').innerHTML=V[tab]();$('#fab').hidden=tab==='settings';}
+function render(){applyChrome();const td=todayJ();$('#hdrTitle').textContent=D['ttl_'+tab]?tr('ttl_'+tab):tr('tab_'+tab);{const ho=holidayOn(td);$('#hdrDate').textContent=dateLabel(td)+(ho?' · 🔴 '+ho.name:isFriday(td)?' · '+tr('friday'):'');}$('#view').innerHTML=V[tab]();$('#fab').hidden=tab==='settings';}
 let pendingRender=false;
 function safeRender(){const a=document.activeElement;if(a&&a.closest&&a.closest('#view form, #modal')&&a.matches('input,select,textarea')){pendingRender=true;return;}render();}
 document.addEventListener('focusout',()=>{if(pendingRender)setTimeout(()=>{if(pendingRender&&!(document.activeElement&&document.activeElement.matches('input,select,textarea'))){pendingRender=false;render();}},150);});
 function openModal(html){$('#modalBody').innerHTML=`<button class="x" data-act="close" aria-label="${tr('close')}">✕</button>`+html;$('#modal').classList.add('open');const i=$('#modalBody').querySelector('input.amt');if(i&&!i.value)setTimeout(()=>i.focus(),60);}
 function closeModal(){$('#modal').classList.remove('open');}
 let tt;function toast(m,l){const el=$('#toast');el.textContent=m;el.className='show '+(l||'');clearTimeout(tt);tt=setTimeout(()=>el.className='',3200);}
+
+/* ---- Iranian official holidays ---- */
+const HOL_FIXED={'01/01':['عید نوروز','Nowruz'],'01/02':['عید نوروز','Nowruz'],'01/03':['عید نوروز','Nowruz'],'01/04':['عید نوروز','Nowruz'],'01/12':['روز جمهوری اسلامی','Islamic Republic Day'],'01/13':['روز طبیعت','Nature Day'],'03/14':['رحلت امام خمینی','Khomeini anniversary'],'03/15':['قیام ۱۵ خرداد','15 Khordad uprising'],'11/22':['پیروزی انقلاب اسلامی','Revolution Day'],'12/29':['ملی شدن صنعت نفت','Oil Nationalization Day']};
+/* Official 1405 calendar (Iranian Council for Public Culture) */
+const HOL_YEAR={1405:{'01/01':['عید نوروز و عید فطر','Nowruz & Eid al-Fitr'],'01/02':['عید نوروز و تعطیل عید فطر','Nowruz & Eid al-Fitr'],'01/25':['شهادت امام جعفر صادق (ع)','Martyrdom of Imam Sadiq'],'03/06':['عید قربان','Eid al-Adha'],'03/14':['عید غدیر و رحلت امام خمینی','Eid al-Ghadir & Khomeini anniversary'],'04/03':['تاسوعای حسینی','Tasua'],'04/04':['عاشورای حسینی','Ashura'],'05/13':['اربعین حسینی','Arbaeen'],'05/21':['رحلت پیامبر (ص) و شهادت امام حسن (ع)','Prophet’s passing & Imam Hasan'],'05/22':['شهادت امام رضا (ع)','Martyrdom of Imam Reza'],'05/30':['شهادت امام حسن عسکری (ع)','Martyrdom of Imam Askari'],'06/08':['میلاد پیامبر (ص) و امام صادق (ع)','Prophet’s birthday'],'08/22':['شهادت حضرت فاطمه (س)','Martyrdom of Fatima'],'10/02':['ولادت امام علی (ع) و روز پدر','Imam Ali’s birthday'],'10/16':['مبعث پیامبر (ص)','Mab’ath'],'11/04':['ولادت حضرت قائم (عج)','Mid-Sha’ban'],'12/09':['شهادت امام علی (ع)','Martyrdom of Imam Ali'],'12/19':['عید فطر','Eid al-Fitr'],'12/20':['تعطیل عید فطر','Eid al-Fitr holiday']}};
+const HOL_LUNAR=[[1,9,'تاسوعای حسینی','Tasua'],[1,10,'عاشورای حسینی','Ashura'],[2,20,'اربعین حسینی','Arbaeen'],[2,28,'رحلت پیامبر (ص) و شهادت امام حسن (ع)','Prophet’s passing'],[2,0,'شهادت امام رضا (ع)','Martyrdom of Imam Reza'],[3,8,'شهادت امام حسن عسکری (ع)','Martyrdom of Imam Askari'],[3,17,'میلاد پیامبر (ص)','Prophet’s birthday'],[6,3,'شهادت حضرت فاطمه (س)','Martyrdom of Fatima'],[7,13,'ولادت امام علی (ع)','Imam Ali’s birthday'],[7,27,'مبعث پیامبر (ص)','Mab’ath'],[8,15,'نیمه شعبان','Mid-Sha’ban'],[9,21,'شهادت امام علی (ع)','Martyrdom of Imam Ali'],[10,1,'عید فطر','Eid al-Fitr'],[10,2,'تعطیل عید فطر','Eid al-Fitr holiday'],[10,25,'شهادت امام صادق (ع)','Martyrdom of Imam Sadiq'],[12,10,'عید قربان','Eid al-Adha'],[12,18,'عید غدیر','Eid al-Ghadir']];
+const _holCache={};
+function holidaysOf(y){if(_holCache[y])return _holCache[y];const out={};const put=(k,v,approx)=>{out[k]=out[k]?{fa:out[k].fa+' · '+v[0],en:out[k].en+' · '+v[1],approx:out[k].approx||approx}:{fa:v[0],en:v[1],approx};};
+  if(HOL_YEAR[y]){Object.assign(out,Object.fromEntries(Object.entries(HOL_FIXED).map(([k,v])=>[k,{fa:v[0],en:v[1]}])));Object.entries(HOL_YEAR[y]).forEach(([k,v])=>{out[k]={fa:v[0],en:v[1]};});return _holCache[y]=out;}
+  Object.entries(HOL_FIXED).forEach(([k,v])=>put(k,v,false));
+  let fmt=null;try{fmt=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{day:'numeric',month:'numeric',timeZone:'UTC'});}catch(e){try{fmt=new Intl.DateTimeFormat('en-u-ca-islamic-civil',{day:'numeric',month:'numeric',timeZone:'UTC'});}catch(e2){}}
+  if(fmt){const hij=d=>{const p=fmt.formatToParts(d);return[+p.find(x=>x.type==='month').value,+p.find(x=>x.type==='day').value];};
+    for(let m=1;m<=12;m++)for(let d=1;d<=mLen(y,m);d++){const g=j2g(y,m,d),dt=new Date(Date.UTC(g[0],g[1]-1,g[2]));const[hm,hd]=hij(dt);const[nm]=hij(new Date(dt.getTime()+864e5));
+      HOL_LUNAR.forEach(([lm,ld,fa,en])=>{if(lm===hm&&(ld===hd||(ld===0&&nm!==hm)))put(pad(m)+'/'+pad(d),[fa,en],true);});}}
+  return _holCache[y]=out;}
+function holidayOn(a){const h=holidaysOf(a[0])[pad(a[1])+'/'+pad(a[2])];return h?{name:h[UI.lang],approx:!!h.approx}:null;}
+function isFriday(a){const g=j2g(a[0],a[1],a[2]);return new Date(g[0],g[1]-1,g[2]).getDay()===5;}
 
 /* =====================================================================
    7. PERSIAN DATE PICKER
@@ -937,9 +957,9 @@ let DP=null;
 function openDP(input){const a=parseJ(input.value)||todayJ();DP={input,y:a[0],m:a[1],sel:parseJ(input.value)};drawDP();$('#dp').classList.add('open');}
 function drawDP(){const{y,m}=DP,g=j2g(y,m,1),wd=(new Date(g[0],g[1]-1,g[2]).getDay()+1)%7,ml=mLen(y,m),td=todayJ();
   const wk=FA_LANG()?['ش','ی','د','س','چ','پ','ج']:['Sa','Su','Mo','Tu','We','Th','Fr'];let cells='';for(let i=0;i<wd;i++)cells+='<span></span>';
-  for(let d=1;d<=ml;d++){const isT=y===td[0]&&m===td[1]&&d===td[2],isS=DP.sel&&y===DP.sel[0]&&m===DP.sel[1]&&d===DP.sel[2];cells+=`<button type="button" class="${isT?'today':''} ${isS?'sel':''}" data-act="dpPick" data-id="${d}">${dg(d)}</button>`;}
+  const hols=[];for(let d=1;d<=ml;d++){const isT=y===td[0]&&m===td[1]&&d===td[2],isS=DP.sel&&y===DP.sel[0]&&m===DP.sel[1]&&d===DP.sel[2],ho=holidayOn([y,m,d]),fr=(wd+d-1)%7===6;if(ho)hols.push([d,ho]);cells+=`<button type="button" class="${isT?'today':''} ${isS?'sel':''} ${ho||fr?'hol':''}" data-act="dpPick" data-id="${d}" ${ho?`title="${esc(ho.name)}"`:''}>${dg(d)}${ho?'<i></i>':''}</button>`;}
   const prev=FA_LANG()?'›':'‹',next=FA_LANG()?'‹':'›';
-  $('#dpBody').innerHTML=`<div class="dp-h"><button type="button" data-act="dpNav" data-id="-1" aria-label="${tr('prevM')}">${prev}</button><b>${mName(m)} ${dg(y)}</b><button type="button" data-act="dpNav" data-id="1" aria-label="${tr('nextM')}">${next}</button></div><div class="dp-w">${wk.map(x=>`<span>${x}</span>`).join('')}</div><div class="dp-g">${cells}</div><div class="btns"><button type="button" class="btn sm" data-act="dpToday">${tr('today')}</button><button type="button" class="btn sm" data-act="dpClose">${tr('cancel')}</button></div>`;}
+  $('#dpBody').innerHTML=`<div class="dp-h"><button type="button" data-act="dpNav" data-id="-1" aria-label="${tr('prevM')}">${prev}</button><b>${mName(m)} ${dg(y)}</b><button type="button" data-act="dpNav" data-id="1" aria-label="${tr('nextM')}">${next}</button></div><div class="dp-w">${wk.map(x=>`<span>${x}</span>`).join('')}</div><div class="dp-g">${cells}</div>${hols.length?`<ul class="dp-hol">${hols.map(([d,ho])=>`<li><b>${dg(d)} ${mName(m)}</b> ${esc(ho.name)}</li>`).join('')}</ul>${hols.some(x=>x[1].approx)?`<p class="hint">${tr('hol_approx')}</p>`:''}`:`<p class="hint" style="text-align:center">${tr('hol_none')}</p>`}<div class="btns"><button type="button" class="btn sm" data-act="dpToday">${tr('today')}</button><button type="button" class="btn sm" data-act="dpClose">${tr('cancel')}</button></div>`;}
 
 /* =====================================================================
    8. CLOUD SYNC ENGINE (encrypted, last-write-wins per record)
