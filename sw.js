@@ -1,6 +1,6 @@
 // Offline cache for دخل‌وخرج. Caches ONLY the app shell and fonts.
 // Sync/API traffic (Firebase, your own server) is never touched.
-const CACHE = 'dakhlokharj-v3.1';
+const CACHE = 'dakhlokharj-v3.2';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
