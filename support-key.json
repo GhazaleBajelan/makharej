@@ -1,0 +1,13 @@
+{
+ "type": "nana-support-public",
+ "made": "2026-11-28",
+ "email": "bajelan.qazal@gmail.com",
+ "pub": {
+  "crv": "P-256",
+  "ext": true,
+  "key_ops": [],
+  "kty": "EC",
+  "x": "UB27xnazzeUTbuzjYObJgsmY2d3puaugqIfMG_J4OOY",
+  "y": "bD-f8TQMYcLK6KKt-0iWFvSIQc1h_GIyQMK52EorO5M"
+ }
+}
