@@ -168,8 +168,9 @@ input[type=checkbox]{width:20px;height:20px;min-height:0;accent-color:var(--pri)
 .form:has(input[name=model][value="503020"]:checked) .mzero{display:none}
 .form:has(select[name=mode] option[value=key]:checked) .only-email{display:none}
 .form:has(select[name=mode] option[value=email]:checked) .only-key{display:none}
-.form:has(select[name=provider] option[value=rest]:checked) .only-fb{display:none}
-.form:has(select[name=provider] option[value=firebase]:checked) .only-rest{display:none}
+.form:has(select[name=provider] option[value=rest]:checked) .only-fb,.form:has(select[name=provider] option[value=gist]:checked) .only-fb{display:none}
+.form:has(select[name=provider] option[value=firebase]:checked) .only-rest,.form:has(select[name=provider] option[value=gist]:checked) .only-rest{display:none}
+.form:has(select[name=provider] option[value=firebase]:checked) .only-gist,.form:has(select[name=provider] option[value=rest]:checked) .only-gist{display:none}
 .stage{display:grid;grid-template-columns:1fr 130px 36px;gap:6px;margin-bottom:6px}
 .tpls{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .tpl{border:1px solid var(--line);background:var(--sunk);border-radius:14px;padding:12px;text-align:start;cursor:pointer}
@@ -316,7 +317,7 @@ table.rft tfoot td{font-weight:700;border-top:2px solid var(--line)}table.rft tf
 
 <script>
 'use strict';
-const APP_VERSION='2.9';let lastDiag='';
+const APP_VERSION='3.0';let lastDiag='';
 /* =====================================================================
    1. UTILITIES, I18N & FORMATTING
    ===================================================================== */
@@ -432,7 +433,7 @@ const D={
  sy_restUrl:['آدرس پایه API','API base URL'],sy_restTok:['توکن (اختیاری)','Bearer token (optional)'],sy_connect:['اتصال و همگام‌سازی','Connect & sync'],sy_now:['همگام‌سازی الان','Sync now'],sy_disc:['قطع اتصال','Disconnect'],
  sy_on:['متصل: {a}','Connected: {a}'],sy_last:['آخرین همگام‌سازی: {a}','Last sync: {a}'],sy_never:['هنوز همگام نشده','Not synced yet'],sy_rules:['قوانین پیشنهادی Firebase','Suggested Firebase rules'],
  sy_needHttps:['رمزنگاری فقط روی https یا localhost کار می‌کند.','Encryption needs https or localhost.'],sy_wrongKey:['کلید یا رمز با داده‌های ابری جور نیست','Key/password does not match the cloud data'],sy_authErr:['ورود ناموفق بود','Sign-in failed'],sy_wrongPass:['رمز عبور اشتباه است','Wrong password'],sy_fill:['همه فیلدهای لازم را پر کنید','Fill in all required fields'],sy_keyShort:['کلید باید حداقل ۱۶ کاراکتر باشد','Key must be at least 16 characters'],
- sy_connected:['همگام‌سازی فعال شد','Sync is on'],sy_discQ:['همگام‌سازی قطع شود؟ اطلاعات روی این دستگاه باقی می‌ماند.','Disconnect sync? Data stays on this device.'],sy_note:['نکته: سرویس‌های گوگل (Firebase) از ایران ممکن است بدون فیلترشکن در دسترس نباشند؛ در آن صورت گزینه «سرور شخصی» را استفاده کنید.','Note: Google services (Firebase) may be unreachable from some regions; use “Own server” in that case.'],
+ sy_connected:['همگام‌سازی فعال شد','Sync is on'],sy_discQ:['همگام‌سازی قطع شود؟ اطلاعات روی این دستگاه باقی می‌ماند.','Disconnect sync? Data stays on this device.'],sy_note:['نکته: Firebase مال گوگل است و از اینترنت ایران بدون VPN در دسترس نیست. گزینه GitHub معمولاً بدون VPN هم کار می‌کند.','Note: Google services (Firebase) may be unreachable from some regions; use “Own server” in that case.'],
  set_backup:['پشتیبان و خروجی','Backup & export'],bk_json:['⬇️ دانلود پشتیبان (JSON)','⬇️ Download backup (JSON)'],bk_share:['📤 ارسال فایل پشتیبان','📤 Share backup file'],bk_imp:['⬆️ ادغام از پشتیبان','⬆️ Merge from backup'],bk_csv:['⬇️ خروجی اکسل (CSV)','⬇️ Excel export (CSV)'],bk_impCsv:['⬆️ ورود از CSV','⬆️ Import CSV'],
  bk_hint:['ورود فایل، اطلاعات را با داده فعلی ادغام می‌کند (جدیدترین نسخه هر رکورد می‌ماند). CSV فقط درآمد و هزینه را وارد می‌کند.','Importing merges with current data (newest version of each record wins). CSV import adds incomes and expenses only.'],
  bk_ok:['فایل پشتیبان دانلود شد','Backup downloaded'],bk_csvOk:['فایل CSV دانلود شد','CSV downloaded'],bk_bad:['این فایل پشتیبان این برنامه نیست','Not a backup of this app'],bk_badJson:['فایل JSON معتبر نیست','Invalid JSON file'],bk_mergeQ:['اطلاعات فایل با اطلاعات فعلی ادغام شود؟','Merge the file into current data?'],bk_merged:['ادغام انجام شد','Merged'],bk_rows:['{a} ردیف اضافه شد','{a} rows added'],bk_csvBad:['ساختار CSV شناخته نشد','Unrecognized CSV layout'],bk_shareNA:['این مرورگر ارسال فایل را پشتیبانی نمی‌کند؛ از دانلود استفاده کنید','Sharing files is not supported here; use download'],readErr:['خواندن فایل انجام نشد','Could not read the file'],
@@ -466,6 +467,12 @@ const D={
  rf_sum:['خلاصه: {a}','Summary: {a}'],rf_essSplit:['ضروری {a} · غیرضروری {b}','Essential {a} · non-essential {b}'],rf_net:['خالص (درآمد − هزینه − اقساط − واریز)','Net (income − expenses − installments − deposits)'],rf_netHint:['آنچه در این بازه برایتان ماند','What you kept in this period'],
  rf_byDebt:['جمع به تفکیک قسط','Totals by installment'],rf_payments:['پرداخت','payments'],rf_list:['تراکنش‌ها ({a} مورد)','Transactions ({a})'],rf_print:['🖨️ چاپ همین گزارش','🖨️ Print this report'],rf_csv:['⬇️ اکسل همین گزارش','⬇️ Excel of this report'],rf_pTitle:['گزارش مالی','Financial report'],rf_filters:['فیلترها','Filters'],rf_yearChart:['درآمد، اقساط و پس‌انداز ماه‌به‌ماه — سال {a}','Monthly income, installments & savings — {a}'],
  dg_btn:['آزمایش اتصال','Test connection'],dg_ver:['نسخه برنامه','App version'],dg_dev:['دستگاه','Device'],dg_online:['اینترنت (از نظر دستگاه)','Online (device says)'],dg_yes:['بله','yes'],dg_no:['خیر','no'],dg_net:['نوع شبکه','Network type'],dg_server:['سرور','Server'],dg_crypto:['رمزنگاری در دسترس','Encryption available'],dg_last:['آخرین همگام‌سازی موفق','Last successful sync'],dg_lastErr:['آخرین خطا','Last error'],dg_test:['اتصال به سرور','Server connection'],dg_ok:['موفق ({a} میلی‌ثانیه)','OK ({a} ms)'],dg_key:['کلید و رمزگشایی','Key & decryption'],dg_keyOk:['درست است ✓','correct ✓'],dg_empty:['هنوز داده‌ای در سرور نیست','no data on server yet'],dg_hint:['از این صفحه عکس بگیرید و بفرستید تا مشکل دقیق پیدا شود.','Screenshot this and send it to find the exact problem.'],
+ sy_gist:['GitHub (پیشنهادی)','GitHub (recommended)'],sy_ghTok:['توکن GitHub (فقط دسترسی gist)','GitHub token (gist scope only)'],sy_ghHow:['توکن را چطور بسازم؟','How do I create the token?'],
+ gh1:['در GitHub به Settings ← Developer settings ← Personal access tokens ← <b>Tokens (classic)</b> بروید.','In GitHub go to Settings → Developer settings → Personal access tokens → <b>Tokens (classic)</b>.'],
+ gh2:['<b>Generate new token (classic)</b> را بزنید؛ در Note بنویسید Nana و Expiration را <b>No expiration</b> بگذارید.','Click <b>Generate new token (classic)</b>; Note: Nana; Expiration: <b>No expiration</b>.'],
+ gh3:['فقط تیک <b>gist</b> را بزنید (هیچ تیک دیگری لازم نیست) و Generate token را بزنید.','Tick only <b>gist</b> and click Generate token.'],
+ gh4:['توکن (با ghp_ شروع می‌شود) را کپی کنید و اینجا بچسبانید. روی دستگاه دوم هم همین توکن و همان کلید همگام‌سازی را وارد کنید.','Copy the token (starts with ghp_) here. Use the same token and sync key on your other device.'],
+ sy_ghBadTok:['توکن GitHub درست نیست یا منقضی شده','GitHub token is invalid or expired'],sy_ghScope:['توکن اجازه gist ندارد','Token lacks the gist permission'],
  storeFull:['ذخیره نشد؛ حافظه مرورگر پر است','Not saved; browser storage is full']
 };
 function tr(k,v){const e=D[k];let s=e?e[FA_LANG()?0:1]:k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s;}
@@ -875,9 +882,10 @@ const FB_RULES=`{
   }
 }`;
 function syncSection(){if(SC.enabled){const last=META.lastSync?new Date(META.lastSync):null;const lj=last?dateLabel(dToJ(last))+' '+dg(pad(last.getHours())+':'+pad(last.getMinutes())):tr('sy_never');
-    return `<p><span class="tag ok">${tr('sy_on',{a:SC.provider==='firebase'?'Firebase'+(SC.mode==='email'?' · '+esc(SC.email):''):esc(SC.restUrl)})}</span></p><p class="hint">${tr('sy_last',{a:lj})}${syncState.err?' · '+esc(syncState.err):''}</p><div class="btns"><button class="btn pri" data-act="syncNow">${tr('sy_now')}</button><button class="btn" data-act="diag">🔍 ${tr('dg_btn')}</button><button class="btn" data-act="syncOff">${tr('sy_disc')}</button></div><div id="diagOut">${lastDiag}</div>`;}
+    return `<p><span class="tag ok">${tr('sy_on',{a:SC.provider==='gist'?'GitHub Gist':SC.provider==='firebase'?'Firebase'+(SC.mode==='email'?' · '+esc(SC.email):''):esc(SC.restUrl)})}</span></p><p class="hint">${tr('sy_last',{a:lj})}${syncState.err?' · '+esc(syncState.err):''}</p><div class="btns"><button class="btn pri" data-act="syncNow">${tr('sy_now')}</button><button class="btn" data-act="diag">🔍 ${tr('dg_btn')}</button><button class="btn" data-act="syncOff">${tr('sy_disc')}</button></div><div id="diagOut">${lastDiag}</div>`;}
   return `<p class="hint">${tr('sy_intro')}</p><form data-form="sync" class="form" autocomplete="off">
-  <div class="row2"><label class="fld"><span>${tr('sy_provider')}</span><select name="provider"><option value="firebase">${tr('sy_fb')}</option><option value="rest">${tr('sy_rest')}</option></select></label><label class="fld"><span>${tr('sy_mode')}</span><select name="mode"><option value="key">${tr('sy_modeKey')}</option><option value="email">${tr('sy_modeEmail')}</option></select></label></div>
+  <div class="row2"><label class="fld"><span>${tr('sy_provider')}</span><select name="provider"><option value="gist">${tr('sy_gist')}</option><option value="firebase">${tr('sy_fb')}</option><option value="rest">${tr('sy_rest')}</option></select></label><label class="fld only-fb"><span>${tr('sy_mode')}</span><select name="mode"><option value="key">${tr('sy_modeKey')}</option><option value="email">${tr('sy_modeEmail')}</option></select></label></div>
+  <div class="only-gist"><label class="fld"><span>${tr('sy_ghTok')}</span><input name="ghToken" dir="ltr" placeholder="ghp_…"></label><details><summary class="sm">${tr('sy_ghHow')}</summary><ol class="steps sm"><li>${tr('gh1')}</li><li>${tr('gh2')}</li><li>${tr('gh3')}</li><li>${tr('gh4')}</li></ol></details></div>
   <label class="fld only-fb"><span>${tr('sy_db')}</span><input name="dbUrl" dir="ltr" placeholder="https://your-app-default-rtdb.firebaseio.com"></label>
   <label class="fld only-rest"><span>${tr('sy_restUrl')}</span><input name="restUrl" dir="ltr" placeholder="https://example.com/api/vault"></label>
   <label class="fld only-rest"><span>${tr('sy_restTok')}</span><input name="restToken" dir="ltr"></label>
@@ -959,8 +967,17 @@ async function fbToken(){const a=SC.auth;if(Date.now()<a.exp-60000)return a.idTo
 /* Adapter: Firebase RTDB REST or a generic REST endpoint (GET/PUT JSON) */
 async function remoteURL(){if(SC.provider==='firebase'){const base=SC.dbUrl.replace(/\/+$/,'');return SC.mode==='email'?`${base}/users/${SC.auth.uid}/vault.json?auth=${encodeURIComponent(await fbToken())}`:`${base}/vaults/${SC.keyHash}.json`;}return `${SC.restUrl.replace(/\/+$/,'')}/${SC.keyHash}`;}
 const restHdr=()=>SC.provider==='rest'&&SC.restToken?{Authorization:'Bearer '+SC.restToken}:{};
-async function remoteGet(){const r=await fetchT(await remoteURL(),{headers:restHdr(),cache:'no-store'});if(r.status===404)return null;if(!r.ok)throw new Error('HTTP '+r.status);const x=await r.text();return x&&x!=='null'?JSON.parse(x):null;}
-async function remotePut(o){const r=await fetchT(await remoteURL(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},restHdr()),body:JSON.stringify(o)});if(!r.ok)throw new Error('HTTP '+r.status);}
+const GH='https://api.github.com';
+const ghHdr=()=>({Authorization:'Bearer '+SC.ghToken,Accept:'application/vnd.github+json'});
+const ghDesc=()=>'Nana vault '+SC.keyHash.slice(0,16),GH_FILE='nana-vault.json';
+async function ghCheck(r){if(r.ok)return r;if(r.status===401)throw new Error(tr('sy_ghBadTok'));if(r.status===403||r.status===404)throw new Error(tr('sy_ghScope')+' (HTTP '+r.status+')');throw new Error('HTTP '+r.status);}
+async function ghFind(){if(SC.gistId)return SC.gistId;for(let pg=1;pg<=5;pg++){const r=await ghCheck(await fetchT(`${GH}/gists?per_page=100&page=${pg}`,{headers:ghHdr(),cache:'no-store'}));const list=await r.json();const g=list.find(x=>x.description===ghDesc());if(g){SC.gistId=g.id;saveSC();return g.id;}if(list.length<100)break;}return null;}
+async function ghGet(){const id=await ghFind();if(!id)return null;const r=await fetchT(`${GH}/gists/${id}`,{headers:ghHdr(),cache:'no-store'});if(r.status===404){SC.gistId='';saveSC();return null;}await ghCheck(r);const j=await r.json();const f=j.files&&j.files[GH_FILE];if(!f)return null;let txt=f.content;if(f.truncated){const rr=await ghCheck(await fetchT(f.raw_url,{cache:'no-store'}));txt=await rr.text();}return txt?JSON.parse(txt):null;}
+async function ghPut(o){const body={files:{[GH_FILE]:{content:JSON.stringify(o)}}};const id=await ghFind();
+  if(id){await ghCheck(await fetchT(`${GH}/gists/${id}`,{method:'PATCH',headers:Object.assign({'Content-Type':'application/json'},ghHdr()),body:JSON.stringify(body)}));return;}
+  const r=await ghCheck(await fetchT(`${GH}/gists`,{method:'POST',headers:Object.assign({'Content-Type':'application/json'},ghHdr()),body:JSON.stringify(Object.assign(body,{description:ghDesc(),public:false}))}));const j=await r.json();SC.gistId=j.id;saveSC();}
+async function remoteGet(){if(SC.provider==='gist')return ghGet();const r=await fetchT(await remoteURL(),{headers:restHdr(),cache:'no-store'});if(r.status===404)return null;if(!r.ok)throw new Error('HTTP '+r.status);const x=await r.text();return x&&x!=='null'?JSON.parse(x):null;}
+async function remotePut(o){if(SC.provider==='gist')return ghPut(o);const r=await fetchT(await remoteURL(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},restHdr()),body:JSON.stringify(o)});if(!r.ok)throw new Error('HTTP '+r.status);}
 /* Merge: newest `u` wins per record; deletions are tombstones */
 const COLLS=['incomes','expenses','debts','goals','plans'];
 function mergeColl(a,b){const m=new Map();[...(a||[]),...(b||[])].forEach(r=>{if(!r||!r.id)return;const x=m.get(r.id);if(!x||(r.u||0)>(x.u||0))m.set(r.id,r);});const cut=Date.now()-180*864e5;return [...m.values()].filter(r=>!(r.del&&r.u<cut)).sort((x,y)=>x.id<y.id?-1:1);}
@@ -979,8 +996,8 @@ async function syncNow(){if(!SC.enabled){setSync('local');return;}if(syncing&&Da
   finally{syncing=false;if(again){again=false;syncNow();}}}
 async function connectSync(f){const E=f.elements,v=n=>(E[n]&&E[n].value||'').trim();
   if(!(window.crypto&&crypto.subtle))return toast(tr('sy_needHttps'),'bad');
-  const cfg={enabled:true,provider:v('provider'),mode:v('provider')==='rest'?'key':v('mode'),dbUrl:v('dbUrl'),apiKey:v('apiKey'),email:v('email').toLowerCase(),restUrl:v('restUrl'),restToken:v('restToken')};
-  if((cfg.provider==='firebase'&&!/^https:\/\//.test(cfg.dbUrl))||(cfg.provider==='rest'&&!/^https?:\/\//.test(cfg.restUrl)))return toast(tr('sy_fill'),'bad');
+  const cfg={enabled:true,provider:v('provider'),mode:v('provider')==='firebase'?v('mode'):'key',ghToken:v('ghToken'),dbUrl:v('dbUrl'),apiKey:v('apiKey'),email:v('email').toLowerCase(),restUrl:v('restUrl'),restToken:v('restToken')};
+  if((cfg.provider==='firebase'&&!/^https:\/\//.test(cfg.dbUrl))||(cfg.provider==='rest'&&!/^https?:\/\//.test(cfg.restUrl))||(cfg.provider==='gist'&&cfg.ghToken.length<20))return toast(tr('sy_fill'),'bad');
   setSync('syncing');
   try{if(cfg.mode==='email'){if(!cfg.apiKey||!cfg.email||!v('password'))throw new Error(tr('sy_fill'));SC=Object.assign({},cfg,{enabled:false});cfg.auth=await fbSignIn(cfg.email,v('password'));cfg.keyHash=cfg.auth.uid;cfg.keyB64=await deriveKey(v('password'),'dk2|'+cfg.email);}
     else{const k=v('syncKey');if(k.replace(/\W/g,'').length<16)throw new Error(tr('sy_keyShort'));cfg.keyHash=await sha('dk2-vault|'+k);cfg.keyB64=await deriveKey(k,'dk2|'+cfg.keyHash);}
@@ -1093,7 +1110,7 @@ const ACT={
    row(tr('dg_ver'),'v'+APP_VERSION);row(tr('dg_dev'),FA_LANG()?(/android/i.test(navigator.userAgent)?'اندروید':/iphone|ipad/i.test(navigator.userAgent)?'آیفون':'کامپیوتر'):(/android/i.test(navigator.userAgent)?'Android':/iphone|ipad/i.test(navigator.userAgent)?'iPhone':'Computer'));
    row(tr('dg_online'),navigator.onLine?tr('dg_yes'):tr('dg_no'),navigator.onLine);
    if(navigator.connection&&navigator.connection.effectiveType)row(tr('dg_net'),navigator.connection.effectiveType);
-   row(tr('dg_server'),esc(SC.provider==='firebase'?(SC.dbUrl||'').replace(/^https:\/\//,''):SC.restUrl));
+   row(tr('dg_server'),esc(SC.provider==='gist'?'api.github.com (Gist)':SC.provider==='firebase'?(SC.dbUrl||'').replace(/^https:\/\//,''):SC.restUrl));
    row(tr('dg_crypto'),window.crypto&&crypto.subtle?tr('dg_yes'):tr('dg_no'),!!(window.crypto&&crypto.subtle));
    row(tr('dg_last'),META.lastSync?dateLabel(dToJ(new Date(META.lastSync)))+' '+dg(pad(new Date(META.lastSync).getHours())+':'+pad(new Date(META.lastSync).getMinutes())):tr('sy_never'));
    if(syncState.err)row(tr('dg_lastErr'),esc(syncState.err),false);
