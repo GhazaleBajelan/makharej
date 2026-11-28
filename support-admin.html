@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>پنل پشتیبانی Nana</title>
+<style>
+  body{font-family:Vazirmatn,Tahoma,sans-serif;background:#F8FAFC;color:#0F172A;max-width:640px;margin:20px auto;padding:0 14px;line-height:1.8}
+  .card{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:16px;margin-bottom:14px}
+  h1{font-size:20px}h2{font-size:16px;margin:0 0 8px}
+  input,textarea{width:100%;box-sizing:border-box;border:1px solid #CBD5E1;border-radius:10px;padding:9px;font:inherit;margin:4px 0 10px}
+  textarea{direction:ltr;font-family:Consolas,monospace;font-size:12px;min-height:90px}
+  button,.btn{border:0;border-radius:10px;padding:9px 14px;background:#0F766E;color:#fff;font:inherit;font-weight:700;cursor:pointer;margin:2px}
+  .sec{background:#E2E8F0;color:#0F172A}
+  .warn{background:#FEF3C7;color:#92400E;border-radius:10px;padding:10px;font-size:14px}
+  .ok{background:#D1FAE5;color:#065F46;border-radius:10px;padding:10px;font-size:14px}
+  .out{direction:ltr;font-family:Consolas,monospace;background:#F1F5F9;border-radius:10px;padding:10px;word-break:break-all;font-size:14px}
+  small{color:#475569}
+</style>
+</head>
+<body>
+<h1>🔑 پنل پشتیبانی دخل و خرج Nana 💕</h1>
+<p><small>این صفحه فقط برای پشتیبان است. همه کارها داخل همین مرورگر انجام می‌شود و هیچ چیز به اینترنت فرستاده نمی‌شود.</small></p>
+
+<div class="card">
+  <h2>۱) راه‌اندازی (فقط یک بار)</h2>
+  <div id="state"></div>
+  <label>ایمیل پشتیبانی (به کاربران نشان داده می‌شود)</label>
+  <input id="email" type="email" dir="ltr" placeholder="you@example.com">
+  <button onclick="makeKeys()">ساخت کلید پشتیبانی</button>
+  <p class="warn">⚠️ بعد از ساخت، دو فایل دانلود می‌شود:<br>
+  <b>nana-support-PRIVATE.json</b>: کلید خصوصی. <u>هرگز آپلود یا برای کسی ارسال نکنید</u>؛ جای امن نگه دارید (مثلاً فلش یا Google Drive شخصی). بدون آن نمی‌توانید کد بازگشایی بسازید.<br>
+  <b>support-key.json</b>: کلید عمومی. همین فایل را در مخزن GitHub برنامه آپلود کنید.</p>
+</div>
+
+<div class="card">
+  <h2>۲) ساخت کد بازگشایی برای کاربر</h2>
+  <label>کلید خصوصی</label>
+  <p><small id="pkState"></small></p>
+  <input type="file" id="pkFile" accept=".json" onchange="loadPk(this.files[0])">
+  <label>کد درخواست کاربر (با NANA1. شروع می‌شود)</label>
+  <textarea id="req" placeholder="NANA1...."></textarea>
+  <button onclick="unlock()">ساخت کد بازگشایی</button>
+  <div id="res"></div>
+</div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s);
+const b64e=buf=>{const a=new Uint8Array(buf);let s='';for(let i=0;i<a.length;i+=0x8000)s+=String.fromCharCode.apply(null,a.subarray(i,i+0x8000));return btoa(s);};
+const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const fromB64u=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return decodeURIComponent(escape(atob(s)));};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let PK=null;
+function dl(name,obj){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(obj,null,1)],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}
+function showState(){const s=localStorage.getItem('nana_admin_pk');$('#pkState').textContent=s?'✅ کلید خصوصی در همین مرورگر ذخیره است (یا فایل را دوباره انتخاب کنید).':'کلید خصوصی را از فایل nana-support-PRIVATE.json انتخاب کنید.';if(s)PK=JSON.parse(s);}
+async function makeKeys(){
+  if(!(window.crypto&&crypto.subtle)){alert('این صفحه را از آدرس https باز کنید.');return;}
+  if(localStorage.getItem('nana_admin_pk')&&!confirm('قبلاً کلید ساخته‌اید. کلید جدید بسازید؟ (کدهای درخواست رمزهای قبلی فقط با کلید قدیمی باز می‌شوند)'))return;
+  const email=$('#email').value.trim();
+  const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey']);
+  const pub=await crypto.subtle.exportKey('jwk',kp.publicKey),priv=await crypto.subtle.exportKey('jwk',kp.privateKey);
+  const made=new Date().toISOString().slice(0,10);
+  dl('nana-support-PRIVATE.json',{type:'nana-support-private',made,email,priv});
+  setTimeout(()=>dl('support-key.json',{type:'nana-support-public',made,email,pub}),600);
+  if(confirm('کلید خصوصی در همین مرورگر هم ذخیره شود تا هر بار لازم نباشد فایل را انتخاب کنید؟\n(فقط روی کامپیوتر شخصی خودتان «تأیید» بزنید)'))localStorage.setItem('nana_admin_pk',JSON.stringify(priv));
+  PK=priv;showState();
+  $('#state').innerHTML='<p class="ok">✅ کلیدها ساخته شد. حالا فایل <b>support-key.json</b> را در مخزن GitHub برنامه آپلود کنید.</p>';
+}
+function loadPk(file){if(!file)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(!j.priv)throw 0;PK=j.priv;$('#pkState').textContent='✅ کلید خصوصی بارگذاری شد.';}catch(e){alert('این فایل کلید خصوصی نیست.');}};r.readAsText(file);}
+async function unlock(){
+  const out=$('#res');out.innerHTML='';
+  if(!PK){alert('اول کلید خصوصی را انتخاب کنید.');return;}
+  try{
+    const raw=$('#req').value.trim().replace(/\s+/g,'');if(!raw.startsWith('NANA1.'))throw new Error('کد باید با NANA1. شروع شود');
+    const j=JSON.parse(fromB64u(raw.slice(6)));
+    const priv=await crypto.subtle.importKey('jwk',PK,{name:'ECDH',namedCurve:'P-256'},false,['deriveKey']);
+    const epk=await crypto.subtle.importKey('raw',b64d(j.e),{name:'ECDH',namedCurve:'P-256'},false,[]);
+    const aes=await crypto.subtle.deriveKey({name:'ECDH',public:epk},priv,{name:'AES-GCM',length:256},false,['decrypt']);
+    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(j.i)},aes,b64d(j.c));
+    const code=new TextDecoder().decode(pt);
+    out.innerHTML=`<p class="ok">✅ درخواست پروفایل <b>${esc(j.p||'(بدون اسم)')}</b> باز شد. این کد را برای کاربر بفرستید:</p><div class="out" id="code">${esc(code)}</div><button class="sec" onclick="navigator.clipboard.writeText(document.getElementById('code').textContent);this.textContent='کپی شد ✓'">📋 کپی کد بازگشایی</button><p><small>کاربر بعد از ورود با این کد، باید یک رمز جدید بگذارد؛ بعد از آن این کد دیگر کار نمی‌کند.</small></p>`;
+  }catch(e){out.innerHTML=`<p class="warn">این کد با کلید خصوصی شما باز نشد. مطمئن شوید کد کامل کپی شده و کلید درست را انتخاب کرده‌اید.</p>`;}
+}
+showState();
+</script>
+</body>
+</html>
